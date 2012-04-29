@@ -5,6 +5,7 @@ package com.chronosystems.model.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.chronosystems.entity.Device;
@@ -38,11 +39,11 @@ public abstract class DeviceDao {
 		}
 	}
 
-	protected Device find(String login) {
+	protected Device find(String email) {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
 			session.beginTransaction();
-			final Device result = (Device) session.createQuery("from Device where login = :login ").setString("login", login).uniqueResult();
+			final Device result = (Device) session.createQuery("from Device where email = :email ").setString("email", email).uniqueResult();
 			session.getTransaction().commit();
 			return result;
 		} catch (Exception e) {
@@ -53,6 +54,40 @@ public abstract class DeviceDao {
 			}
 		}
 		return null;
+	}
+
+	protected Device find(String email, String password) {
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			session.beginTransaction();
+			final Query query = session.createQuery("from Device where email = :email and password = :password");
+			query.setString("email", email);
+			query.setString("password", password);
+			final Device result = (Device) query.uniqueResult();
+			session.getTransaction().commit();
+			return result;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return null;
+	}
+	
+	protected Long rowCount(String email) {
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			return (Long) session.createQuery("select count(*) from Device where email = :email ").setString("email", email).uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return 0L;
 	}
 
 	@SuppressWarnings("unchecked")

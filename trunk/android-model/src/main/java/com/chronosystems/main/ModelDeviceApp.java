@@ -1,4 +1,4 @@
-package com.chronosystems;
+package com.chronosystems.main;
 
 import java.util.Date;
 import java.util.List;
@@ -20,7 +20,7 @@ public class ModelDeviceApp {
 		Device entity = service.find(login);
 		if (entity == null) {
 			entity = new Device();
-			entity.setLogin(login);
+			entity.setEmail(login);
 			entity.setName("Android User");
 		}
 
@@ -29,7 +29,7 @@ public class ModelDeviceApp {
 		location.setLatitude(-(Math.random()*100));
 		location.setLongitude(-Math.random()*100);
 		location.setTimeline(new Date());
-		entity.getLocations().add(location);
+		//entity.getLocations().add(location);
 		service.save(entity);
 
 		EntityUtils.printAll(entity);
