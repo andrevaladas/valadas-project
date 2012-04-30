@@ -12,29 +12,36 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.Root;
 
 /**
  * @author Andre Valadas
  *
  */
+@Root
 @Entity
-@XmlRootElement
 public class Location implements Serializable {
 
 	private static final long serialVersionUID = -6509094806343240084L;
 
+	@Element
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	
+
+	@Element
+	private double latitude;
+
+	@Element
+	private double longitude;
+
+	@Element
+	private Date timeline;
+
 	@ManyToOne
 	@JoinColumn(name = "iddevice")
 	private Device device;
-
-	private double latitude;
-	private double longitude;
-	private Date timeline;
 
 	public Long getId() {
 		return id;
@@ -43,7 +50,6 @@ public class Location implements Serializable {
 		this.id = id;
 	}
 
-	@XmlTransient
 	public Device getDevice() {
 		return device;
 	}

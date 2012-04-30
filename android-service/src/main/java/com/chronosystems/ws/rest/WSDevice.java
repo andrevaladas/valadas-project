@@ -14,22 +14,23 @@ import org.apache.commons.httpclient.HttpStatus;
 
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
-import com.chronosystems.entity.util.EntityUtils;
+import com.chronosystems.entity.util.XMLParser;
 import com.chronosystems.model.service.DeviceService;
 
 @Path("/device")
-public class WebServiceRestDevice {
+public class WSDevice {
 
 	@POST
 	@Path("/login")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
 	public Response login(final String xml) {
-		final Device entity = EntityUtils.getDevice(xml);//convert to bean
-		final Device device = new DeviceService().find(entity.getEmail(), entity.getPassword());
+		final Device filter = XMLParser.parseXML(xml, Device.class);//convert to bean
+		final Device device = new DeviceService().find(filter.getEmail(), filter.getPassword());
 		if(device != null) {
 			return Response.ok(new Entity(device)).build();
 		}
-		return Response.noContent().build();
+		return Response.ok( XMLParser.parseXML(new Entity(filter))).build();
+		//return Response.noContent().build();
 	}
 
 	@GET
@@ -44,7 +45,7 @@ public class WebServiceRestDevice {
 	@Path("/register")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response register(final String xml) {
-		final Device entity = EntityUtils.getDevice(xml);//convert to bean
+		final Device entity = XMLParser.parseXML(xml, Device.class);//convert to bean
 		final Long rowCount = new DeviceService().rowCount(entity.getEmail());
 		if (rowCount == 0) {
 			new DeviceService().save(entity);//save
