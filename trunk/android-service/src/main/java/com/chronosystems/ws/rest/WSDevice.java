@@ -22,35 +22,34 @@ public class WSDevice {
 
 	@POST
 	@Path("/login")
-	@Produces({MediaType.APPLICATION_JSON, MediaType.TEXT_XML})
+	@Produces(MediaType.TEXT_XML)
 	public Response login(final String xml) {
 		final Device filter = XMLParser.parseXML(xml, Device.class);//convert to bean
 		final Device device = new DeviceService().find(filter.getEmail(), filter.getPassword());
 		if(device != null) {
-			return Response.ok(new Entity(device)).build();
+			return Response.ok(XMLParser.parseXML(new Entity(device))).build();
 		}
-		return Response.ok( XMLParser.parseXML(new Entity(filter))).build();
-		//return Response.noContent().build();
+		return Response.noContent().build();
 	}
 
 	@GET
 	@Path("/search/{email}")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_XML)
 	public Response jsonSearch(@PathParam("email") String email) {
 		final Device device = new DeviceService().find(email);//search
-		return Response.ok(new Entity(device)).build();
+		return Response.ok(XMLParser.parseXML(new Entity(device))).build();
 	}
 
 	@POST
 	@Path("/register")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.TEXT_XML)
 	public Response register(final String xml) {
 		final Device entity = XMLParser.parseXML(xml, Device.class);//convert to bean
 		final Long rowCount = new DeviceService().rowCount(entity.getEmail());
 		if (rowCount == 0) {
 			new DeviceService().save(entity);//save
 			entity.setDatecreated(new Date());
-			return Response.ok(new Entity(entity)).build();
+			return Response.ok(XMLParser.parseXML(new Entity(entity))).build();
 		}
 		//conflict
 		return Response.status(HttpStatus.SC_CONFLICT).build();
