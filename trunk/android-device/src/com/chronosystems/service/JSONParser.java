@@ -1,4 +1,4 @@
-package com.chronosystems.library;
+package com.chronosystems.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -18,8 +18,9 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.chronosystems.entity.Device;
-import com.chronosystems.model.ParseXML;
+import com.chronosystems.entity.util.XMLParser;
 
+@Deprecated
 public class JSONParser {
 
 	static InputStream is = null;
@@ -38,11 +39,10 @@ public class JSONParser {
 			HttpPost httpPost = new HttpPost(url);
 			httpPost.setHeader("Content-type", "text/xml; charset=UTF-8");
 
-			if (device != null) {
-				final ByteArrayEntity entity = new ByteArrayEntity(ParseXML.writeXml(device).getBytes("UTF-8"));//Xml.Encoding.UTF_8
-				entity.setContentType("text/xml");
-				httpPost.setEntity(entity);
-			}
+			final ByteArrayEntity entity = new ByteArrayEntity(XMLParser.parseXML(device).getBytes("UTF-8"));//Xml.Encoding.UTF_8
+			entity.setContentType("text/xml");
+			httpPost.setEntity(entity);
+
 			HttpResponse httpResponse = httpClient.execute(httpPost);
 			HttpEntity httpEntity = httpResponse.getEntity();
 			//data not found
@@ -83,4 +83,5 @@ public class JSONParser {
 		// return JSON String
 		return jObj;
 	}
+
 }

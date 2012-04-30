@@ -7,10 +7,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.chronosystems.library.UserFunctions;
+import com.chronosystems.service.UserFunctions;
 
 public class DashboardActivity extends Activity {
-	UserFunctions userFunctions;
 	Button btnLogout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,14 +19,13 @@ public class DashboardActivity extends Activity {
          * Dashboard Screen for the application
          * */        
         // Check login status in database
-        userFunctions = new UserFunctions();
-        if(userFunctions.isUserLoggedIn(getApplicationContext())){
+        if(UserFunctions.isUserLoggedIn(getApplicationContext())){
         	setContentView(R.layout.dashboard);
         	btnLogout = (Button) findViewById(R.id.btnLogout);
         	
         	btnLogout.setOnClickListener(new View.OnClickListener() {
     			public void onClick(View view) {
-    				userFunctions.logoutUser(getApplicationContext());
+    				UserFunctions.logoutUser(getApplicationContext());
     				Intent login = new Intent(getApplicationContext(), LoginActivity.class);
     	        	login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
     	        	startActivity(login);

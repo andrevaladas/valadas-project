@@ -1,26 +1,20 @@
 package com.chronosystems.view;
 
 
-import static com.chronosystems.model.DeviceField.KEY_CREATED_AT;
-import static com.chronosystems.model.DeviceField.KEY_EMAIL;
-import static com.chronosystems.model.DeviceField.KEY_NAME;
-import static com.chronosystems.model.DeviceField.KEY_SUCCESS;
-import static com.chronosystems.model.DeviceField.KEY_UID;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chronosystems.library.DatabaseHandler;
-import com.chronosystems.library.UserFunctions;
+import com.chronosystems.entity.Device;
+import com.chronosystems.entity.Entity;
+import com.chronosystems.service.DatabaseHandler;
+import com.chronosystems.service.UserFunctions;
 
 public class RegisterActivity extends Activity {
 
@@ -55,23 +49,26 @@ public class RegisterActivity extends Activity {
  					return;
  				}
 
-				UserFunctions userFunction = new UserFunctions();
-				JSONObject json = userFunction.registerUser(name, email, password);
+ 				Log.d("Button", "Register");
+ 				final Entity entity = UserFunctions.loginUser(email, password);
 
 				// check for login response
 				try {
-					if (json != null && json.getString(KEY_SUCCESS) != null) {
+					if (entity != null && !entity.getDevices().isEmpty()) {
 						// user successfully registred
 						// Store user details in SQLite Database
-						DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-						JSONObject json_user = json.getJSONArray(KEY_SUCCESS).getJSONObject(0);
+						final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+						final Device device = entity.getDevices().get(0);
 
 						// Clear all previous data in database
-						userFunction.logoutUser(getApplicationContext());
-						db.addUser(json_user.getString(KEY_NAME), json_user.getString(KEY_EMAIL), json_user.getString(KEY_UID), json_user.getString(KEY_CREATED_AT));
+						UserFunctions.logoutUser(getApplicationContext());
+						db.addUser(device.getName(),
+								device.getEmail(),
+								device.getId().toString(),
+								device.getDatecreated().toString());
 
 						// Launch Dashboard Screen
-						Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
+						final Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
 
 						// Close all views before launching Dashboard
 						dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -82,7 +79,7 @@ public class RegisterActivity extends Activity {
 						// Error in registration
 						Toast.makeText(getApplicationContext(), "Error occured in registration", Toast.LENGTH_SHORT).show();
 					}
-				} catch (JSONException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}

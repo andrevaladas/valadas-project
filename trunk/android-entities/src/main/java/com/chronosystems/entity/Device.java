@@ -18,27 +18,39 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.xml.bind.annotation.XmlRootElement;
+
+import org.simpleframework.xml.Element;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 
 /**
  * @author Andre Valadas
  *
  */
+@Root
 @Entity
-@XmlRootElement
 public class Device implements Serializable {
 
 	private static final long serialVersionUID = -1665393754488451531L;
 
+	@Element(required=false)
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
+	
+	@Element(required=false)
 	private String name;
+	
+	@Element(required=false)
 	private String email;
+	
+	@Element(required=false)
 	private String password;
 
+	@Element(required=false)
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date datecreated;
 
+	@ElementList(entry="locations", inline=true, required=false)
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="device")
 	@OrderBy("timeline DESC")
 	private List<Location> locations = new ArrayList<Location>();

@@ -4,20 +4,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 
 /**
  * @author Andre Valadas
  *
  */
-@XmlRootElement
+@Root
 public class Entity implements Serializable {
-	
+
 	private static final long serialVersionUID = 6246777207650306617L;
-	
+
+	@ElementList(entry="devices", inline=true, required=false)
 	private List<Device> devices;
-	
+
 	public Entity() {
 		super();
 	}
@@ -27,7 +28,6 @@ public class Entity implements Serializable {
 		addDevice(device);
 	}
 
-	@XmlElement(name="result")
 	public List<Device> getDevices() {
 		return devices;
 	}
