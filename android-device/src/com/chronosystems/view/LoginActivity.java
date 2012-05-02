@@ -37,8 +37,8 @@ public class LoginActivity extends Activity {
  		btnLogin.setOnClickListener(new View.OnClickListener() {
 
  			public void onClick(View view) {
- 				String email = inputEmail.getText().toString();
- 				String password = inputPassword.getText().toString();
+ 				final String email = inputEmail.getText().toString();
+ 				final String password = inputPassword.getText().toString();
 
  				/** validate filelds */
  				if (!validateFields(email, password)) {
@@ -46,42 +46,48 @@ public class LoginActivity extends Activity {
  				}
 
  				Log.d("Button", "Login");
- 				final Entity entity = UserFunctions.loginUser(email, password);
+ 				new ExecuteActivity(LoginActivity.this){
+ 					@Override
+ 					protected String doInBackground(String... args) {
+ 						final Entity entity = UserFunctions.loginUser(email, password);
 
- 				// check for login response
- 				try {
- 					if (entity != null && !entity.getDevices().isEmpty()) {
-						// user successfully logged in
-						// Store user details in SQLite Database
- 						final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-						final Device device = entity.getDevices().get(0);
+ 		 				// check for login response
+ 		 				try {
+ 		 					if (entity != null && !entity.getDevices().isEmpty()) {
+ 								// user successfully logged in
+ 								// Store user details in SQLite Database
+ 		 						final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+ 								final Device device = entity.getDevices().get(0);
 
-						// Clear all previous data in database
-						UserFunctions.logoutUser(getApplicationContext());
-						db.addUser(device.getName(),
-								device.getEmail(),
-								device.getId().toString(),
-								device.getDatecreated().toString());
+ 								// Clear all previous data in database
+ 								UserFunctions.logoutUser(getApplicationContext());
+ 								db.addUser(device.getName(),
+ 										device.getEmail(),
+ 										device.getId().toString(),
+ 										device.getDatecreated().toString());
 
-						// Launch Dashboard Screen
-						final Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
+ 								// Launch Dashboard Screen
+ 								final Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
 
-						// Close all views before launching Dashboard
-						dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(dashboard);
-						
-						// Close Login Screen
-						finish();
- 					} else {
- 						// Error in login
- 						Toast.makeText(getApplicationContext(), "Incorrect username/password", Toast.LENGTH_SHORT).show();
+ 								// Close all views before launching Dashboard
+ 								dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+ 								startActivity(dashboard);
+
+ 								// Close Login Screen
+ 								finish();
+ 		 					} else {
+ 		 						// Error in login
+ 		 						Toast.makeText(getApplicationContext(), "Incorrect username/password", Toast.LENGTH_SHORT).show();
+ 		 					}
+ 		 				} catch (Exception e) {
+ 		 					e.printStackTrace();
+ 		 				}
+ 						return null;
  					}
- 				} catch (Exception e) {
- 					e.printStackTrace();
- 				}
+ 				}.execute();
  			}
  		});
-        
+
         // Listening to register new account link
         registerScreen.setOnClickListener(new View.OnClickListener() {
 			
