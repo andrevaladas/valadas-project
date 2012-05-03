@@ -56,7 +56,8 @@ public class MapViewActivity extends MapActivity {
 		itemizedOverlay.setShowDisclosure(true);
 		itemizedOverlay.setSnapToCenter(true);
 
-		/** Device Param */
+		/** Receive Params */
+		//final Entity entity = (Entity) getIntent().getSerializableExtra("entity");
 		final Device device = (Device) getIntent().getSerializableExtra("device");
 		final Location location = device.getLocations().get(0);
 		final GeoPoint pointCenter = new GeoPoint((int)(location.getLatitude()*1E6),(int)(location.getLongitude()*1E6));

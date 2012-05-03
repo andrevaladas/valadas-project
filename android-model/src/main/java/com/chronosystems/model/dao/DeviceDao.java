@@ -10,6 +10,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.chronosystems.entity.Device;
+import com.chronosystems.entity.Entity;
 import com.chronosystems.entity.Location;
 import com.chronosystems.util.HibernateUtil;
 
@@ -87,10 +88,15 @@ public abstract class DeviceDao {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected List<Device> findAll() {
+	protected Entity search(final Entity entity) {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			final List<Device> list = session.createQuery("from Device order by name").list();
+			final Query query = session.createQuery("from Device order by name");
+			// paginacao
+			query.setFirstResult(entity.getMaxRecords() * ((entity.getCurrentPage()-1)+1));
+			query.setMaxResults(entity.getMaxRecords()+1);
+
+			final List<Device> list = query.list();
 			final List<Device> result = new ArrayList<Device>();
 			for (final Device device : list) {
 				final List<Location> locations = device.getLocations();
@@ -98,15 +104,23 @@ public abstract class DeviceDao {
 					final Device data = new Device();
 					data.setName(device.getName());
 					data.setEmail(device.getEmail());
-					data.setDatecreatedInTime(device.getDatecreated().getTime());
+					data.setDateInTime(device.getDatecreated().getTime());
 
 					final Location location = locations.get(0);
-					location.setTimelineInTime(location.getTimeline().getTime());
+					location.setDateInTime(location.getTimeline().getTime());
 					data.addLocation(location);
 					result.add(data);
 				}
 			}
-			return result;
+
+			// has more rows?
+			entity.setHasNext(result.size());
+			if(Boolean.TRUE.equals(entity.getHasNext())) {
+				result.remove(result.size()-1);
+			}
+			/** set device result list */
+			entity.setDevices(result);
+			return entity;
 		} finally {
 			if(session.isOpen()) {
 				session.close();

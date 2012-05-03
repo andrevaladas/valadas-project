@@ -33,9 +33,10 @@ public class DashboardActivity extends Activity {
 				}
 			});
 
-		}else{
+		} else {
 			// user is not logged in show login screen
-			final Intent login = new Intent(getApplicationContext(), ListViewActivity.class);
+			//final Intent login = new Intent(getApplicationContext(), ListViewActivity.class);
+			final Intent login = new Intent(getApplicationContext(), LoginActivity.class);
 			login.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			startActivity(login);
 			// Closing dashboard screen

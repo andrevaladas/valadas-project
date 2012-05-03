@@ -14,34 +14,35 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.chronosystems.entity.Device;
+import com.chronosystems.entity.Entity;
 import com.chronosystems.entity.Location;
 import com.chronosystems.view.R;
 
 public class LazyAdapter extends BaseAdapter {
 
-	private final List<Device> deviceList;
+	private final Entity entity;
 	private static LayoutInflater inflater=null;
 	public ImageLoader imageLoader;
 
-	public LazyAdapter(final Activity activity, final List<Device> list) {
-		this.deviceList = list;
+	public LazyAdapter(final Activity activity, final Entity data) {
+		this.entity = data;
 		this.imageLoader = new ImageLoader(activity.getApplicationContext());
 		inflater = (LayoutInflater)activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	public int getCount() {
-		return deviceList.size();
+		return entity.getDevices().size();
 	}
 
 	public Object getItem(final int position) {
 		if(getCount() >= position) {
-			return deviceList.get(position);
+			return entity.getDevices().get(position);
 		}
 		return null;
 	}
 
-	public List<Device> getDeviceList() {
-		return deviceList;
+	public Entity getEntity() {
+		return entity;
 	}
 
 	public long getItemId(final int position) {
@@ -59,12 +60,13 @@ public class LazyAdapter extends BaseAdapter {
 		final TextView lastTimeLocation = (TextView)vi.findViewById(R.id.timeline); // timeline
 		vi.findViewById(R.id.list_image);
 
-		final Device device = deviceList.get(position);
+		final Device device = (Device) getItem(position);
 		final List<Location> locations = device.getLocations();
 		Long timelineInTime = new Date().getTime();
 		if (!locations.isEmpty()) {
+			//get the last location
 			final Location location = locations.get(0);
-			timelineInTime = location.getTimelineInTime();
+			timelineInTime = location.getDateInTime();
 		}
 
 		// Setting all values in listview

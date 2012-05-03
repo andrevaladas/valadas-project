@@ -8,10 +8,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
+import com.chronosystems.library.dialog.AlertMessage;
 import com.chronosystems.service.AsyncService;
 import com.chronosystems.service.DatabaseHandler;
 import com.chronosystems.service.UserFunctions;
@@ -105,18 +105,18 @@ public class RegisterActivity extends Activity {
 
 	private boolean validateForm() {
 		if (inputFullName.getText().toString().length() < 1) {
+			AlertMessage.show("Full name is required.", this);
 			inputFullName.requestFocus();
-			Toast.makeText(getApplicationContext(), "Informe seu nome", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		if (inputEmail.getText().toString().length() < 1) {
+			AlertMessage.show("Username is required.", this);
 			inputEmail.requestFocus();
-			Toast.makeText(getApplicationContext(), "Informe seu username", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		if (inputPassword.getText().toString().length() < 1) {
+			AlertMessage.show("Password is required.", this);
 			inputPassword.requestFocus();
-			Toast.makeText(getApplicationContext(), "Informe seu password", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		return true;

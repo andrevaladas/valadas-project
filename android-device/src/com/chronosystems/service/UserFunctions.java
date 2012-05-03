@@ -12,7 +12,7 @@ public class UserFunctions {
 
 	private static String loginURL = "http://192.168.0.101:8888/android-service/rest/device/login";
 	private static String registerURL = "http://192.168.0.101:8888/android-service/rest/device/register";
-	private static String findAllURL = "http://192.168.0.101:8888/android-service/rest/device/findAll";
+	private static String findAllURL = "http://192.168.0.101:8888/android-service/rest/device/search";
 
 	/**
 	 * function make Login Request
@@ -47,11 +47,11 @@ public class UserFunctions {
 	}
 
 	/**
-	 * find all devices
+	 * search devices
 	 * */
-	public static Entity findAllUsers(){
+	public static Entity searchDevices(final Entity entity){
 		// getting Entity Object
-		return RestService.executeRequest(findAllURL, new Device());
+		return RestService.executeRequest(findAllURL, entity);
 	}
 
 	/**

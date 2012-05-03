@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.chronosystems.entity.Device;
+import com.chronosystems.entity.Entity;
 import com.chronosystems.entity.Location;
 import com.chronosystems.entity.util.XMLParser;
 import com.chronosystems.model.service.DeviceService;
@@ -38,7 +39,8 @@ public class ModelDeviceApp {
 	@SuppressWarnings("unused")
 	private static void printAll(final DeviceService service) {
 		System.out.println("-------------- PRINT ALL --------------");
-		final List<Device> list = service.findAll();
+		final Entity searchResult = service.search(new Entity());
+		final List<Device> list = searchResult.getDevices();
 		for (final Device entity : list) {
 			XMLParser.printAll(entity);
 		}
