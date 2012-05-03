@@ -7,14 +7,15 @@ import java.util.List;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import com.chronosystems.core.FilterEntity;
+
 /**
  * @author Andre Valadas
- *
  */
 @Root
-public class Entity implements Serializable {
+public class Entity extends FilterEntity implements Serializable {
 
-	private static final long serialVersionUID = 6246777207650306617L;
+	private static final long serialVersionUID = -2259338148320677313L;
 
 	@ElementList(entry="devices", inline=true, required=false)
 	private List<Device> devices;

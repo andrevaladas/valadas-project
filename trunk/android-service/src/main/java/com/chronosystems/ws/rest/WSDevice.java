@@ -1,12 +1,9 @@
 package com.chronosystems.ws.rest;
 
 import java.util.Date;
-import java.util.List;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -48,21 +45,12 @@ public class WSDevice {
 		return Response.status(HttpStatus.SC_CONFLICT).build();
 	}
 
-	@GET
-	@Path("/search/{email}")
-	@Produces(MediaType.TEXT_XML)
-	public Response search(@PathParam("email") final String email) {
-		final Device device = new DeviceService().find(email);//search
-		return Response.ok(XMLParser.parseXML(new Entity(device))).build();
-	}
-
 	@POST
-	@Path("/findAll")
+	@Path("/search")
 	@Produces(MediaType.TEXT_XML)
-	public Response findAll() {
-		final List<Device> list = new DeviceService().findAll();
-		final Entity entity = new Entity();
-		entity.setDevices(list);
-		return Response.ok(XMLParser.parseXML(entity)).build();
+	public Response search(final String xml) {
+		final Entity entity = XMLParser.parseXML(xml, Entity.class);//convert to bean
+		final Entity result = new DeviceService().search(entity);
+		return Response.ok(XMLParser.parseXML(result)).build();
 	}
 }

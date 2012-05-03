@@ -6,7 +6,8 @@ package com.chronosystems.service;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.widget.Toast;
+
+import com.chronosystems.library.dialog.AlertMessage;
 
 /**
  * @author andrevaladas
@@ -58,7 +59,7 @@ public class AsyncService extends AsyncTask<String, String, String> {
 		// dismiss the dialog once done
 		pDialog.dismiss();
 		if(message != null) {
-			Toast.makeText(currentContext, message, Toast.LENGTH_LONG).show();
+			AlertMessage.show(message, currentContext);
 		}
 	}
 

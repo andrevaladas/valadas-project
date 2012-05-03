@@ -17,12 +17,14 @@ import javax.persistence.Transient;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import com.chronosystems.core.TimeEntity;
+
 /**
  * @author Andre Valadas
  */
 @Root
 @Entity
-public class Location implements Serializable {
+public class Location extends TimeEntity implements Serializable {
 
 	private static final long serialVersionUID = -6509094806343240084L;
 
@@ -37,10 +39,6 @@ public class Location implements Serializable {
 	private double longitude;
 
 	private Date timeline;
-
-	@Transient
-	@Element(required=false)
-	private Long timelineInTime;
 
 	@ManyToOne
 	@JoinColumn(name = "iddevice")
@@ -72,9 +70,9 @@ public class Location implements Serializable {
 		this.longitude = longitude;
 	}
 	public Date getTimeline() {
-		if (timeline == null) {
-			if (timelineInTime != null) {
-				timeline = new Date(timelineInTime);
+		if(timeline == null) {
+			if (super.getDateInTime() != null) {
+				timeline = new Date(super.getDateInTime());
 			} else {
 				timeline = new Date();
 			}
@@ -83,15 +81,14 @@ public class Location implements Serializable {
 	}
 	public void setTimeline(final Date timeline) {
 		this.timeline = timeline;
-		this.timelineInTime = getTimeline().getTime();
 	}
-	public void setTimelineInTime(final Long timelineInTime) {
-		this.timelineInTime = timelineInTime;
-	}
-	public Long getTimelineInTime() {
-		if(timelineInTime == null) {
-			timelineInTime = getTimeline().getTime();
+
+	@Override
+	public Long getDateInTime() {
+		final Long dateInTime = super.getDateInTime();
+		if (dateInTime == null) {
+			super.setDateInTime(getTimeline().getTime());
 		}
-		return timelineInTime;
+		return super.getDateInTime();
 	}
 }

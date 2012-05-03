@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.chronosystems.entity.Device;
+import com.chronosystems.entity.Entity;
 import com.chronosystems.model.dao.DeviceDao;
 
 /**
@@ -38,7 +39,7 @@ public class DeviceService extends DeviceDao implements Serializable {
 	}
 	
 	@Override
-	public List<Device> findAll() {
-		return super.findAll();
+	public Entity search(final Entity entity) {
+		return super.search(entity);
 	}
 }

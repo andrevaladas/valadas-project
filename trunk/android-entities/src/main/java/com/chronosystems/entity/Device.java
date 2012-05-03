@@ -16,18 +16,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
-import javax.persistence.Transient;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
+
+import com.chronosystems.core.TimeEntity;
 
 /**
  * @author Andre Valadas
  */
 @Root
 @Entity
-public class Device implements Serializable {
+public class Device extends TimeEntity implements Serializable {
 
 	private static final long serialVersionUID = -1665393754488451531L;
 
@@ -46,14 +47,10 @@ public class Device implements Serializable {
 
 	private Date datecreated;
 
-	@Transient
-	@Element(required=false)
-	private Long datecreatedInTime;
-
 	@ElementList(entry="locations", inline=true, required=false)
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="device")
 	@OrderBy("timeline DESC")
-	private List<Location> locations = new ArrayList<Location>();
+	private List<Location> locations;
 
 	public Long getId() {
 		return id;
@@ -81,8 +78,8 @@ public class Device implements Serializable {
 	}
 	public Date getDatecreated() {
 		if(datecreated == null) {
-			if (datecreatedInTime != null) {
-				datecreated = new Date(datecreatedInTime);
+			if (super.getDateInTime() != null) {
+				datecreated = new Date(super.getDateInTime());
 			} else {
 				datecreated = new Date();
 			}
@@ -91,27 +88,28 @@ public class Device implements Serializable {
 	}
 	public void setDatecreated(final Date datecreated) {
 		this.datecreated = datecreated;
-		this.datecreatedInTime = getDatecreated().getTime();
 	}
 
-	public Long getDatecreatedInTime() {
-		if(datecreatedInTime == null) {
-			datecreatedInTime = getDatecreated().getTime();
+	@Override
+	public Long getDateInTime() {
+		final Long dateInTime = super.getDateInTime();
+		if (dateInTime == null) {
+			super.setDateInTime(getDatecreated().getTime());
 		}
-		return datecreatedInTime;
-	}
-	public void setDatecreatedInTime(final Long datecreatedInTime) {
-		this.datecreatedInTime = datecreatedInTime;
+		return super.getDateInTime();
 	}
 
 	public List<Location> getLocations() {
+		if (locations ==  null) {
+			locations = new ArrayList<Location>();
+		}
 		return locations;
 	}
 	public void setLocations(final List<Location> locations) {
 		this.locations = locations;
 	}
 	public void addLocation(final Location location) {
-		locations.add(location);
+		getLocations().add(location);
 	}
 
 	@Override

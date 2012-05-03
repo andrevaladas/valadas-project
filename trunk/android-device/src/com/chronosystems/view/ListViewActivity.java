@@ -1,8 +1,5 @@
 package com.chronosystems.view;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,18 +22,12 @@ public class ListViewActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list);
 
-		final List<Device> deviceList = new ArrayList<Device>();
-		final Entity entity = UserFunctions.findAllUsers();
-
-		// looping through all devices
-		for (final Device device : entity.getDevices()) {
-			deviceList.add(device);
-		}
-
+		final Entity filter = new Entity();
+		final Entity entity = UserFunctions.searchDevices(filter);
 		list = (ListView)findViewById(R.id.list);
 
-		// Getting adapter by passing xml data ArrayList
-		adapter = new LazyAdapter(ListViewActivity.this, deviceList);
+		// Getting adapter by passing xml data
+		adapter = new LazyAdapter(ListViewActivity.this, entity);
 		list.setAdapter(adapter);
 
 		// Click event for single list row
@@ -47,6 +38,7 @@ public class ListViewActivity extends Activity {
 					final Intent i = new Intent(getApplicationContext(), MapViewActivity.class);
 					final Device device = (Device) adapter.getItem(position);
 					i.putExtra("device", device);
+					i.putExtra("entity", adapter.getEntity());
 					startActivity(i);
 				}
 			};
