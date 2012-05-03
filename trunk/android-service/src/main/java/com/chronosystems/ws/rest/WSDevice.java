@@ -1,6 +1,7 @@
 package com.chronosystems.ws.rest;
 
 import java.util.Date;
+import java.util.List;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -32,14 +33,6 @@ public class WSDevice {
 		return Response.noContent().build();
 	}
 
-	@GET
-	@Path("/search/{email}")
-	@Produces(MediaType.TEXT_XML)
-	public Response jsonSearch(@PathParam("email") String email) {
-		final Device device = new DeviceService().find(email);//search
-		return Response.ok(XMLParser.parseXML(new Entity(device))).build();
-	}
-
 	@POST
 	@Path("/register")
 	@Produces(MediaType.TEXT_XML)
@@ -53,5 +46,23 @@ public class WSDevice {
 		}
 		//conflict
 		return Response.status(HttpStatus.SC_CONFLICT).build();
+	}
+
+	@GET
+	@Path("/search/{email}")
+	@Produces(MediaType.TEXT_XML)
+	public Response search(@PathParam("email") final String email) {
+		final Device device = new DeviceService().find(email);//search
+		return Response.ok(XMLParser.parseXML(new Entity(device))).build();
+	}
+
+	@POST
+	@Path("/findAll")
+	@Produces(MediaType.TEXT_XML)
+	public Response findAll() {
+		final List<Device> list = new DeviceService().findAll();
+		final Entity entity = new Entity();
+		entity.setDevices(list);
+		return Response.ok(XMLParser.parseXML(entity)).build();
 	}
 }
