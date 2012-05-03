@@ -30,38 +30,38 @@ public class JSONParser {
 	// constructor
 	public JSONParser() { }
 
-	public JSONObject getJSONFromUrl(String url, Device device) {
+	public JSONObject getJSONFromUrl(final String url, final Device device) {
 
 		// Making HTTP request
 		try {
 			// defaultHttpClient
-			DefaultHttpClient httpClient = new DefaultHttpClient();
-			HttpPost httpPost = new HttpPost(url);
+			final DefaultHttpClient httpClient = new DefaultHttpClient();
+			final HttpPost httpPost = new HttpPost(url);
 			httpPost.setHeader("Content-type", "text/xml; charset=UTF-8");
 
 			final ByteArrayEntity entity = new ByteArrayEntity(XMLParser.parseXML(device).getBytes("UTF-8"));//Xml.Encoding.UTF_8
 			entity.setContentType("text/xml");
 			httpPost.setEntity(entity);
 
-			HttpResponse httpResponse = httpClient.execute(httpPost);
-			HttpEntity httpEntity = httpResponse.getEntity();
+			final HttpResponse httpResponse = httpClient.execute(httpPost);
+			final HttpEntity httpEntity = httpResponse.getEntity();
 			//data not found
 			if (httpEntity == null) {
 				return null;
 			}
 			is = httpEntity.getContent();
 
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (ClientProtocolException e) {
+		} catch (final ClientProtocolException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
-			StringBuilder sb = new StringBuilder();
+			final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
+			final StringBuilder sb = new StringBuilder();
 			String line = null;
 			while ((line = reader.readLine()) != null) {
 				sb.append(line + "\n");
@@ -69,14 +69,14 @@ public class JSONParser {
 			is.close();
 			json = sb.toString();
 			Log.e("JSON", json);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Log.e("Buffer Error", "Error converting result " + e.toString());
 		}
 
 		// try parse the string to a JSON object
 		try {
 			jObj = new JSONObject(json);
-		} catch (JSONException e) {
+		} catch (final JSONException e) {
 			Log.e("JSON Parser", "Error parsing data " + e.toString());
 		}
 

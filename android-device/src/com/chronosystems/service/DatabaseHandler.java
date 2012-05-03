@@ -27,15 +27,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_UID = "uid";
 	private static final String KEY_CREATED_AT = "created_at";
 
-	public DatabaseHandler(Context context) {
+	public DatabaseHandler(final Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
 	}
 
 	// Creating Tables
 	@Override
-	public void onCreate(SQLiteDatabase db) {
-		String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_LOGIN + "("
-				+ KEY_ID + " INTEGER PRIMARY KEY," 
+	public void onCreate(final SQLiteDatabase db) {
+		final String CREATE_LOGIN_TABLE = "CREATE TABLE " + TABLE_LOGIN + "("
+				+ KEY_ID + " INTEGER PRIMARY KEY,"
 				+ KEY_NAME + " TEXT,"
 				+ KEY_EMAIL + " TEXT UNIQUE,"
 				+ KEY_UID + " TEXT,"
@@ -45,7 +45,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Upgrading database
 	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+	public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion) {
 		// Drop older table if existed
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_LOGIN);
 
@@ -56,10 +56,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	/**
 	 * Storing user details in database
 	 * */
-	public void addUser(String name, String email, String uid, String created_at) {
-		SQLiteDatabase db = this.getWritableDatabase();
+	public void addUser(final String name, final String email, final String uid, final String created_at) {
+		final SQLiteDatabase db = this.getWritableDatabase();
 
-		ContentValues values = new ContentValues();
+		final ContentValues values = new ContentValues();
 		values.put(KEY_NAME, name); // Name
 		values.put(KEY_EMAIL, email); // Email
 		values.put(KEY_UID, uid); // Id
@@ -69,26 +69,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		db.insert(TABLE_LOGIN, null, values);
 		db.close(); // Closing database connection
 	}
-	
+
 	/**
 	 * Getting user data from database
 	 * */
 	public HashMap<String, String> getUserDetails(){
-		HashMap<String,String> user = new HashMap<String,String>();
-		String selectQuery = "SELECT  * FROM " + TABLE_LOGIN;
-		 
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(selectQuery, null);
-        // Move to first row
-        cursor.moveToFirst();
-        if(cursor.getCount() > 0){
-        	user.put("name", cursor.getString(1));
-        	user.put("email", cursor.getString(2));
-        	user.put("uid", cursor.getString(3));
-        	user.put("created_at", cursor.getString(4));
-        }
-        cursor.close();
-        db.close();
+		final HashMap<String,String> user = new HashMap<String,String>();
+		final String selectQuery = "SELECT  * FROM " + TABLE_LOGIN;
+
+		final SQLiteDatabase db = this.getReadableDatabase();
+		final Cursor cursor = db.rawQuery(selectQuery, null);
+		// Move to first row
+		cursor.moveToFirst();
+		if(cursor.getCount() > 0){
+			user.put("name", cursor.getString(1));
+			user.put("email", cursor.getString(2));
+			user.put("uid", cursor.getString(3));
+			user.put("created_at", cursor.getString(4));
+		}
+		cursor.close();
+		db.close();
 		// return user
 		return user;
 	}
@@ -98,23 +98,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * return true if rows are there in table
 	 * */
 	public int getRowCount() {
-		String countQuery = "SELECT  * FROM " + TABLE_LOGIN;
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = db.rawQuery(countQuery, null);
-		int rowCount = cursor.getCount();
+		final String countQuery = "SELECT  * FROM " + TABLE_LOGIN;
+		final SQLiteDatabase db = this.getReadableDatabase();
+		final Cursor cursor = db.rawQuery(countQuery, null);
+		final int rowCount = cursor.getCount();
 		db.close();
 		cursor.close();
-		
+
 		// return row count
 		return rowCount;
 	}
-	
+
 	/**
 	 * Re crate database
 	 * Delete all tables and create them again
 	 * */
 	public void resetTables(){
-		SQLiteDatabase db = this.getWritableDatabase();
+		final SQLiteDatabase db = this.getWritableDatabase();
 		// Delete All Rows
 		db.delete(TABLE_LOGIN, null, null);
 		db.close();

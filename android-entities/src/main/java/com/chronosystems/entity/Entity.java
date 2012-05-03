@@ -22,7 +22,7 @@ public class Entity implements Serializable {
 	public Entity() {
 		super();
 	}
-	
+
 	public Entity(final Device device) {
 		super();
 		addDevice(device);
@@ -31,7 +31,7 @@ public class Entity implements Serializable {
 	public List<Device> getDevices() {
 		return devices;
 	}
-	public void setDevices(List<Device> devices) {
+	public void setDevices(final List<Device> devices) {
 		this.devices = devices;
 	}
 
