@@ -18,7 +18,6 @@ public class XMLParser {
 		try {
 			final Serializer serializer = new Persister();
 			final StringWriter sw = new StringWriter();
-			//sw.write("<?xml version='1.0' encoding='UTF-8' standalone='no'?>\n");
 			serializer.write(T, sw);
 			return sw.toString();
 		} catch (Exception e) {
@@ -30,9 +29,8 @@ public class XMLParser {
 	public static <T>T parseXML(final String xml, Class<T> clazz) {
 		try {
 			final Serializer serializer = new Persister();
-			//final ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes("UTF-8"));
 			final Reader reader = new StringReader(xml);
-			return serializer.read(clazz, reader, false);
+			return serializer.read(clazz, reader);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

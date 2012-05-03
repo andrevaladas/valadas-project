@@ -23,7 +23,7 @@ import com.chronosystems.entity.util.XMLParser;
  * @author andrevaladas
  *
  */
-public class RestClient {
+public class RestService {
 	static InputStream is = null;
 
 	public static Entity executeRequest(final String url, final Object T) {
@@ -46,11 +46,11 @@ public class RestClient {
 				return null;
 			}
 			is = httpEntity.getContent();
-		} catch (UnsupportedEncodingException e) {
+		} catch (final UnsupportedEncodingException e) {
 			e.printStackTrace();
-		} catch (ClientProtocolException e) {
+		} catch (final ClientProtocolException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (final IOException e) {
 			e.printStackTrace();
 		}
 
@@ -63,7 +63,7 @@ public class RestClient {
 			}
 			is.close();
 			return XMLParser.parseXML(sb.toString(), Entity.class);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			Log.e("Buffer Error", "Error converting result " + e.toString());
 		}
 		return null;
