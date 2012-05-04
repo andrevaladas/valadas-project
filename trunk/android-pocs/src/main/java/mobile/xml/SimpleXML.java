@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mobile.entities.xml;
+package mobile.xml;
 
 import java.util.ArrayList;
 import java.util.List;
