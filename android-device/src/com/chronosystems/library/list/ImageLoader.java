@@ -67,6 +67,12 @@ public class ImageLoader {
 			copyStream(is, os);
 			os.close();
 			final Bitmap bitmap = decodeFile(f);
+
+			//try this solution
+			//final ByteArrayInputStream bais = new ByteArrayInputStream(device.getImage());
+			//final BufferedInputStream bis = new BufferedInputStream(bais);
+			//final Bitmap bMap = BitmapFactory.decodeStream(bis);
+
 			return bitmap;
 		} catch (final Exception ex){
 			ex.printStackTrace();
