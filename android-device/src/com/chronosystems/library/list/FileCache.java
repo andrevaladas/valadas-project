@@ -20,9 +20,9 @@ public class FileCache {
 		}
 	}
 
-	public File getFile(final String url){
+	public File getFile(final Long id){
 		//I identify images by hashcode. Not a perfect solution, good for the demo.
-		final String filename=String.valueOf(url.hashCode());
+		final String filename=String.valueOf(id.hashCode());
 		//Another possible solution (thanks to grantland)
 		//String filename = URLEncoder.encode(url);
 		final File f = new File(cacheDir, filename);

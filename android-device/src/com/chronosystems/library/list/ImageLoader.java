@@ -1,13 +1,12 @@
 package com.chronosystems.library.list;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -20,13 +19,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import com.chronosystems.entity.Device;
 import com.chronosystems.view.R;
 
 public class ImageLoader {
 
 	MemoryCache memoryCache = new MemoryCache();
 	FileCache fileCache;
-	private final Map<ImageView, String> imageViews=Collections.synchronizedMap(new WeakHashMap<ImageView, String>());
+	private final Map<ImageView, Long> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, Long>());
 	ExecutorService executorService;
 
 	public ImageLoader(final Context context){
@@ -35,24 +35,24 @@ public class ImageLoader {
 	}
 
 	final int stub_id = R.drawable.no_image;
-	public void DisplayImage(final String url, final ImageView imageView) {
-		imageViews.put(imageView, url);
-		final Bitmap bitmap = memoryCache.get(url);
+	public void DisplayImage(final Device device, final ImageView imageView) {
+		imageViews.put(imageView, device.getId());
+		final Bitmap bitmap = memoryCache.get(device.getId().toString());
 		if(bitmap!=null) {
 			imageView.setImageBitmap(bitmap);
 		} else {
-			queuePhoto(url, imageView);
+			queuePhoto(device, imageView);
 			imageView.setImageResource(stub_id);
 		}
 	}
 
-	private void queuePhoto(final String url, final ImageView imageView) {
-		final PhotoToLoad p=new PhotoToLoad(url, imageView);
+	private void queuePhoto(final Device device, final ImageView imageView) {
+		final PhotoToLoad p=new PhotoToLoad(device, imageView);
 		executorService.submit(new PhotosLoader(p));
 	}
 
-	private Bitmap getBitmap(final String url) {
-		final File f=fileCache.getFile(url);
+	private Bitmap getBitmap(final Device device) {
+		final File f=fileCache.getFile(device.getId());
 
 		//from SD cache
 		final Bitmap b = decodeFile(f);
@@ -62,17 +62,11 @@ public class ImageLoader {
 
 		//from web
 		try {
-			Bitmap bitmap=null;
-			final URL imageUrl = new URL(url);
-			final HttpURLConnection conn = (HttpURLConnection)imageUrl.openConnection();
-			conn.setConnectTimeout(30000);
-			conn.setReadTimeout(30000);
-			conn.setInstanceFollowRedirects(true);
-			final InputStream is=conn.getInputStream();
+			final InputStream is = new ByteArrayInputStream(device.getImage());
 			final OutputStream os = new FileOutputStream(f);
 			copyStream(is, os);
 			os.close();
-			bitmap = decodeFile(f);
+			final Bitmap bitmap = decodeFile(f);
 			return bitmap;
 		} catch (final Exception ex){
 			ex.printStackTrace();
@@ -125,10 +119,10 @@ public class ImageLoader {
 
 	//Task for the queue
 	private class PhotoToLoad {
-		public String url;
+		public Device device;
 		public ImageView imageView;
-		public PhotoToLoad(final String u, final ImageView i){
-			url=u;
+		public PhotoToLoad(final Device d, final ImageView i){
+			device=d;
 			imageView=i;
 		}
 	}
@@ -143,11 +137,8 @@ public class ImageLoader {
 			if(imageViewReused(photoToLoad)) {
 				return;
 			}
-			final Bitmap bmp=getBitmap(photoToLoad.url);
-			memoryCache.put(photoToLoad.url, bmp);
-			if(imageViewReused(photoToLoad)) {
-				return;
-			}
+			final Bitmap bmp=getBitmap(photoToLoad.device);
+			memoryCache.put(photoToLoad.device.getId().toString(), bmp);
 			final BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
 			final Activity a=(Activity)photoToLoad.imageView.getContext();
 			a.runOnUiThread(bd);
@@ -155,8 +146,8 @@ public class ImageLoader {
 	}
 
 	boolean imageViewReused(final PhotoToLoad photoToLoad){
-		final String tag=imageViews.get(photoToLoad.imageView);
-		if(tag==null || !tag.equals(photoToLoad.url)) {
+		final Long tag = imageViews.get(photoToLoad.imageView);
+		if(tag==null || !tag.equals(photoToLoad.device.getId())) {
 			return true;
 		}
 		return false;

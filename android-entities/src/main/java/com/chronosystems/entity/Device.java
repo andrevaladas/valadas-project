@@ -14,6 +14,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
@@ -46,6 +47,10 @@ public class Device extends TimeEntity implements Serializable {
 	private String password;
 
 	private Date datecreated;
+
+	@Lob
+	@Element(required=false)
+	private byte[] image;
 
 	@ElementList(entry="locations", inline=true, required=false)
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="device")
@@ -110,6 +115,13 @@ public class Device extends TimeEntity implements Serializable {
 	}
 	public void addLocation(final Location location) {
 		getLocations().add(location);
+	}
+
+	public byte[] getImage() {
+		return image;
+	}
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 
 	@Override

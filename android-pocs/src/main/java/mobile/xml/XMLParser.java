@@ -1,7 +1,7 @@
 /**
  * 
  */
-package mobile.entities.xml;
+package mobile.xml;
 
 import java.io.Reader;
 import java.io.StringReader;

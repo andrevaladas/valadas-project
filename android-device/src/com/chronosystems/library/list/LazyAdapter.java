@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chronosystems.entity.Device;
@@ -54,17 +55,17 @@ public class LazyAdapter extends BaseAdapter {
 		final TextView title = (TextView)vi.findViewById(R.id.title); // title
 		final TextView description = (TextView)vi.findViewById(R.id.description); // description
 		final TextView lastTimeLocation = (TextView)vi.findViewById(R.id.timeline); // timeline
-		vi.findViewById(R.id.list_image);
+		final ImageView image = (ImageView)vi.findViewById(R.id.list_image); // thumb image
 
+		// device and last location
 		final Device device = (Device) getItem(position);
-		//get the last location
 		final Location lastLocation = device.getLocations().get(0);
 
 		// Setting all values in listview
 		title.setText(device.getName());
 		description.setText(device.getEmail());
 		lastTimeLocation.setText(LocationUtils.getTimelineDescrition(lastLocation));
-		//imageLoader.DisplayImage(song.get(Utils.KEY_THUMB_URL), thumb_image);
+		imageLoader.DisplayImage(device, image);
 		return vi;
 	}
 }
