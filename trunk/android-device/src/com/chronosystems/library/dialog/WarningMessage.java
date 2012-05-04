@@ -24,16 +24,11 @@ public class WarningMessage {
 		final AlertDialog aDialog = new AlertDialog.Builder(currentContext).create();
 		aDialog.setTitle("Warning");
 		aDialog.setMessage(message);
-	    // Setting Icon to Dialog
-	    aDialog.setIcon(R.drawable.warning);
-		// Setting OK Button
+		aDialog.setIcon(R.drawable.warning);
 		aDialog.setButton("OK", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				// Write your code here to execute after dialog closed
-				//Toast.makeText(currentContext, "You clicked on OK", Toast.LENGTH_SHORT).show();
+			public void onClick(final DialogInterface dialog, final int which) {
 			}
 		});
-		// Showing Message
 		aDialog.show();
 	}
 }

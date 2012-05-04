@@ -34,11 +34,11 @@ public class FilterEntity implements Serializable {
 
 	public Integer getMaxRecords() {
 		if (maxRecords == null) {
-			maxRecords = 10;
+			maxRecords = 7;
 		}
 		return maxRecords;
 	}
-	public void setMaxRecords(Integer maxRecords) {
+	public void setMaxRecords(final Integer maxRecords) {
 		this.maxRecords = maxRecords;
 	}
 
@@ -48,7 +48,7 @@ public class FilterEntity implements Serializable {
 		}
 		return currentPage;
 	}
-	public void setCurrentPage(Integer currentPage) {
+	public void setCurrentPage(final Integer currentPage) {
 		this.currentPage = currentPage;
 	}
 
