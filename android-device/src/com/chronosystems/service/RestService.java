@@ -12,6 +12,9 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 
 import android.util.Log;
 
@@ -30,8 +33,18 @@ public class RestService {
 
 		// Making HTTP request
 		try {
+			final HttpParams httpParameters = new BasicHttpParams();
+			// Set the timeout in milliseconds until a connection is established.
+			// The default value is zero, that means the timeout is not used.
+			final int timeoutConnection = 3000;
+			HttpConnectionParams.setConnectionTimeout(httpParameters, timeoutConnection);
+			// Set the default socket timeout (SO_TIMEOUT)
+			// in milliseconds which is the timeout for waiting for data.
+			final int timeoutSocket = 10000;
+			HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+
 			// defaultHttpClient
-			final DefaultHttpClient httpClient = new DefaultHttpClient();
+			final DefaultHttpClient httpClient = new DefaultHttpClient(httpParameters);
 			final HttpPost httpPost = new HttpPost(url);
 			httpPost.setHeader("Content-type", "text/xml; charset=UTF-8");
 
