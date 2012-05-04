@@ -3,7 +3,6 @@
  */
 package com.chronosystems.model.dao;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -11,7 +10,6 @@ import org.hibernate.Session;
 
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
-import com.chronosystems.entity.Location;
 import com.chronosystems.util.HibernateUtil;
 
 /**
@@ -91,32 +89,18 @@ public abstract class DeviceDao {
 	protected Entity search(final Entity entity) {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			final Query query = session.createQuery("from Device order by name");
+			final Query query = session.createQuery("select dev from Device as dev left join fetch dev.locations where dev.locations.size > 0 order by dev.name");
 			// paginacao
 			query.setFirstResult(entity.getMaxRecords() * ((entity.getCurrentPage()-1)+1));
 			query.setMaxResults(entity.getMaxRecords()+1);
 
-			final List<Device> list = query.list();
-			final List<Device> result = new ArrayList<Device>();
-			for (final Device device : list) {
-				final List<Location> locations = device.getLocations();
-				if(!locations.isEmpty()) {
-					final Device data = new Device();
-					data.setName(device.getName());
-					data.setEmail(device.getEmail());
-					data.setDateInTime(device.getDatecreated().getTime());
-
-					final Location location = locations.get(0);
-					location.setDateInTime(location.getTimeline().getTime());
-					data.addLocation(location);
-					result.add(data);
-				}
-			}
+			// execute query
+			final List<Device> result = query.list();
 
 			// has more rows?
 			entity.setHasNext(result.size());
 			if(Boolean.TRUE.equals(entity.getHasNext())) {
-				result.remove(result.size()-1);
+				result.remove(result.size()-1);//remove last record
 			}
 			/** set device result list */
 			entity.setDevices(result);
