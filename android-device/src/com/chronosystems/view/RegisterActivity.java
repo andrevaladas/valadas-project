@@ -56,7 +56,9 @@ public class RegisterActivity extends Activity {
 
 						// check for login response
 						try {
-							if (entity != null && !entity.getDevices().isEmpty()) {
+							if (entity == null ) {
+								return "Connection server error! verify your internet connection.";
+							} else if (!entity.getDevices().isEmpty()) {
 								// user successfully registred
 								// Store user details in SQLite Database
 								final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
@@ -79,7 +81,7 @@ public class RegisterActivity extends Activity {
 								finish();
 							} else {
 								// Error in registration
-								return "Error occured in registration";
+								return "Error occured in registration! try again.";
 							}
 						} catch (final Exception e) {
 							e.printStackTrace();

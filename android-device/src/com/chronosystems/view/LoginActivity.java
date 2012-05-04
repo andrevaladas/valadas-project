@@ -52,7 +52,9 @@ public class LoginActivity extends Activity {
 
 						// check for login response
 						try {
-							if (entity != null && !entity.getDevices().isEmpty()) {
+							if (entity == null ) {
+								return "Connection server error! verify your internet connection.";
+							} else if (!entity.getDevices().isEmpty()) {
 								// user successfully logged in
 								// Store user details in SQLite Database
 								final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
@@ -76,7 +78,7 @@ public class LoginActivity extends Activity {
 								finish();
 							} else {
 								// Error in login
-								return "Incorrect username/password";
+								return "Incorrect username or password.";
 							}
 						} catch (final Exception e) {
 							e.printStackTrace();

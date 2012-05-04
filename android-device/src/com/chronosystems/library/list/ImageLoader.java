@@ -70,7 +70,7 @@ public class ImageLoader {
 			conn.setInstanceFollowRedirects(true);
 			final InputStream is=conn.getInputStream();
 			final OutputStream os = new FileOutputStream(f);
-			Utils.CopyStream(is, os);
+			copyStream(is, os);
 			os.close();
 			bitmap = decodeFile(f);
 			return bitmap;
@@ -79,6 +79,20 @@ public class ImageLoader {
 			return null;
 		}
 	}
+	private void copyStream(final InputStream is, final OutputStream os) {
+		final int buffer_size=1024;
+		try {
+			final byte[] bytes=new byte[buffer_size];
+			for(;;) {
+				final int count=is.read(bytes, 0, buffer_size);
+				if(count==-1) {
+					break;
+				}
+				os.write(bytes, 0, count);
+			}
+		} catch(final Exception ex){}
+	}
+
 
 	//decodes image and scales it to reduce memory consumption
 	private Bitmap decodeFile(final File f){

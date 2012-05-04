@@ -24,16 +24,11 @@ public class InfoMessage {
 		final AlertDialog aDialog = new AlertDialog.Builder(currentContext).create();
 		aDialog.setTitle("Information");
 		aDialog.setMessage(message);
-	    // Setting Icon to Dialog
-	    aDialog.setIcon(R.drawable.info);
-		// Setting OK Button
+		aDialog.setIcon(R.drawable.info);
 		aDialog.setButton("OK", new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				// Write your code here to execute after dialog closed
-				//Toast.makeText(currentContext, "You clicked on OK", Toast.LENGTH_SHORT).show();
+			public void onClick(final DialogInterface dialog, final int which) {
 			}
 		});
-		// Showing Message
 		aDialog.show();
 	}
 }
