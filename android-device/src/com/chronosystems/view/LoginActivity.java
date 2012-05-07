@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.library.dialog.AlertMessage;
+import com.chronosystems.library.utils.ValidatorUtils;
 import com.chronosystems.service.AsyncService;
 import com.chronosystems.service.DatabaseHandler;
 import com.chronosystems.service.UserFunctions;
@@ -28,7 +29,7 @@ public class LoginActivity extends Activity {
 
 		// Importing all assets like buttons, text fields
 		inputEmail = (EditText) findViewById(R.id.loginEmail);
-		inputEmail.setText("andrevaladas");
+		inputEmail.setText("andrevaladas@gmail.com");
 		inputPassword = (EditText) findViewById(R.id.loginPassword);
 		btnLogin = (Button) findViewById(R.id.btnLogin);
 		registerScreen = (TextView) findViewById(R.id.link_to_register);
@@ -68,8 +69,8 @@ public class LoginActivity extends Activity {
 										device.getDatecreated().toString());
 
 								// Launch Dashboard Screen
-								final Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
-
+								final Intent dashboard = new Intent(getApplicationContext(), TabDashboardActivity.class);
+								//final Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
 								// Close all views before launching Dashboard
 								dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 								startActivity(dashboard);
@@ -78,7 +79,7 @@ public class LoginActivity extends Activity {
 								finish();
 							} else {
 								// Error in login
-								entity.addAlert("Incorrect username or password.");
+								entity.addAlert(getString(R.string.incorrectEmailPassword));
 								return entity;
 							}
 						} catch (final Exception e) {
@@ -104,13 +105,18 @@ public class LoginActivity extends Activity {
 	}
 
 	private boolean validateForm() {
-		if (inputEmail.getText().toString().length() < 1) {
-			AlertMessage.show("Username is required.", this);
+		final String email = inputEmail.getText().toString();
+		if (email.length() < 1) {
+			AlertMessage.show(getString(R.string.emailRequired), this);
+			inputEmail.requestFocus();
+			return false;
+		} else if (!ValidatorUtils.isValidEmail(email)) {
+			AlertMessage.show(getString(R.string.invalidEmail), this);
 			inputEmail.requestFocus();
 			return false;
 		}
 		if (inputPassword.getText().toString().length() < 1) {
-			AlertMessage.show("Password is required.", this);
+			AlertMessage.show(getString(R.string.passwordRequired), this);
 			inputPassword.requestFocus();
 			return false;
 		}

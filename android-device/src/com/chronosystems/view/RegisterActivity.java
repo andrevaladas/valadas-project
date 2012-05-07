@@ -81,7 +81,7 @@ public class RegisterActivity extends Activity {
 								finish();
 							} else {
 								// Error in registration
-								entity.addAlert("Error occured in registration! try again.");
+								entity.addAlert(getString(R.string.registrationError));
 								return entity;
 							}
 						} catch (final Exception e) {
@@ -108,17 +108,17 @@ public class RegisterActivity extends Activity {
 
 	private boolean validateForm() {
 		if (inputFullName.getText().toString().length() < 1) {
-			AlertMessage.show("Full name is required.", this);
+			AlertMessage.show(getString(R.string.nameRequired), this);
 			inputFullName.requestFocus();
 			return false;
 		}
 		if (inputEmail.getText().toString().length() < 1) {
-			AlertMessage.show("Username is required.", this);
+			AlertMessage.show(getString(R.string.emailRequired), this);
 			inputEmail.requestFocus();
 			return false;
 		}
 		if (inputPassword.getText().toString().length() < 1) {
-			AlertMessage.show("Password is required.", this);
+			AlertMessage.show(getString(R.string.passwordRequired), this);
 			inputPassword.requestFocus();
 			return false;
 		}

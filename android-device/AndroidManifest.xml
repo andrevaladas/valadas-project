@@ -44,6 +44,12 @@
             android:name=".MapViewActivity"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
         
+        <!-- Maps Location Activity -->
+        <activity
+            android:label="Tab Dashboard" 
+            android:name=".TabDashboardActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
+        
         <uses-library android:name="com.google.android.maps" android:required="true"/>
     </application>
     
