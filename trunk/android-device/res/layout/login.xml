@@ -45,34 +45,35 @@
 		      	android:layout_width="fill_parent"
 		  		android:layout_height="wrap_content"
 		  		android:textColor="#372c24"
-		  		android:text="Email"/>
+		  		android:text="@string/email"/>
 		  <EditText
 		        android:id="@+id/loginEmail"  
 		      	android:layout_width="fill_parent"
 		  		android:layout_height="wrap_content"
 		  		android:layout_marginTop="5dip"
 		  		android:layout_marginBottom="20dip"
+		  		android:inputType="textEmailAddress"
 		  		android:singleLine="true"/>
 		  <!--  Password Label -->
 		  <TextView 
 		      	android:layout_width="fill_parent"
 		  		android:layout_height="wrap_content"
 		  		android:textColor="#372c24"
-		  		android:text="Password"/>
+		  		android:text="@string/password"/>
 		  <EditText
 		      	android:id="@+id/loginPassword" 
 		      	android:layout_width="fill_parent"
 		  		android:layout_height="wrap_content"
 		  		android:layout_marginTop="5dip"
 		  		android:singleLine="true"
-		  		android:password="true"/>
+		  		android:inputType="textPassword"/>
 
 		  <!-- Login button -->	
 		  <Button android:id="@+id/btnLogin" 
 		  		android:layout_width="fill_parent"
 		  		android:layout_height="wrap_content"
 		  		android:layout_marginTop="10dip"
-		  		android:text="Login"/>
+		  		android:text="@string/login"/>
 		  
 		  <!-- Link to Registration Screen -->		
 		  <TextView android:id="@+id/link_to_register" 
@@ -80,7 +81,7 @@
 		  		android:layout_height="wrap_content"
 		  		android:layout_marginTop="40dip"
 		  		android:layout_marginBottom="40dip"
-		  		android:text="New to Twitter? Register here"
+		  		android:text="@string/noHasAccount"
 		  		android:gravity="center"
 		  		android:textSize="20dip"
 		  		android:textColor="#0b84aa"/>

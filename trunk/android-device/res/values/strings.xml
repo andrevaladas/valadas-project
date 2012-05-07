@@ -2,4 +2,27 @@
 <resources>
     <string name="hello">Hello World, LoginActivity!</string>
     <string name="app_name">Closer</string>
+
+	<!-- Buttons -->    
+    <string name="login">Login</string>
+    <string name="registerAccount">Register New Account</string>
+
+    <!-- Input fields -->
+    <string name="fullName">Full Name</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+
+    <!-- Labels and texts -->
+    <string name="noHasAccount">New to Twitter? Register here</string>
+    <string name="hasAccount">Already has account! Login here</string>
+    
+    <!-- Required and Validations -->
+    <string name="nameRequired">Full name is required.</string>
+    <string name="emailRequired">Email is required.</string>
+    <string name="passwordRequired">Password is required.</string>
+
+    <string name="invalidEmail">Invalid email addresss.</string>
+    <string name="incorrectEmailPassword">Incorrect email or password.</string>
+
+    <string name="registrationError">An registration error occurred.</string>
 </resources>
