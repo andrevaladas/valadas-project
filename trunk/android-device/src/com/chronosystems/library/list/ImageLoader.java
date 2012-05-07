@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.entity.Device;
 import com.chronosystems.view.R;
 
@@ -28,13 +29,16 @@ public class ImageLoader {
 	FileCache fileCache;
 	private final Map<ImageView, Long> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, Long>());
 	ExecutorService executorService;
+	Bitmap bNoImage;
 
 	public ImageLoader(final Context context){
 		fileCache = new FileCache(context);
 		executorService=Executors.newFixedThreadPool(5);
+		if(bNoImage == null) {
+			bNoImage = ImageHelper.getRoundedBitmap(BitmapFactory.decodeResource(context.getResources(), R.drawable.no_image));
+		}
 	}
 
-	final int stub_id = R.drawable.no_image;
 	public void DisplayImage(final Device device, final ImageView imageView) {
 		imageViews.put(imageView, device.getId());
 		final Bitmap bitmap = memoryCache.get(device.getId().toString());
@@ -42,7 +46,7 @@ public class ImageLoader {
 			imageView.setImageBitmap(bitmap);
 		} else {
 			queuePhoto(device, imageView);
-			imageView.setImageResource(stub_id);
+			imageView.setImageBitmap(bNoImage);
 		}
 	}
 
@@ -60,20 +64,17 @@ public class ImageLoader {
 			return b;
 		}
 
+		if (device.getImage() == null || device.getImage().length < 1) {
+			return null;
+		}
+
 		//from web
 		try {
 			final InputStream is = new ByteArrayInputStream(device.getImage());
 			final OutputStream os = new FileOutputStream(f);
 			copyStream(is, os);
 			os.close();
-			final Bitmap bitmap = decodeFile(f);
-
-			//try this solution
-			//final ByteArrayInputStream bais = new ByteArrayInputStream(device.getImage());
-			//final BufferedInputStream bis = new BufferedInputStream(bais);
-			//final Bitmap bMap = BitmapFactory.decodeStream(bis);
-
-			return bitmap;
+			return decodeFile(f);
 		} catch (final Exception ex){
 			ex.printStackTrace();
 			return null;
@@ -143,7 +144,12 @@ public class ImageLoader {
 			if(imageViewReused(photoToLoad)) {
 				return;
 			}
-			final Bitmap bmp=getBitmap(photoToLoad.device);
+			Bitmap bmp = getBitmap(photoToLoad.device);
+			if(bmp == null) {
+				bmp = bNoImage;
+			} else {
+				bmp = ImageHelper.getRoundedBitmap(bmp);
+			}
 			memoryCache.put(photoToLoad.device.getId().toString(), bmp);
 			final BitmapDisplayer bd=new BitmapDisplayer(bmp, photoToLoad);
 			final Activity a=(Activity)photoToLoad.imageView.getContext();
@@ -152,8 +158,8 @@ public class ImageLoader {
 	}
 
 	boolean imageViewReused(final PhotoToLoad photoToLoad){
-		final Long tag = imageViews.get(photoToLoad.imageView);
-		if(tag==null || !tag.equals(photoToLoad.device.getId())) {
+		final Long id = imageViews.get(photoToLoad.imageView);
+		if(id==null || !id.equals(photoToLoad.device.getId())) {
 			return true;
 		}
 		return false;
@@ -175,7 +181,7 @@ public class ImageLoader {
 			if(bitmap!=null) {
 				photoToLoad.imageView.setImageBitmap(bitmap);
 			} else {
-				photoToLoad.imageView.setImageResource(stub_id);
+				photoToLoad.imageView.setImageBitmap(bNoImage);
 			}
 		}
 	}

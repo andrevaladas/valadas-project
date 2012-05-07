@@ -3,18 +3,25 @@
  */
 package com.chronosystems.library.utils;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 
 import com.chronosystems.entity.Location;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
 import com.chronosystems.library.maps.CustomOverlayItem;
 import com.chronosystems.maps.core.TapControlledMapView;
 import com.chronosystems.view.R;
+import com.google.android.maps.GeoPoint;
 
 /**
  * @author Andre Valadas
@@ -22,8 +29,33 @@ import com.chronosystems.view.R;
  */
 public class LocationUtils {
 
+	public static String getAddressFromGeocoder(final Location location, final Context currentContext) {
+		// create a point
+		final GeoPoint point = new GeoPoint((int)(location.getLatitude()*1E6),(int)(location.getLongitude()*1E6));
+
+		// find address location by Geocoder
+		final Geocoder geoCoder = new Geocoder(currentContext, Locale.getDefault());
+		String addressValue = "";
+		try {
+			final List<Address> addresses = geoCoder.getFromLocation(point.getLatitudeE6() / 1E6, point.getLongitudeE6() / 1E6, 1);
+			if (addresses.size() > 0) {
+				final Address address = addresses.get(0);
+				for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+					addressValue += address.getAddressLine(i) + " ";
+				}
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+		} finally {
+			if(addressValue.isEmpty()) {
+				addressValue = "Endereço não encontrado.";
+			}
+		}
+		return addressValue;
+	}
+
 	public static CustomItemizedOverlay<CustomOverlayItem> getItemizedOverlay(final Location location, final TapControlledMapView mapView, final Resources resources) {
-		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(getTimelineMarker(location, resources, mapView.getOverlays().isEmpty()), mapView);
+		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(getMarker(location, resources, mapView.getOverlays().isEmpty()), mapView);
 		// set iOS behavior attributes for overlay
 		itemizedOverlay.setShowClose(false);
 		itemizedOverlay.setShowDisclosure(true);
@@ -31,7 +63,7 @@ public class LocationUtils {
 		return itemizedOverlay;
 	}
 
-	public static Drawable getTimelineMarker(final Location location, final Resources resources, final boolean isLastLocation) {
+	public static Drawable getMarker(final Location location, final Resources resources, final boolean isLastLocation) {
 		if (!isLastLocation) {
 			final Long timeline = location.getDateInTime();
 			/* Days */
@@ -71,6 +103,8 @@ public class LocationUtils {
 			return resources.getDrawable(R.drawable.marker);
 		}
 		/* lastLocation */
+		//final Bitmap bitmap = ImageHelper.getRoundedBitmap(location.getDevice().getImage());
+		//return new BitmapDrawable(ImageHelper.getResizedBitmap(bitmap, 15, 15));
 		return resources.getDrawable(R.drawable.marker_lastlocation);
 	}
 

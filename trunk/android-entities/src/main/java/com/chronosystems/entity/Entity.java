@@ -30,12 +30,18 @@ public class Entity extends FilterEntity implements Serializable {
 	}
 
 	public List<Device> getDevices() {
+		if (devices == null) {
+			devices = new ArrayList<Device>();
+		}
 		return devices;
 	}
 	public void setDevices(final List<Device> devices) {
 		this.devices = devices;
 	}
 
+	public boolean hasDevices() {
+		return !getDevices().isEmpty();
+	}
 	public void addDevice(final Device device) {
 		if(devices == null) {
 			devices = new ArrayList<Device>();

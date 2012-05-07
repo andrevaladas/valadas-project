@@ -21,7 +21,7 @@ public class ModelDeviceApp {
 	public static void main(final String[] args) {
 		final DeviceService service = new DeviceService();
 
-		final String login = "andrevaladas";
+		final String login = "android";
 		Device entity = service.find(login);
 		if (entity == null) {
 			entity = new Device();
@@ -29,9 +29,9 @@ public class ModelDeviceApp {
 			saveImageToFile(entity.getImage());
 		}
 		entity.setEmail(login);
-		entity.setName("André Valadas");
-		entity.setPassword("123");
-		entity.setDatecreated(new Date());
+		//entity.setName("André Valadas");
+		//entity.setPassword("123");
+		//entity.setDatecreated(new Date());
 		entity.setImage(getImageFromFile());
 
 		final Location location = new Location();
@@ -54,7 +54,8 @@ public class ModelDeviceApp {
 
 	private static byte[] getImageFromFile() {
 		// save image into database
-		final File file = new File("C:/Andre Valadas/profiles/chinaValadas.jpg");
+		//final File file = new File("C:/chinaValadas.jpg");
+		final File file = new File("C:/android.png");
 		final byte[] bFile = new byte[(int) file.length()];
 
 		try {
@@ -69,6 +70,9 @@ public class ModelDeviceApp {
 	}
 
 	private static void saveImageToFile(final byte[] imgBytes) {
+		if(imgBytes == null || imgBytes.length <1) {
+			return;
+		}
 		try {
 			final FileOutputStream fos = new FileOutputStream("C:/imagem_return.png");
 			fos.write(imgBytes);

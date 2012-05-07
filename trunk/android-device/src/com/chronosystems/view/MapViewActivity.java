@@ -1,14 +1,11 @@
 package com.chronosystems.view;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
+import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Location;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
@@ -55,32 +52,15 @@ public class MapViewActivity extends MapActivity {
 			// create a point
 			final GeoPoint point = new GeoPoint((int)(location.getLatitude()*1E6),(int)(location.getLongitude()*1E6));
 
-			// find address location by Geocoder
-			final Geocoder geoCoder = new Geocoder(getBaseContext(), Locale.getDefault());
-			String addressValue = "";
-			try {
-				final List<Address> addresses = geoCoder.getFromLocation(point.getLatitudeE6() / 1E6, point.getLongitudeE6() / 1E6, 1);
-				if (addresses.size() > 0) {
-					final Address address = addresses.get(0);
-					for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
-						addressValue += address.getAddressLine(i) + " ";
-					}
-				}
-			} catch (final IOException e) {
-				e.printStackTrace();
-			} finally {
-				if(addressValue.isEmpty()) {
-					addressValue = "Endereço não encontrado.";
-				}
-			}
-
 			// define data point
-			final CustomOverlayItem overlayItem = new CustomOverlayItem(point,
+			final CustomOverlayItem overlayItem = new CustomOverlayItem(
+					point,
 					device.getName(),
-					LocationUtils.getDateTimeDescrition(location).concat("\n").concat(addressValue),
-					"http://ia.media-imdb.com/images/M/MV5BMjAyNjk5Njk0MV5BMl5BanBnXkFtZTcwOTA4MjIyMQ@@._V1._SX40_CR0,0,40,54_.jpg");
+					LocationUtils.getDateTimeDescrition(location).concat("\n").concat(LocationUtils.getAddressFromGeocoder(location, getBaseContext())),
+					ImageHelper.getRoundedBitmap(device.getImage()));
 
 			// define overlay/marker by location timeline
+			location.setDevice(device);
 			final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = LocationUtils.getItemizedOverlay(location, mapView, getResources());
 
 			//add item on overlay
@@ -95,7 +75,7 @@ public class MapViewActivity extends MapActivity {
 			final Location lastLocation = device.getLocations().get(0);
 			final GeoPoint lastPoint = new GeoPoint((int)(lastLocation.getLatitude()*1E6),(int)(lastLocation.getLongitude()*1E6));
 			mc.animateTo(lastPoint);
-			mc.setZoom(16);
+			mc.setZoom(15);
 		} else {
 			// restoring focused state of overlays
 			final int focused = savedInstanceState.getInt("focused", -1);

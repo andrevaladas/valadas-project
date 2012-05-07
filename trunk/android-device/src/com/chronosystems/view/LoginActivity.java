@@ -45,16 +45,16 @@ public class LoginActivity extends Activity {
 				//Execute service
 				new AsyncService(LoginActivity.this) {
 					@Override
-					protected String doInBackground(final String... args) {
+					protected Entity doInBackground(final String... args) {
 						final Entity entity = UserFunctions.loginUser(
 								inputEmail.getText().toString(),
 								inputPassword.getText().toString());
 
 						// check for login response
 						try {
-							if (entity == null ) {
-								return "Connection server error! verify your internet connection.";
-							} else if (!entity.getDevices().isEmpty()) {
+							if (entity.hasErrors()) {
+								return entity;
+							} else if (entity.hasDevices()) {
 								// user successfully logged in
 								// Store user details in SQLite Database
 								final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
@@ -78,13 +78,14 @@ public class LoginActivity extends Activity {
 								finish();
 							} else {
 								// Error in login
-								return "Incorrect username or password.";
+								entity.addAlert("Incorrect username or password.");
+								return entity;
 							}
 						} catch (final Exception e) {
-							e.printStackTrace();
-							return e.getMessage();
+							entity.addError(e.getMessage());
+							return entity;
 						}
-						return null;
+						return entity;
 					}
 				}.execute();
 			}

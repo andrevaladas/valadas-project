@@ -48,7 +48,7 @@ public class RegisterActivity extends Activity {
 				//Execute service
 				new AsyncService(RegisterActivity.this) {
 					@Override
-					protected String doInBackground(final String... args) {
+					protected Entity doInBackground(final String... args) {
 
 						final Entity entity = UserFunctions.loginUser(
 								inputEmail.getText().toString(),
@@ -56,9 +56,9 @@ public class RegisterActivity extends Activity {
 
 						// check for login response
 						try {
-							if (entity == null ) {
-								return "Connection server error! verify your internet connection.";
-							} else if (!entity.getDevices().isEmpty()) {
+							if (entity.hasErrors()) {
+								return entity;
+							} else if (entity.hasDevices()) {
 								// user successfully registred
 								// Store user details in SQLite Database
 								final DatabaseHandler db = new DatabaseHandler(getApplicationContext());
@@ -81,13 +81,14 @@ public class RegisterActivity extends Activity {
 								finish();
 							} else {
 								// Error in registration
-								return "Error occured in registration! try again.";
+								entity.addAlert("Error occured in registration! try again.");
+								return entity;
 							}
 						} catch (final Exception e) {
-							e.printStackTrace();
-							return e.getMessage();
+							entity.addError(e.getMessage());
+							return entity;
 						}
-						return null;
+						return entity;
 					}
 				}.execute();
 			}
