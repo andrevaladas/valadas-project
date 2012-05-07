@@ -8,8 +8,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.httpclient.HttpStatus;
-
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.entity.util.XMLParser;
@@ -24,10 +22,10 @@ public class WSDevice {
 	public Response login(final String xml) {
 		final Device filter = XMLParser.parseXML(xml, Device.class);//convert to bean
 		final Device device = new DeviceService().find(filter.getEmail(), filter.getPassword());
-		if(device != null) {
-			return Response.ok(XMLParser.parseXML(new Entity(device))).build();
+		if(device == null) {
+			return Response.ok(XMLParser.parseXML(new Entity())).build();
 		}
-		return Response.noContent().build();
+		return Response.ok(XMLParser.parseXML(new Entity(device))).build();
 	}
 
 	@POST
@@ -42,7 +40,7 @@ public class WSDevice {
 			return Response.ok(XMLParser.parseXML(new Entity(entity))).build();
 		}
 		//conflict
-		return Response.status(HttpStatus.SC_CONFLICT).build();
+		return Response.ok(XMLParser.parseXML(new Entity())).build();
 	}
 
 	@POST
