@@ -1,23 +1,25 @@
 package com.chronosystems.library.maps;
 
+import android.graphics.Bitmap;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 
 public class CustomOverlayItem extends OverlayItem {
 
-	protected String mImageURL;
+	protected Bitmap image;
 
-	public CustomOverlayItem(final GeoPoint point, final String title, final String snippet, final String imageURL) {
+	public CustomOverlayItem(final GeoPoint point, final String title, final String snippet, final Bitmap bitmap) {
 		super(point, title, snippet);
-		mImageURL = imageURL;
+		image = bitmap;
 	}
 
-	public String getImageURL() {
-		return mImageURL;
+	public Bitmap getImage() {
+		return image;
 	}
 
-	public void setImageURL(final String imageURL) {
-		this.mImageURL = imageURL;
+	public void setImage(final Bitmap bitmap) {
+		this.image = bitmap;
 	}
 
 }

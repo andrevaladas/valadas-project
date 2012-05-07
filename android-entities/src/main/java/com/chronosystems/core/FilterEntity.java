@@ -15,7 +15,7 @@ import org.simpleframework.xml.Root;
  * @author andrevaladas
  */
 @Root
-public class FilterEntity implements Serializable {
+public class FilterEntity extends EntityError implements Serializable {
 
 	private static final long serialVersionUID = -6230944785480582166L;
 

@@ -14,7 +14,7 @@ import com.chronosystems.view.R;
  * @author andrevaladas
  *
  */
-public class InfoMessage {
+public class SuccessMessage {
 
 	public static void show(final String message, final Context currentContext) {
 		show(message, currentContext, null);
@@ -28,7 +28,7 @@ public class InfoMessage {
 	 */
 	public static <T> void show(final String message, final Context currentContext, final Class<T> backOnError) {
 		final AlertDialog aDialog = new AlertDialog.Builder(currentContext).create();
-		aDialog.setTitle("Information");
+		aDialog.setTitle("Success");
 		aDialog.setMessage(message);
 		aDialog.setIcon(R.drawable.info);
 		aDialog.setButton("OK", new DialogInterface.OnClickListener() {

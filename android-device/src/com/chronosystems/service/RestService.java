@@ -27,10 +27,12 @@ import com.chronosystems.entity.util.XMLParser;
  *
  */
 public class RestService {
+	static Entity result = null;
 	static InputStream is = null;
 
 	public static Entity executeRequest(final String url, final Object T) {
 
+		result = new Entity();
 		// Making HTTP request
 		try {
 			final HttpParams httpParameters = new BasicHttpParams();
@@ -56,29 +58,33 @@ public class RestService {
 			final HttpEntity httpEntity = httpResponse.getEntity();
 			//data not found
 			if (httpEntity == null) {
-				return null;
+				result.addError("Critical server error!");
+				return result;
 			}
 			is = httpEntity.getContent();
 		} catch (final UnsupportedEncodingException e) {
-			e.printStackTrace();
+			result.addError(e.getMessage());
 		} catch (final ClientProtocolException e) {
-			e.printStackTrace();
+			result.addError(e.getMessage());
 		} catch (final IOException e) {
-			e.printStackTrace();
+			result.addError(e.getMessage());
 		}
 
-		try {
-			final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
-			final StringBuilder sb = new StringBuilder();
-			String line = null;
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
+		if (!result.hasErrors()) {
+			try {
+				final BufferedReader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"), 8);
+				final StringBuilder sb = new StringBuilder();
+				String line = null;
+				while ((line = reader.readLine()) != null) {
+					sb.append(line + "\n");
+				}
+				is.close();
+				return XMLParser.parseXML(sb.toString(), Entity.class);
+			} catch (final Exception e) {
+				result.addError(e.getMessage());
+				Log.e("Buffer Error", "Error converting result " + e.toString());
 			}
-			is.close();
-			return XMLParser.parseXML(sb.toString(), Entity.class);
-		} catch (final Exception e) {
-			Log.e("Buffer Error", "Error converting result " + e.toString());
 		}
-		return null;
+		return result;
 	}
 }

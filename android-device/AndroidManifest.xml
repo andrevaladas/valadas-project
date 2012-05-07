@@ -8,10 +8,11 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
+    <application android:icon="@drawable/icon_device" android:label="@string/app_name" android:theme="@style/CustomTheme">
         <activity
             android:label="@string/app_name"
-            android:name=".DashboardActivity" >
+            android:name=".DashboardActivity"
+            android:theme="@android:style/Theme.NoTitleBar">
             <intent-filter >
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,22 +23,26 @@
         <!--  Login Activity -->
         <activity
             android:label="Login Account" 
-            android:name=".LoginActivity"></activity>
+            android:name=".LoginActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
 
         <!--  Register Activity -->
         <activity
             android:label="Register New Account" 
-            android:name=".RegisterActivity"></activity>
+            android:name=".RegisterActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
 
         <!-- Friend List Activity -->
         <activity
             android:label="Friends" 
-            android:name=".ListViewActivity"></activity>
+            android:name=".ListViewActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
         
         <!-- Maps Location Activity -->
         <activity
             android:label="Map Location" 
-            android:name=".MapViewActivity"></activity>
+            android:name=".MapViewActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
         
         <uses-library android:name="com.google.android.maps" android:required="true"/>
     </application>

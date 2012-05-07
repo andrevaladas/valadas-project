@@ -10,9 +10,9 @@ public class UserFunctions {
 	//Wifi = 192.168.0.101
 	//Dev  = 10.0.2.2
 
-	private static String loginURL = "http://10.0.2.2:8888/android-service/rest/device/login";
-	private static String registerURL = "http://10.0.2.2:8888/android-service/rest/device/register";
-	private static String findAllURL = "http://10.0.2.2:8888/android-service/rest/device/search";
+	private static String loginURL = "http://192.168.0.101:8888/android-service/rest/device/login";
+	private static String registerURL = "http://192.168.0.101:8888/android-service/rest/device/register";
+	private static String findAllURL = "http://192.168.0.101:8888/android-service/rest/device/search";
 
 	/**
 	 * function make Login Request
