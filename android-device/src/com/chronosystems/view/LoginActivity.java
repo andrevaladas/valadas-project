@@ -12,9 +12,10 @@ import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.library.dialog.AlertMessage;
 import com.chronosystems.library.utils.ValidatorUtils;
-import com.chronosystems.service.AsyncService;
-import com.chronosystems.service.DatabaseHandler;
-import com.chronosystems.service.UserFunctions;
+import com.chronosystems.service.local.AsyncService;
+import com.chronosystems.service.local.DatabaseHandler;
+import com.chronosystems.service.local.UserFunctions;
+import com.chronosystems.service.remote.DeviceService;
 
 public class LoginActivity extends Activity {
 	Button btnLogin;
@@ -47,9 +48,10 @@ public class LoginActivity extends Activity {
 				new AsyncService(LoginActivity.this) {
 					@Override
 					protected Entity doInBackground(final String... args) {
-						final Entity entity = UserFunctions.loginUser(
-								inputEmail.getText().toString(),
-								inputPassword.getText().toString());
+						final Device login = new Device();
+						login.setEmail(inputEmail.getText().toString());
+						login.setPassword(inputPassword.getText().toString());
+						final Entity entity = DeviceService.loginUser(login);
 
 						// check for login response
 						try {
@@ -69,11 +71,10 @@ public class LoginActivity extends Activity {
 										device.getDatecreated().toString());
 
 								// Launch Dashboard Screen
-								final Intent dashboard = new Intent(getApplicationContext(), TabDashboardActivity.class);
-								//final Intent dashboard = new Intent(getApplicationContext(), DashboardActivity.class);
+								final Intent tabDashboard = new Intent(getApplicationContext(), TabDashboardActivity.class);
 								// Close all views before launching Dashboard
-								dashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-								startActivity(dashboard);
+								tabDashboard.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+								startActivity(tabDashboard);
 
 								// Close Login Screen
 								finish();

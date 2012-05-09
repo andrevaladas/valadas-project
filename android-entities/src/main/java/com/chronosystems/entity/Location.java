@@ -12,7 +12,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Transient;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
@@ -43,6 +42,16 @@ public class Location extends TimeEntity implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "iddevice")
 	private Device device;
+
+	public Location() {
+		super();
+	}
+
+	public Location(final double latitude, final double longitude) {
+		super();
+		this.latitude = latitude;
+		this.longitude = longitude;
+	}
 
 	public Long getId() {
 		return id;

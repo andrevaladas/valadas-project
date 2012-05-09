@@ -30,7 +30,7 @@ public class SuccessMessage {
 		final AlertDialog aDialog = new AlertDialog.Builder(currentContext).create();
 		aDialog.setTitle("Success");
 		aDialog.setMessage(message);
-		aDialog.setIcon(R.drawable.info);
+		aDialog.setIcon(R.drawable.success);
 		aDialog.setButton("OK", new DialogInterface.OnClickListener() {
 			public void onClick(final DialogInterface dialog, final int which) {
 				// back to view

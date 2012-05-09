@@ -114,13 +114,13 @@ public class Device extends TimeEntity implements Serializable {
 		this.locations = locations;
 	}
 	public void addLocation(final Location location) {
-		getLocations().add(location);
+		getLocations().add(0, location);
 	}
 
 	public byte[] getImage() {
 		return image;
 	}
-	public void setImage(byte[] image) {
+	public void setImage(final byte[] image) {
 		this.image = image;
 	}
 

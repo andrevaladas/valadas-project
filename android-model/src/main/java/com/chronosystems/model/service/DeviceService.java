@@ -25,6 +25,11 @@ public class DeviceService extends DeviceDao implements Serializable {
 	}
 
 	@Override
+	public Device find(final Long id) {
+		return super.find(id);
+	}
+
+	@Override
 	public Device find(final String email, final String password) {
 		return super.find(email, password);
 	}
