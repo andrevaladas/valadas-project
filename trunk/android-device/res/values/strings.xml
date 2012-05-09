@@ -1,22 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hello">Hello World, LoginActivity!</string>
-    <string name="app_name">Closer</string>
+    <string name="app_name">Hey guys!</string>
+    
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    
+    <!-- tabs -->
+    <string name="home">Home</string>
+    <string name="friends">Friends</string>
+    <string name="me">Me</string>
+    <string name="requests">Requests</string>
 
 	<!-- Buttons -->    
     <string name="login">Login</string>
     <string name="registerAccount">Register New Account</string>
 
     <!-- Input fields -->
+    <string name="userPicture">Select your picture</string>
     <string name="fullName">Full Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
 
     <!-- Labels and texts -->
-    <string name="noHasAccount">New to Twitter? Register here</string>
+    <string name="noHasAccount">New to Hey guys? Register here</string>
     <string name="hasAccount">Already has account! Login here</string>
     
     <!-- Required and Validations -->
+    <string name="pictureRequired">A picture is required.</string>
     <string name="nameRequired">Full name is required.</string>
     <string name="emailRequired">Email is required.</string>
     <string name="passwordRequired">Password is required.</string>
@@ -25,4 +36,10 @@
     <string name="incorrectEmailPassword">Incorrect email or password.</string>
 
     <string name="registrationError">An registration error occurred.</string>
+
+    <string name="enableGPS">Your GPS seems to be disabled, do you want to enable it?</string>
+    
+    <string name="confirmCheckin">Confirm your checkin?</string>
+    <string name="checkinSuccess">Checkin location registered.</string>
+    <string name="checkinError">An checkin location error occurred.</string>
 </resources>

@@ -7,29 +7,30 @@ import com.chronosystems.route.Placemark;
 import com.chronosystems.route.Route;
 import com.google.android.maps.GeoPoint;
 
-public class RouteImpl implements Route
-{
+public class RouteImpl implements Route {
 	private String totalDistance;
 	private List<GeoPoint> geoPoints;
 	private List<Placemark> placemarks;
 
-	public void setTotalDistance(String totalDistance) {
+	public void setTotalDistance(final String totalDistance) {
 		this.totalDistance = totalDistance;
 	}
 
+	@Override
 	public String getTotalDistance() {
 		return totalDistance;
 	}
-	
-	public void setGeoPoints(List<GeoPoint> geoPoints) {
+
+	public void setGeoPoints(final List<GeoPoint> geoPoints) {
 		this.geoPoints = geoPoints;
 	}
 
+	@Override
 	public List<GeoPoint> getGeoPoints() {
 		return geoPoints;
 	}
-	
-	public void addGeoPoint (GeoPoint point)
+
+	public void addGeoPoint (final GeoPoint point)
 	{
 		if (geoPoints == null) {
 			geoPoints = new ArrayList<GeoPoint>();
@@ -37,15 +38,16 @@ public class RouteImpl implements Route
 		geoPoints.add(point);
 	}
 
-	public void setPlacemarks(List<Placemark> placemarks) {
+	public void setPlacemarks(final List<Placemark> placemarks) {
 		this.placemarks = placemarks;
 	}
 
+	@Override
 	public List<Placemark> getPlacemarks() {
 		return placemarks;
 	}
-	
-	public void addPlacemark (Placemark mark)
+
+	public void addPlacemark (final Placemark mark)
 	{
 		if (placemarks == null) {
 			placemarks = new ArrayList<Placemark>();

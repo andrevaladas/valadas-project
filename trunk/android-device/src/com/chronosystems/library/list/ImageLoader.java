@@ -1,12 +1,8 @@
 package com.chronosystems.library.list;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -26,10 +22,10 @@ import com.chronosystems.view.R;
 public class ImageLoader {
 
 	MemoryCache memoryCache = new MemoryCache();
-	FileCache fileCache;
+	static FileCache fileCache;
 	private final Map<ImageView, Long> imageViews = Collections.synchronizedMap(new WeakHashMap<ImageView, Long>());
 	ExecutorService executorService;
-	Bitmap bNoImage;
+	static Bitmap bNoImage;
 
 	public ImageLoader(final Context context){
 		fileCache = new FileCache(context);
@@ -55,48 +51,30 @@ public class ImageLoader {
 		executorService.submit(new PhotosLoader(p));
 	}
 
-	private Bitmap getBitmap(final Device device) {
+	public static Bitmap getBitmapCached(final Device device) {
 		final File f=fileCache.getFile(device.getId());
 
 		//from SD cache
 		final Bitmap b = decodeFile(f);
 		if(b!=null) {
-			return b;
+			return ImageHelper.getRoundedBitmap(b);
 		}
 
 		if (device.getImage() == null || device.getImage().length < 1) {
-			return null;
+			return bNoImage;
 		}
 
 		//from web
 		try {
-			final InputStream is = new ByteArrayInputStream(device.getImage());
-			final OutputStream os = new FileOutputStream(f);
-			copyStream(is, os);
-			os.close();
-			return decodeFile(f);
+			return ImageHelper.getRoundedBitmap(ImageHelper.decodeToLowResolution(device.getImage()));
 		} catch (final Exception ex){
 			ex.printStackTrace();
-			return null;
+			return bNoImage;
 		}
 	}
-	private void copyStream(final InputStream is, final OutputStream os) {
-		final int buffer_size=1024;
-		try {
-			final byte[] bytes=new byte[buffer_size];
-			for(;;) {
-				final int count=is.read(bytes, 0, buffer_size);
-				if(count==-1) {
-					break;
-				}
-				os.write(bytes, 0, count);
-			}
-		} catch(final Exception ex){}
-	}
-
 
 	//decodes image and scales it to reduce memory consumption
-	private Bitmap decodeFile(final File f){
+	private static Bitmap decodeFile(final File f){
 		try {
 			//decode image size
 			final BitmapFactory.Options o = new BitmapFactory.Options();
@@ -144,7 +122,7 @@ public class ImageLoader {
 			if(imageViewReused(photoToLoad)) {
 				return;
 			}
-			Bitmap bmp = getBitmap(photoToLoad.device);
+			Bitmap bmp = getBitmapCached(photoToLoad.device);
 			if(bmp == null) {
 				bmp = bNoImage;
 			} else {

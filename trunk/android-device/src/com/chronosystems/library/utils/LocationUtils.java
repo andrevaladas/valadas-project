@@ -29,10 +29,17 @@ import com.google.android.maps.GeoPoint;
  */
 public class LocationUtils {
 
-	public static String getAddressFromGeocoder(final Location location, final Context currentContext) {
+	public static String getGeocoderAddress(final android.location.Location location, final Context currentContext) {
 		// create a point
 		final GeoPoint point = new GeoPoint((int)(location.getLatitude()*1E6),(int)(location.getLongitude()*1E6));
-
+		return getGeocoderAddress(point, currentContext);
+	}
+	public static String getGeocoderAddress(final Location location, final Context currentContext) {
+		// create a point
+		final GeoPoint point = new GeoPoint((int)(location.getLatitude()*1E6),(int)(location.getLongitude()*1E6));
+		return getGeocoderAddress(point, currentContext);
+	}
+	public static String getGeocoderAddress(final GeoPoint point, final Context currentContext) {
 		// find address location by Geocoder
 		final Geocoder geoCoder = new Geocoder(currentContext, Locale.getDefault());
 		String addressValue = "";

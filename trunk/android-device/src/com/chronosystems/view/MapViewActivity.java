@@ -5,9 +5,9 @@ import java.util.List;
 import android.os.Bundle;
 import android.view.MotionEvent;
 
-import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Location;
+import com.chronosystems.library.list.ImageLoader;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
 import com.chronosystems.library.maps.CustomOverlayItem;
 import com.chronosystems.library.utils.LocationUtils;
@@ -27,7 +27,6 @@ public class MapViewActivity extends MapActivity {
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.map_view);
-
 		mapView = (TapControlledMapView) findViewById(R.id.mapview);
 		mapView.setBuiltInZoomControls(true);
 		mapOverlays = mapView.getOverlays();
@@ -43,9 +42,7 @@ public class MapViewActivity extends MapActivity {
 		});
 
 		/** Receive Params */
-		//final Entity entity = (Entity) getIntent().getSerializableExtra("entity");
 		final Device device = (Device) getIntent().getSerializableExtra("device");
-
 		/** create all point locations on map */
 		final List<Location> locations = device.getLocations();
 		for (final Location location : locations) {
@@ -56,8 +53,8 @@ public class MapViewActivity extends MapActivity {
 			final CustomOverlayItem overlayItem = new CustomOverlayItem(
 					point,
 					device.getName(),
-					LocationUtils.getDateTimeDescrition(location).concat("\n").concat(LocationUtils.getAddressFromGeocoder(location, getBaseContext())),
-					ImageHelper.getRoundedBitmap(device.getImage()));
+					LocationUtils.getDateTimeDescrition(location).concat("\n").concat(LocationUtils.getGeocoderAddress(location, getBaseContext())),
+					ImageLoader.getBitmapCached(device));
 
 			// define overlay/marker by location timeline
 			location.setDevice(device);
@@ -75,7 +72,7 @@ public class MapViewActivity extends MapActivity {
 			final Location lastLocation = device.getLocations().get(0);
 			final GeoPoint lastPoint = new GeoPoint((int)(lastLocation.getLatitude()*1E6),(int)(lastLocation.getLongitude()*1E6));
 			mc.animateTo(lastPoint);
-			mc.setZoom(15);
+			mc.setZoom(16);
 		} else {
 			// restoring focused state of overlays
 			final int focused = savedInstanceState.getInt("focused", -1);

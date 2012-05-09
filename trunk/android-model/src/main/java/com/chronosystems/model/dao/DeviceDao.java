@@ -40,6 +40,20 @@ public abstract class DeviceDao {
 		}
 	}
 
+	public Device find(final Long id) {
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			return (Device) session.createQuery("from Device where id = :id ").setLong("id", id).uniqueResult();
+		} catch (final Exception e) {
+			e.printStackTrace();
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return null;
+	}
+
 	protected Device find(final String email) {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();

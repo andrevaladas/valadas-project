@@ -29,7 +29,7 @@ public class Error implements Serializable {
 	public Error(final ErrorType type, final String message) {
 		super();
 		this.type = type;
-		this.message = message;
+		this.message = message == null || message.isEmpty() ? "This is a Very Critial ERROR! Run!!!" : message;
 	}
 
 	public ErrorType getType() {

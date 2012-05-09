@@ -11,8 +11,8 @@ import android.widget.ListView;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.library.list.LazyAdapter;
-import com.chronosystems.service.AsyncService;
-import com.chronosystems.service.UserFunctions;
+import com.chronosystems.service.local.AsyncService;
+import com.chronosystems.service.remote.DeviceService;
 
 public class ListViewActivity extends Activity {
 	ListView list;
@@ -25,13 +25,13 @@ public class ListViewActivity extends Activity {
 
 		list = (ListView)findViewById(R.id.list);
 
-		new AsyncService(ListViewActivity.this, DashboardActivity.class) {
+		new AsyncService(ListViewActivity.this, TabDashboardActivity.class) {
 			@Override
 			protected Entity doInBackground(final String... args) {
 
 				// Find devices on server
 				final Entity filter = new Entity();
-				final Entity entity = UserFunctions.searchDevices(filter);
+				final Entity entity = DeviceService.searchDevices(filter);
 
 				if (!entity.hasErrors()) {
 					// Getting adapter by passing xml data
