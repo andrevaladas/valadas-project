@@ -17,10 +17,22 @@
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-
 	<servlet-mapping>
 		<servlet-name>jersey-serlvet</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>GoogleEngineServlet</servlet-name>
+		<servlet-class>com.chronosystems.google.GoogleEngineServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>GoogleEngineServlet</servlet-name>
+		<url-pattern>/GoogleEngineServlet</url-pattern>
+	</servlet-mapping>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
 
 </web-app>
