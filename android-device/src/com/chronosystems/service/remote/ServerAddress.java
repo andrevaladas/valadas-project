@@ -1,6 +1,7 @@
 package com.chronosystems.service.remote;
 
 public enum ServerAddress {
+	//http://andrevaladas.appspot.com/rest/device/get/andrevaladas
 	LOCAL("http://10.0.2.2:8888/android-service/rest"),
 	REMOTE("http://192.168.0.101:8888/android-service/rest");
 
