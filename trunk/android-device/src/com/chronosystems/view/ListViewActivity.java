@@ -1,67 +1,139 @@
 package com.chronosystems.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
 
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.library.list.LazyAdapter;
+import com.chronosystems.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.chronosystems.pulltorefresh.library.PullToRefreshListView;
 import com.chronosystems.service.local.AsyncService;
+import com.chronosystems.service.local.AsyncSimpleTask;
+import com.chronosystems.service.local.UserFunctions;
 import com.chronosystems.service.remote.DeviceService;
 
-public class ListViewActivity extends Activity {
-	ListView list;
+public class ListViewActivity extends Activity implements OnItemClickListener, OnRefreshListener {
 	LazyAdapter adapter;
+	PullToRefreshListView listView;
+
+	private class ListRefreshSearch extends AsyncSimpleTask {
+		public ListRefreshSearch(final Context currentContext, final Class<?> backOnError) {
+			super(currentContext, backOnError);
+		}
+		public ListRefreshSearch(final Context currentContext) {
+			super(currentContext);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			listView.setRefreshing();
+		}
+
+		@Override
+		protected Entity doInBackground(final String... args) {
+			// Find devices on server
+			final Entity filter = new Entity();
+			filter.addDevice(UserFunctions.getCurrentUser(getApplicationContext()));
+			final Entity entity = DeviceService.searchDevices(filter);
+
+			if (!entity.hasErrors()) {
+				// Getting adapter by passing xml data
+				adapter = new LazyAdapter(ListViewActivity.this, entity);
+				adapter.notifyDataSetChanged();
+			}
+			return entity;
+		};
+		@Override
+		protected void onPostExecute(final Entity result) {
+			super.onPostExecute(result);
+
+			// updating UI from Background Thread
+			runOnUiThread(new Runnable() {
+				public void run() {
+					// verify erros
+					if (!result.hasErrors()) {
+						final ListView actualListView = listView.getRefreshableView();
+						actualListView.setAdapter(adapter);
+					}
+				}});
+			listView.onRefreshComplete();
+		}
+	}
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.list);
+		setContentView(R.layout.list_devices);
 
-		list = (ListView)findViewById(R.id.list);
+		listView = (PullToRefreshListView)findViewById(R.id.pull_refresh_listview);
+		listView.setOnRefreshListener(this);
+		listView.getRefreshableView().setOnItemClickListener(this);
 
-		new AsyncService(ListViewActivity.this, TabDashboardActivity.class) {
-			@Override
-			protected Entity doInBackground(final String... args) {
+		new ListRefreshSearch(ListViewActivity.this, TabDashboardActivity.class).execute();
+	}
 
-				// Find devices on server
-				final Entity filter = new Entity();
-				final Entity entity = DeviceService.searchDevices(filter);
+	public void onRefresh() {
+		listView.setLastUpdatedLabel(DateUtils.formatDateTime(getApplicationContext(), System.currentTimeMillis(), DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL));
+		new ListRefreshSearch(ListViewActivity.this, TabDashboardActivity.class).execute();
+	}
 
-				if (!entity.hasErrors()) {
-					// Getting adapter by passing xml data
-					adapter = new LazyAdapter(ListViewActivity.this, entity);
-				}
-				return entity;
-			};
-			@Override
-			protected void onPostExecute(final Entity result) {
-				super.onPostExecute(result);
+	public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
+		if(parent.getAdapter() instanceof HeaderViewListAdapter) {
+			new AsyncService(ListViewActivity.this, "Loading google maps...") {
+				@Override
+				protected Entity doInBackground(final String... args) {
+					final HeaderViewListAdapter listAdapter = (HeaderViewListAdapter) parent.getAdapter();
+					final LazyAdapter adapter = (LazyAdapter)listAdapter.getWrappedAdapter();
+					final Intent i = new Intent(getApplicationContext(), MapViewActivity.class);
+					final Device device = (Device) adapter.getItem(position-1);
+					i.putExtra("device", device);
+					i.putExtra("entity", adapter.getEntity());
+					startActivity(i);
+					return null;
+				};
+			}.execute();
+		}
+	}
 
-				// verify erros
-				if (!result.hasErrors()) {
-					list.setAdapter(adapter);
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		final MenuInflater menuInflater = getMenuInflater();
+		menuInflater.inflate(R.layout.menu_list, menu);
+		return true;
+	}
 
-					// Click event for single list row
-					list.setOnItemClickListener(new OnItemClickListener() {
-						public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
-							if(parent.getAdapter() instanceof LazyAdapter) {
-								final LazyAdapter adapter = (LazyAdapter)parent.getAdapter();
-								final Intent i = new Intent(getApplicationContext(), MapViewActivity.class);
-								final Device device = (Device) adapter.getItem(position);
-								i.putExtra("device", device);
-								i.putExtra("entity", adapter.getEntity());
-								startActivity(i);
-							}
-						};
-					});
-				}
-			}
-		}.execute();
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_all_friends:
+			final Intent i = new Intent(getApplicationContext(), MapViewActivity.class);
+			i.putExtra("allFriends", adapter.getEntity());
+			startActivity(i);
+			return true;
+		case R.id.menu_refresh:
+			new ListRefreshSearch(ListViewActivity.this, TabDashboardActivity.class).execute();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		finish();
 	}
 }

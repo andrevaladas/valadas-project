@@ -7,18 +7,23 @@
 		<property name="connection.driver_class">
 			com.mysql.jdbc.Driver
 		</property>
-		<!--
-		jdbc:mysql://localhost/android?useServerPrepStmts=false
-		root
-		root 
-		 -->
+
+		<!-- localhost -->		 
+		<!-- <property name="connection.url">
+			jdbc:mysql://localhost/android?autoReconnect=true
+		</property>
+		<property name="connection.username">root</property>
+		<property name="connection.password">root</property> -->
+
+		<!-- server side -->
 		<property name="connection.url">
-			jdbc:mysql://instance14008.db.xeround.com:9431/android?useServerPrepStmts=false
+			jdbc:mysql://instance14008.db.xeround.com:9431/android?autoReconnect=true
 		</property>
 		<property name="connection.username">andrevaladas</property>
 		<property name="connection.password">hide0721</property>
+		
 		<!-- JDBC connection pool (use the built-in) -->
-		<property name="connection.pool_size">5</property>
+		<property name="connection.pool_size">10</property>
 		<!-- SQL dialect -->
 		<property name="dialect">
 			org.hibernate.dialect.MySQL5Dialect

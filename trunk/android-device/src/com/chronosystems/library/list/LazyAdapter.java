@@ -54,6 +54,7 @@ public class LazyAdapter extends BaseAdapter {
 
 		final TextView title = (TextView)vi.findViewById(R.id.title); // title
 		final TextView description = (TextView)vi.findViewById(R.id.description); // description
+		final TextView address = (TextView)vi.findViewById(R.id.address); // address
 		final TextView lastTimeLocation = (TextView)vi.findViewById(R.id.timeline); // timeline
 		final ImageView image = (ImageView)vi.findViewById(R.id.list_image); // thumb image
 
@@ -64,6 +65,9 @@ public class LazyAdapter extends BaseAdapter {
 		// Setting all values in listview
 		title.setText(device.getName());
 		description.setText(device.getEmail());
+		final String geocoderAddress = LocationUtils.getGeocoderAddress(lastLocation, parent.getContext());
+		final int addressLength = Math.min(42, geocoderAddress.length());
+		address.setText(geocoderAddress.substring(0, addressLength)+(addressLength == 42 ? "..." : ""));
 		lastTimeLocation.setText(LocationUtils.getTimelineDescrition(lastLocation));
 		imageLoader.DisplayImage(device, image);
 		return vi;

@@ -61,8 +61,8 @@ public class LocationUtils {
 		return addressValue;
 	}
 
-	public static CustomItemizedOverlay<CustomOverlayItem> getItemizedOverlay(final Location location, final TapControlledMapView mapView, final Resources resources) {
-		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(getMarker(location, resources, mapView.getOverlays().isEmpty()), mapView);
+	public static CustomItemizedOverlay<CustomOverlayItem> getItemizedOverlay(final Location location, final boolean isLastLocation, final TapControlledMapView mapView, final Resources resources) {
+		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(getMarker(location, resources, isLastLocation), mapView);
 		// set iOS behavior attributes for overlay
 		itemizedOverlay.setShowClose(false);
 		itemizedOverlay.setShowDisclosure(true);

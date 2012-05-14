@@ -10,7 +10,11 @@
     <string name="home">Home</string>
     <string name="friends">Friends</string>
     <string name="me">Me</string>
-    <string name="requests">Requests</string>
+    <string name="profile">Profile</string>
+    <string name="change_account">Change Account</string>
+    <string name="manual_refresh">Manual Refresh</string>
+    <string name="all_friends">All Friends</string>
+    <string name="find_me">Find Me</string>
 
 	<!-- Buttons -->    
     <string name="login">Login</string>
@@ -37,9 +41,10 @@
 
     <string name="registrationError">An registration error occurred.</string>
 
-    <string name="enableGPS">Your GPS seems to be disabled, do you want to enable it?</string>
+    <string name="disableGPS">Your GPS seems to be disabled</string>
+    <string name="enableGPS">Do you want to enable it?</string>
     
     <string name="confirmCheckin">Confirm your checkin?</string>
-    <string name="checkinSuccess">Checkin location registered.</string>
+    <string name="checkinSuccess">Checkin registered.</string>
     <string name="checkinError">An checkin location error occurred.</string>
 </resources>
