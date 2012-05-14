@@ -49,15 +49,14 @@ public class DeviceService extends DeviceDao implements Serializable {
 		final Entity resultEntity = super.search(entity);
 
 		// return only last device location
-		for (final Device device : resultEntity.getDevices()) {
+		final List<Device> devices = resultEntity.getDevices();
+		for (final Device device : devices) {
 			device.setDateInTime(device.getDatecreated().getTime());
+
 			final List<Location> locations = device.getLocations();
 			for (final Location location : locations) {
-				location.setDateInTime(location.getTimeline().getTime());
+				location.updateTimeline();
 			}
-			//only last location
-			//device.setLocations(new ArrayList<Location>());
-			//device.addLocation(location);
 		}
 		return resultEntity;
 	}

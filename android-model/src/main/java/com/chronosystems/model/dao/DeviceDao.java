@@ -103,7 +103,15 @@ public abstract class DeviceDao {
 	protected Entity search(final Entity entity) {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			final Query query = session.createQuery("select dev from Device as dev left join fetch dev.locations where dev.locations.size > 0 order by dev.name");
+			final Query query = session.createQuery(
+					" select dev from Device dev " +
+							" where dev.id <> :id" +
+							"	and dev.locations.id in (" +
+							"		select max(loc.id) " +
+							"		from Location loc " +
+					"		where loc.device.id = dev.id order by loc.timeline desc)");
+			query.setLong("id", entity.getDevices().get(0).getId());
+
 			// paginacao
 			query.setFirstResult(entity.getMaxRecords() * ((entity.getCurrentPage()-1)+1));
 			query.setMaxResults(entity.getMaxRecords()+1);

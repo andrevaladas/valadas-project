@@ -3,14 +3,12 @@ package com.chronosystems.maps.core.view;
 import java.util.List;
 
 import android.graphics.drawable.Drawable;
-import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup.LayoutParams;
 
-import com.chronosystems.maps.core.view.R;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.MapController;
@@ -25,9 +23,6 @@ import com.google.android.maps.OverlayItem;
  * @author André Valadas
  */
 public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends ItemizedOverlay<Item> {
-
-	private static final long BALLOON_INFLATION_TIME = 300;
-	private static Handler handler = new Handler();
 
 	private final MapView mapView;
 	private BalloonOverlayView<Item> balloonView;
@@ -93,17 +88,11 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	 */
 	protected void onBalloonOpen(final int index) {}
 
-	/* (non-Javadoc)
-	 * @see com.google.android.maps.ItemizedOverlay#onTap(int)
-	 */
 	@Override
 	//protected final boolean onTap(int index) {
 	public final boolean onTap(final int index) {
 
-		handler.removeCallbacks(finishBalloonInflation);
 		isInflating = true;
-		handler.postDelayed(finishBalloonInflation, BALLOON_INFLATION_TIME);
-
 		currentFocusedIndex = index;
 		currentFocusedItem = createItem(index);
 		setLastFocusedIndex(index);
@@ -168,6 +157,7 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 			}
 			hideBalloon();
 		}
+		isInflating = false;
 	}
 
 	/**
@@ -213,17 +203,11 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 		};
 	}
 
-	/* (non-Javadoc)
-	 * @see com.google.android.maps.ItemizedOverlay#getFocus()
-	 */
 	@Override
 	public Item getFocus() {
 		return currentFocusedItem;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.google.android.maps.ItemizedOverlay#setFocus(Item)
-	 */
 	@Override
 	public void setFocus(final Item item) {
 		super.setFocus(item);
@@ -314,12 +298,4 @@ public abstract class BalloonItemizedOverlay<Item extends OverlayItem> extends I
 	public static boolean isInflating() {
 		return isInflating;
 	}
-
-	private static Runnable finishBalloonInflation = new Runnable() {
-		@Override
-		public void run() {
-			isInflating = false;
-		}
-	};
-
 }

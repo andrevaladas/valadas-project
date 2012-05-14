@@ -5,8 +5,6 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
@@ -14,10 +12,13 @@ import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TabHost.TabSpec;
 
+import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
+import com.chronosystems.entity.Location;
 import com.chronosystems.gps.GpsLocationService;
 import com.chronosystems.library.dialog.ErrorMessage;
 import com.chronosystems.library.dialog.SuccessMessage;
+import com.chronosystems.library.utils.GpsUtils;
 import com.chronosystems.library.utils.LocationUtils;
 import com.chronosystems.service.local.AsyncService;
 import com.chronosystems.service.local.UserFunctions;
@@ -43,47 +44,50 @@ public class TabDashboardActivity extends TabActivity {
 
 			// Tab for Home
 			final TabSpec homespec = tabHost.newTabSpec(getString(R.string.home));
-			homespec.setIndicator(getString(R.string.home), getResources().getDrawable(R.drawable.icon_photos_tab));
+			homespec.setIndicator(getString(R.string.home), getResources().getDrawable(R.drawable.icon_home_tab));
 			final Intent homeIntent = new Intent(this, HomeActivity.class);
 			homespec.setContent(homeIntent);
 
+			final TabSpec tab2 = tabHost.newTabSpec(getString(R.string.profile));
+			tab2.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
+			final Intent itab2Intent = new Intent(this, ListViewActivity.class);
+			tab2.setContent(itab2Intent);
+
 			// Tab for Friends
 			final TabSpec friendspec = tabHost.newTabSpec(getString(R.string.friends));
-			friendspec.setIndicator(getString(R.string.friends), getResources().getDrawable(R.drawable.icon_songs_tab));
+			friendspec.setIndicator(getString(R.string.friends), getResources().getDrawable(R.drawable.icon_home_tab));
 			final Intent friendsIntent = new Intent(this, ListViewActivity.class);
 			friendspec.setContent(friendsIntent);
 
-			// Tab for Me
-			final TabSpec mespec = tabHost.newTabSpec(getString(R.string.me));
-			mespec.setIndicator(getString(R.string.me), getResources().getDrawable(R.drawable.icon_videos_tab));
-			final Intent meIntent = new Intent(this, LoginActivity.class);
-			mespec.setContent(meIntent);
-
 			// Tab for Request
-			final TabSpec requestspec = tabHost.newTabSpec(getString(R.string.requests));
-			requestspec.setIndicator(getString(R.string.requests), getResources().getDrawable(R.drawable.icon_photos_tab));
+			final TabSpec hometab = tabHost.newTabSpec(getString(R.string.profile));
+			hometab.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
 			final Intent requestIntent = new Intent(this, ListViewActivity.class);
-			requestspec.setContent(requestIntent);
+			hometab.setContent(requestIntent);
 
 			// Adding all TabSpec to TabHost
-			tabHost.addTab(homespec); // Adding home tab
-			tabHost.addTab(friendspec); // Adding frineds tab
-			tabHost.addTab(mespec); // Adding me tab
-			tabHost.addTab(requestspec); // Adding requests tab
+			tabHost.addTab(homespec);
+			tabHost.addTab(tab2);
+			tabHost.addTab(friendspec);
+			tabHost.addTab(hometab);
 
-			tabHost.getTabWidget().getChildAt(0).setBackgroundColor(Color.parseColor("#4E4E9C"));
-			tabHost.getTabWidget().getChildAt(1).setBackgroundColor(Color.parseColor("#4E4E9C"));
-			tabHost.getTabWidget().getChildAt(2).setBackgroundColor(Color.parseColor("#4E4E9C"));
-			tabHost.getTabWidget().getChildAt(3).setBackgroundColor(Color.parseColor("#4E4E9C"));
-
-			//		tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			//			public void onTabChanged(final String tabId) {
-			//				for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) {
-			//					tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#FF0000")); //unselected
+			//			final TabWidget tabWidget = tabHost.getTabWidget();
+			//			for (int i = 0; i < tabWidget.getChildCount(); i++) {
+			//				if (i == 0) {
+			//					tabWidget.getChildAt(i).setBackgroundColor(Color.parseColor("#828282"));
+			//				} else {
+			//					tabWidget.getChildAt(i).setBackgroundColor(Color.parseColor("#363636"));
 			//				}
-			//				tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#0000FF")); // selected
 			//			}
-			//		});
+
+			//			tabHost.setOnTabChangedListener(new OnTabChangeListener() {
+			//				public void onTabChanged(final String tabId) {
+			//					for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) {
+			//						tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#363636")); //unselected
+			//					}
+			//					tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#828282")); // selected
+			//				}
+			//			});
 
 			final ImageButton btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
 			btnCheckin.setOnClickListener(new View.OnClickListener() {
@@ -106,74 +110,95 @@ public class TabDashboardActivity extends TabActivity {
 	 * @param location
 	 */
 	private void callCheckin() {
-		final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)){
-			final GpsLocationService locationService = new GpsLocationService();
-			final Location checkin = locationService.checkin(locationManager);
-			if (checkin != null) {
-				showConfirmCheckinMessage(checkin);
-			}
-		} else {
-			// I open here the preferences to force the user start the GPS
-			showAlertMessageNoGps();
-		}
-	}
+		// Verifica se GPS está ativo
+		if (GpsUtils.checkConfiguration(this)){
 
-	/** confirm checkin */
-	private void showConfirmCheckinMessage(final Location location) {
-		final AlertDialog.Builder confirm = new AlertDialog.Builder(this);
-		confirm.setMessage(getString(R.string.confirmCheckin)+"\n"+LocationUtils.getGeocoderAddress(location, getBaseContext()));
-		confirm.setIcon(R.drawable.info);
+			// param to set location
+			final Device localDevice = new Device();
 
-		confirm.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
-			public void onClick(final DialogInterface dialog, final int id) {
-				new AsyncService(TabDashboardActivity.this) {
-					@Override
-					protected Entity doInBackground(final String... args) {
-						return LocationService.checkinLocation(UserFunctions.getCurrentUser(getApplicationContext()), location);
-					}
-					@Override
-					protected void onPostExecute(final Entity result) {
-						super.onPostExecute(result);
-						if(!result.hasErrors()) {
-							SuccessMessage.show(getString(R.string.checkinSuccess), TabDashboardActivity.this);
-						} else {
-							ErrorMessage.show(getString(R.string.checkinError), TabDashboardActivity.this);
+			// Cria mensagem de confirmação do usuário para checkin
+			final AlertDialog.Builder confirm = new AlertDialog.Builder(this);
+			confirm.setTitle(getString(R.string.confirmCheckin));
+			confirm.setIcon(R.drawable.info);
+			confirm.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
+				public void onClick(final DialogInterface dialog, final int id) {
+					new AsyncService(TabDashboardActivity.this) {
+						@Override
+						protected Entity doInBackground(final String... args) {
+							// get current user and set current location
+							final Device currentUser = UserFunctions.getCurrentUser(getApplicationContext());
+							currentUser.setLocations(localDevice.getLocations());
+
+							// send data to server
+							return LocationService.checkinLocation(currentUser);
 						}
-					}
-				}.execute();
-			}
-		});
-		confirm.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
-			public void onClick(final DialogInterface dialog, final int id) {
-				dialog.cancel();
-			}
-		});
-		confirm.show();
-	}
+						@Override
+						protected void onPostExecute(final Entity result) {
+							super.onPostExecute(result);
+							if(!result.hasErrors()) {
+								SuccessMessage.show(getString(R.string.checkinSuccess), TabDashboardActivity.this);
+							} else {
+								ErrorMessage.show(getString(R.string.checkinError), TabDashboardActivity.this);
+							}
+						}
+					}.execute();
+				}
+			});
+			confirm.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
+				public void onClick(final DialogInterface dialog, final int id) {
+					dialog.cancel();
+				}
+			});
 
-	/** Builds an alert message to allow the user the option of enabling GPS */
-	private void showAlertMessageNoGps() {
-		final AlertDialog.Builder alert = new AlertDialog.Builder(this);
-		alert.setMessage(getString(R.string.enableGPS));
-		alert.setIcon(R.drawable.warning);
-		alert.setCancelable(false);
+			// GPS Service
+			final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+			final GpsLocationService locationService = new GpsLocationService(locationManager);
 
-		alert.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-			public void onClick(final DialogInterface dialog, final int id) {
-				launchGPSOptions();
-			}
-		});
-		alert.setNegativeButton("No", new DialogInterface.OnClickListener() {
-			public void onClick(final DialogInterface dialog, final int id) {
-				dialog.cancel();
-			}
-		});
-		alert.show();
-	}
-	/** Launches the SecuritySettings activity */
-	private void launchGPSOptions() {
-		/* bring up the GPS settings */
-		startActivityForResult(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS), 0);
+			// Chama servico de localização do GPS
+			new AsyncService(TabDashboardActivity.this, "Checking your location...") {
+				@Override
+				protected void onPreExecute() {
+					super.onPreExecute();
+					locationService.startService();
+				}
+
+				@Override
+				protected Entity doInBackground(final String... args) {
+
+					//search for current local for checkin
+					final android.location.Location checkin = locationService.getCurrentLocation();
+
+					//create a location checkin
+					final Location location = new Location(
+							checkin.getLatitude(),
+							checkin.getLongitude());
+
+					localDevice.addLocation(location);
+
+					// busca dados da localizacao
+					final String geocoderAddress = LocationUtils.getGeocoderAddress(location, getApplicationContext());
+					confirm.setMessage(geocoderAddress);
+
+					return null;
+				}
+
+				@Override
+				protected void onCancelled() {
+					super.onCancelled();
+					// force shutdown service
+					locationService.stopService();
+				}
+
+				@Override
+				protected void onPostExecute(final Entity result) {
+					super.onPostExecute(result);
+					// force shutdown service
+					locationService.stopService();
+
+					// mostra o alerta de confirmação
+					confirm.show();
+				}
+			}.execute();
+		}
 	}
 }

@@ -21,14 +21,14 @@ public class WSDevice {
 	@GET
 	@Path("/get/{message}")
 	public String get(@PathParam("message")final String message) {
-		return message;
+		return "version 1.1 message: "+message;
 	}
 
 	@POST
 	@Path("/login")
 	@Produces(MediaType.TEXT_XML)
 	public Response login(final String xml) {
-		final Device filter = XMLParser.parseXML(xml, Device.class);//convert to bean
+		final Device filter = XMLParser.parseXML(xml, Device.class);
 		final Device device = new DeviceService().find(filter.getEmail(), filter.getPassword());
 		if(device == null) {
 			return Response.ok(XMLParser.parseXML(new Entity())).build();
@@ -40,7 +40,7 @@ public class WSDevice {
 	@Path("/register")
 	@Produces(MediaType.TEXT_XML)
 	public Response register(final String xml) {
-		final Device entity = XMLParser.parseXML(xml, Device.class);//convert to bean
+		final Device entity = XMLParser.parseXML(xml, Device.class);
 		final Long rowCount = new DeviceService().rowCount(entity.getEmail());
 		if (rowCount == 0) {
 			new DeviceService().save(entity);//save
@@ -55,7 +55,7 @@ public class WSDevice {
 	@Path("/search")
 	@Produces(MediaType.TEXT_XML)
 	public Response search(final String xml) {
-		final Entity entity = XMLParser.parseXML(xml, Entity.class);//convert to bean
+		final Entity entity = XMLParser.parseXML(xml, Entity.class);
 		final Entity result = new DeviceService().search(entity);
 		return Response.ok(XMLParser.parseXML(result)).build();
 	}

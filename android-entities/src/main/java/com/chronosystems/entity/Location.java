@@ -100,4 +100,7 @@ public class Location extends TimeEntity implements Serializable {
 		}
 		return super.getDateInTime();
 	}
+	public void updateTimeline() {
+		setDateInTime(this.getTimeline().getTime());
+	}
 }

@@ -34,7 +34,7 @@ public class FilterEntity extends EntityError implements Serializable {
 
 	public Integer getMaxRecords() {
 		if (maxRecords == null) {
-			maxRecords = 7;
+			maxRecords = 30;
 		}
 		return maxRecords;
 	}
