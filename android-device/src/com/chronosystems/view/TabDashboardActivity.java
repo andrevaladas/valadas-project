@@ -26,6 +26,8 @@ import com.chronosystems.service.remote.LocationService;
 
 public class TabDashboardActivity extends TabActivity {
 	TabHost tabHost = null;
+	// GPS Service
+	GpsLocationService locationService;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -150,9 +152,7 @@ public class TabDashboardActivity extends TabActivity {
 				}
 			});
 
-			// GPS Service
-			final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-			final GpsLocationService locationService = new GpsLocationService(locationManager);
+			locationService = new GpsLocationService((LocationManager) getSystemService(Context.LOCATION_SERVICE));
 
 			// Chama servico de localização do GPS
 			new AsyncService(TabDashboardActivity.this, "Checking your location...") {
@@ -172,7 +172,6 @@ public class TabDashboardActivity extends TabActivity {
 					final Location location = new Location(
 							checkin.getLatitude(),
 							checkin.getLongitude());
-
 					localDevice.addLocation(location);
 
 					// busca dados da localizacao
@@ -199,6 +198,22 @@ public class TabDashboardActivity extends TabActivity {
 					confirm.show();
 				}
 			}.execute();
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		if (locationService != null) {
+			locationService.stopService();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (locationService != null) {
+			locationService.stopService();
 		}
 	}
 }
