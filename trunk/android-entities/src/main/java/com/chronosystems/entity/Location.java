@@ -51,6 +51,7 @@ public class Location extends TimeEntity implements Serializable {
 		super();
 		this.latitude = latitude;
 		this.longitude = longitude;
+		setDateInTime(new Date().getTime());
 	}
 
 	public Long getId() {
@@ -101,6 +102,6 @@ public class Location extends TimeEntity implements Serializable {
 		return super.getDateInTime();
 	}
 	public void updateTimeline() {
-		setDateInTime(this.getTimeline().getTime());
+		setDateInTime(getTimeline().getTime());
 	}
 }

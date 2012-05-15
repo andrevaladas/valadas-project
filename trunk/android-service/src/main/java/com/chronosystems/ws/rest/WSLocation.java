@@ -1,7 +1,5 @@
 package com.chronosystems.ws.rest;
 
-import java.util.Date;
-
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -25,7 +23,7 @@ public class WSLocation {
 		final Device device = new DeviceService().find(filter.getId());
 
 		final Location checkin = filter.getLocations().get(0);
-		checkin.setTimeline(new Date());
+		checkin.setTimeline(checkin.getTimeline());//update from xml
 		checkin.setDevice(device);
 		device.addLocation(checkin);
 		new DeviceService().save(device);
