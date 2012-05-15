@@ -3,11 +3,6 @@
 "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
 <hibernate-configuration>
 	<session-factory>
-		<!-- Database connection settings -->
-		<property name="connection.driver_class">
-			com.mysql.jdbc.Driver
-		</property>
-
 		<!-- localhost -->		 
 		<!-- <property name="connection.url">
 			jdbc:mysql://localhost/android?autoReconnect=true
@@ -21,21 +16,14 @@
 		</property>
 		<property name="connection.username">andrevaladas</property>
 		<property name="connection.password">hide0721</property>
-		
-		<!-- JDBC connection pool (use the built-in) -->
-		<property name="connection.pool_size">10</property>
-		<!-- SQL dialect -->
+
+		<property name="connection.driver_class">
+			com.mysql.jdbc.Driver
+		</property>		
 		<property name="dialect">
 			org.hibernate.dialect.MySQL5Dialect
 		</property>
-		<!-- Enable Hibernate's automatic session context management -->
-		<property name="current_session_context_class">thread</property>
-		<!-- Disable the second-level cache -->
-		<property name="cache.provider_class">
-			org.hibernate.cache.NoCacheProvider
-		</property>
-		<!-- Echo all executed SQL to stdout -->
-		<property name="show_sql">true</property>
+		<property name="show_sql">false</property>
 
 		<mapping class="com.chronosystems.entity.Device"/>
 		<mapping class="com.chronosystems.entity.Location"/>
