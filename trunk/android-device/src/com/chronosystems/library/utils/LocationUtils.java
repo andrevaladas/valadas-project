@@ -12,10 +12,13 @@ import java.util.concurrent.TimeUnit;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 
+import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.entity.Location;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
 import com.chronosystems.library.maps.CustomOverlayItem;
@@ -61,8 +64,10 @@ public class LocationUtils {
 		return addressValue;
 	}
 
-	public static CustomItemizedOverlay<CustomOverlayItem> getItemizedOverlay(final Location location, final boolean isLastLocation, final TapControlledMapView mapView, final Resources resources) {
-		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(getMarker(location, resources, isLastLocation), mapView);
+	public static CustomItemizedOverlay<CustomOverlayItem> getItemizedOverlay(final Location location, final TapControlledMapView mapView, final Resources resources) {
+		final Bitmap marker = getMarker(location, resources);
+		final BitmapDrawable bitmapDrawable = new BitmapDrawable(ImageHelper.adjustOpacity(marker, 100));
+		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(bitmapDrawable, mapView);
 		// set iOS behavior attributes for overlay
 		itemizedOverlay.setShowClose(false);
 		itemizedOverlay.setShowDisclosure(true);
@@ -70,49 +75,40 @@ public class LocationUtils {
 		return itemizedOverlay;
 	}
 
-	public static Drawable getMarker(final Location location, final Resources resources, final boolean isLastLocation) {
-		if (!isLastLocation) {
-			final Long timeline = location.getDateInTime();
-			/* Days */
-			final long days = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()-timeline);
-			if(days > 0) {
-				return resources.getDrawable(R.drawable.marker_red);
+	private static Bitmap getMarker(final Location location, final Resources resources) {
+		final Long timeline = location.getDateInTime();
+		/* Days */
+		final long days = TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis()-timeline);
+		if(days > 0) {
+			/** after 5 days */
+			if (days > 5) {
+				return BitmapFactory.decodeResource(resources,R.drawable.light_gray_sphere);
 			}
-			/* Hours */
-			final long hours = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis()-timeline);
-			if (hours > 0) {
-				/** between 12/24 hrs */
-				if (hours > 12) {
-					return resources.getDrawable(R.drawable.marker_green);
-				}
-				/** between 3/12 hrs */
-				if (hours > 3) {
-					return resources.getDrawable(R.drawable.marker_green);
-				}
-				/** between 1/3 hrs */
-				return resources.getDrawable(R.drawable.marker_green);
+			/** after 3 days */
+			if (days > 3) {
+				return BitmapFactory.decodeResource(resources,R.drawable.dark_gray_sphere);
 			}
-			/* Minutes */
-			final long minutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()-timeline);
-			if (minutes > 3) {
-				/** between 30/60 min */
-				if (minutes > 30) {
-					return resources.getDrawable(R.drawable.marker_green);
-				}
-				/** between 15/30 min */
-				if (minutes > 15) {
-					return resources.getDrawable(R.drawable.marker_green);
-				}
-				/** between 3/15 min */
-				return resources.getDrawable(R.drawable.marker_green);
-			}
-			/* less than 3 minutes, now! */
-			return resources.getDrawable(R.drawable.marker);
+			/** between 1-3 days */
+			return BitmapFactory.decodeResource(resources,R.drawable.green_1_sphere);
 		}
+		/* Hours */
+		final long hours = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis()-timeline);
+		if (hours > 0) {
+			/** between 1-24 hrs */
+			return BitmapFactory.decodeResource(resources,R.drawable.blue_sphere);
+		}
+		/* Minutes */
+		final long minutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()-timeline);
+		if (minutes > 30) {
+			/** between 30-60 min */
+			return BitmapFactory.decodeResource(resources,R.drawable.green_sphere);
+		}
+		/* less than 15 minutes, now! */
+		return BitmapFactory.decodeResource(resources,R.drawable.red_sphere);
 		/* lastLocation */
 		//final Bitmap bitmap = ImageHelper.getRoundedBitmap(location.getDevice().getImage());
 		//return new BitmapDrawable(ImageHelper.getResizedBitmap(bitmap, 15, 15));
-		return resources.getDrawable(R.drawable.marker_lastlocation);
+		//return resources.getDrawable(R.drawable.red_sphere);
 	}
 
 	public static String getTimelineDescrition(final Location location) {
