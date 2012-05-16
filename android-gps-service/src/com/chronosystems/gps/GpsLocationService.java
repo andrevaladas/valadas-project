@@ -1,5 +1,7 @@
 package com.chronosystems.gps;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,7 +14,9 @@ import android.util.Log;
  */
 public class GpsLocationService {
 
-	Location currentLocation = null;
+	AtomicInteger count;
+	Location currentLocation;
+	Location networkLocation;
 	LocationManager locationManager;
 	final LocationListenerGps locationListenerGps = new LocationListenerGps();
 	final LocationListenerNetwork locationListenerNetwork = new LocationListenerNetwork();
@@ -34,10 +38,16 @@ public class GpsLocationService {
 	}
 
 	public Location getCurrentLocation() {
+		count = new AtomicInteger();
 		while (currentLocation == null) {
 			try {
 				Thread.sleep(1000);
 			} catch (final Exception e) {}
+
+			//set networkLocation after x attempts
+			if(count.getAndIncrement() > 10 && currentLocation == null && networkLocation != null) {
+				currentLocation = networkLocation;
+			}
 		}
 		return currentLocation;
 	}
@@ -46,8 +56,7 @@ public class GpsLocationService {
 
 		@Override
 		public void onLocationChanged(final Location location) {
-			System.out.println("LocationListenerNetwork");
-			currentLocation = location;
+			networkLocation = location;
 		}
 
 		@Override
@@ -81,8 +90,10 @@ public class GpsLocationService {
 
 		@Override
 		public void onLocationChanged(final Location location) {
-			System.out.println("LocationListenerGps");
-			currentLocation = location;
+			System.out.println("LocationListenerGps Accuracy: "+location.getAccuracy());
+			if (location.getAccuracy() < 50f) {
+				currentLocation = location;
+			}
 		}
 
 		@Override

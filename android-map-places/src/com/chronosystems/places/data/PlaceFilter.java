@@ -12,7 +12,6 @@ import com.google.android.maps.GeoPoint;
 
 /**
  * @author Andre Valadas
- *
  */
 public class PlaceFilter {
 
@@ -21,9 +20,9 @@ public class PlaceFilter {
 	private GeoPoint location;
 	private String name;
 	private List<String> type = Arrays.asList("establishment");//food|restaurant|establishment|store|grocery_or_supermarket|bakery
-	private final String language = "pt-BR"; //en
+	private String language = "pt-BR"; //en
 	private int radius = 100;
-	private boolean sensor = true;
+	private boolean sensor;
 
 	public GeoPoint getLocation() {
 		return location;
@@ -57,6 +56,9 @@ public class PlaceFilter {
 	}
 	public String getLanguage() {
 		return language;
+	}
+	public void setLanguage(final String language) {
+		this.language = language;
 	}
 
 	public String getFilterUrl(final String urlPlaces) {

@@ -5,6 +5,9 @@ package com.chronosystems.crop.image;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
@@ -101,6 +104,18 @@ public class ImageHelper {
 			o2.inSampleSize=scale;
 			return BitmapFactory.decodeStream(new ByteArrayInputStream(image), null, o2);
 		} catch (final OutOfMemoryError e) {
+		}
+		return null;
+	}
+
+	public static Bitmap getBitmapFromUrl(final String url) {
+		try {
+			final HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+			connection.connect();
+			final InputStream input = connection.getInputStream();
+			return BitmapFactory.decodeStream(input);
+		} catch (final Exception e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
