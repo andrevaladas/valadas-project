@@ -46,6 +46,12 @@
             android:name=".ListViewActivity"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
 
+        <!-- Places Activity -->
+        <activity
+            android:label="Places" 
+            android:name=".PlacesViewActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
+        
         <!-- Maps Location Activity -->
         <activity
             android:label="Map Location" 

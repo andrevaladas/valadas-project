@@ -9,12 +9,18 @@
     <!-- tabs -->
     <string name="home">Home</string>
     <string name="friends">Friends</string>
+    <string name="places">Places</string>
     <string name="me">Me</string>
     <string name="profile">Profile</string>
     <string name="change_account">Change Account</string>
     <string name="manual_refresh">Manual Refresh</string>
     <string name="all_friends">All Friends</string>
     <string name="find_me">Find Me</string>
+    
+    <string name="search_places">Search Places</string>
+    
+    <string name="map">Map</string>
+    <string name="satellite">Satellite</string>
 
 	<!-- Buttons -->    
     <string name="login">Login</string>
