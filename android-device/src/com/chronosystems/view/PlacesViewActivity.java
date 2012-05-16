@@ -191,7 +191,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		menuInflater.inflate(R.layout.menu_places, menu);
 		if (placesView.isSatellite()) {
 			final MenuItem item = menu.findItem(R.id.map);
-			item.setTitle(getString(R.string.map));
+			item.setTitle(getString(R.string.road));
 		}
 		return true;
 	}
@@ -224,7 +224,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 			final String satellite = getString(R.string.satellite);
 			if (item.getTitle().equals(satellite)) {
 				placesView.setSatellite(true);
-				item.setTitle(getString(R.string.map));
+				item.setTitle(getString(R.string.road));
 				item.setChecked(true);
 			} else {
 				placesView.setSatellite(false);

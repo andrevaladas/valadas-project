@@ -88,7 +88,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 							ImageLoader.getBitmapCached(location.getDevice()));
 
 					// define overlay/marker by location timeline
-					final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = LocationUtils.getItemizedOverlay(location, itemizedOverlayList.isEmpty(), mapView, getResources());
+					final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = LocationUtils.getItemizedOverlay(location, mapView, getResources());
 
 					//add item on overlay
 					itemizedOverlay.addOverlay(overlayItem);
@@ -216,7 +216,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 		menuInflater.inflate(R.layout.menu_map, menu);
 		if (mapView.isSatellite()) {
 			final MenuItem item = menu.findItem(R.id.map);
-			item.setTitle(getString(R.string.map));
+			item.setTitle(getString(R.string.road));
 		}
 		return true;
 	}
@@ -241,7 +241,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 			final String satellite = getString(R.string.satellite);
 			if (item.getTitle().equals(satellite)) {
 				mapView.setSatellite(true);
-				item.setTitle(getString(R.string.map));
+				item.setTitle(getString(R.string.road));
 				item.setChecked(true);
 			} else {
 				mapView.setSatellite(false);

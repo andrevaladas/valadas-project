@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
@@ -62,8 +63,8 @@ public class ImageHelper {
 	public static Bitmap getResizedBitmap(final Bitmap bm, final int newHeight, final int newWidth) {
 		final int width = bm.getWidth();
 		final int height = bm.getHeight();
-		final float scaleWidth = ((float) newWidth) / width;
-		final float scaleHeight = ((float) newHeight) / height;
+		final float scaleWidth = (float) newWidth / width;
+		final float scaleHeight = (float) newHeight / height;
 		// CREATE A MATRIX FOR THE MANIPULATION
 		final Matrix matrix = new Matrix();
 		// RESIZE THE BIT MAP
@@ -118,5 +119,21 @@ public class ImageHelper {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	/**
+	 * @param bitmap The source bitmap.
+	 * @param opacity a value between 0 (completely transparent) and 255 (completely * opaque).
+	 * @return The opacity-adjusted bitmap.  If the source bitmap is mutable it will be
+	 * adjusted and returned, otherwise a new bitmap is created.
+	 */
+	public static Bitmap adjustOpacity(final Bitmap bitmap, final int opacity) {
+		final Bitmap mutableBitmap = bitmap.isMutable()
+				? bitmap
+						: bitmap.copy(Bitmap.Config.ARGB_8888, true);
+		final Canvas canvas = new Canvas(mutableBitmap);
+		final int colour = (opacity & 0xFF) << 24;
+		canvas.drawColor(colour, PorterDuff.Mode.DST_IN);
+		return mutableBitmap;
 	}
 }
