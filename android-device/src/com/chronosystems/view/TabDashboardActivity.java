@@ -45,56 +45,39 @@ public class TabDashboardActivity extends TabActivity {
 			tabHost = getTabHost();
 
 			// Tab for Home
-			final TabSpec homespec = tabHost.newTabSpec(getString(R.string.home));
-			homespec.setIndicator(getString(R.string.home), getResources().getDrawable(R.drawable.icon_home_tab));
+			final TabSpec homeTab = tabHost.newTabSpec(getString(R.string.home));
+			homeTab.setIndicator(getString(R.string.home), getResources().getDrawable(R.drawable.icon_home_tab));
 			final Intent homeIntent = new Intent(this, HomeActivity.class);
-			homespec.setContent(homeIntent);
-
-			final TabSpec tab2 = tabHost.newTabSpec(getString(R.string.profile));
-			tab2.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
-			final Intent itab2Intent = new Intent(this, ListViewActivity.class);
-			tab2.setContent(itab2Intent);
+			homeTab.setContent(homeIntent);
 
 			// Tab for Friends
-			final TabSpec friendspec = tabHost.newTabSpec(getString(R.string.friends));
-			friendspec.setIndicator(getString(R.string.friends), getResources().getDrawable(R.drawable.icon_home_tab));
+			final TabSpec friendsTab = tabHost.newTabSpec(getString(R.string.friends));
+			friendsTab.setIndicator(getString(R.string.friends), getResources().getDrawable(R.drawable.icon_friends_tab));
 			final Intent friendsIntent = new Intent(this, ListViewActivity.class);
-			friendspec.setContent(friendsIntent);
+			friendsTab.setContent(friendsIntent);
 
-			// Tab for Request
-			final TabSpec hometab = tabHost.newTabSpec(getString(R.string.profile));
-			hometab.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
-			final Intent requestIntent = new Intent(this, ListViewActivity.class);
-			hometab.setContent(requestIntent);
+			// Tab for Places
+			final TabSpec placesTab = tabHost.newTabSpec(getString(R.string.places));
+			placesTab.setIndicator(getString(R.string.places), getResources().getDrawable(R.drawable.icon_places_tab));
+			final Intent placesIntent = new Intent(this, PlacesViewActivity.class);
+			placesTab.setContent(placesIntent);
+
+			// Tab for Profile
+			final TabSpec profileTab = tabHost.newTabSpec(getString(R.string.profile));
+			profileTab.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
+			final Intent profileIntent = new Intent(this, HomeActivity.class);
+			profileTab.setContent(profileIntent);
 
 			// Adding all TabSpec to TabHost
-			tabHost.addTab(homespec);
-			tabHost.addTab(tab2);
-			tabHost.addTab(friendspec);
-			tabHost.addTab(hometab);
-
-			//			final TabWidget tabWidget = tabHost.getTabWidget();
-			//			for (int i = 0; i < tabWidget.getChildCount(); i++) {
-			//				if (i == 0) {
-			//					tabWidget.getChildAt(i).setBackgroundColor(Color.parseColor("#828282"));
-			//				} else {
-			//					tabWidget.getChildAt(i).setBackgroundColor(Color.parseColor("#363636"));
-			//				}
-			//			}
-
-			//			tabHost.setOnTabChangedListener(new OnTabChangeListener() {
-			//				public void onTabChanged(final String tabId) {
-			//					for(int i=0;i<tabHost.getTabWidget().getChildCount();i++) {
-			//						tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.parseColor("#363636")); //unselected
-			//					}
-			//					tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.parseColor("#828282")); // selected
-			//				}
-			//			});
+			tabHost.addTab(homeTab);
+			tabHost.addTab(friendsTab);
+			tabHost.addTab(placesTab);
+			tabHost.addTab(profileTab);
 
 			final ImageButton btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
 			btnCheckin.setOnClickListener(new View.OnClickListener() {
 				public void onClick(final View v) {
-					callCheckin();
+					callCheckinLocation();
 				}
 			});
 		} else {
@@ -111,7 +94,7 @@ public class TabDashboardActivity extends TabActivity {
 	 * Checkin Location
 	 * @param location
 	 */
-	private void callCheckin() {
+	private void callCheckinLocation() {
 		// Verifica se GPS está ativo
 		if (GpsUtils.checkConfiguration(this)){
 
@@ -124,6 +107,9 @@ public class TabDashboardActivity extends TabActivity {
 			confirm.setIcon(R.drawable.info);
 			confirm.setPositiveButton(getString(R.string.yes), new DialogInterface.OnClickListener() {
 				public void onClick(final DialogInterface dialog, final int id) {
+					// force shutdown service
+					locationService.stopService();
+
 					new AsyncService(TabDashboardActivity.this) {
 						@Override
 						protected Entity doInBackground(final String... args) {
@@ -137,7 +123,7 @@ public class TabDashboardActivity extends TabActivity {
 						@Override
 						protected void onPostExecute(final Entity result) {
 							super.onPostExecute(result);
-							if(!result.hasErrors()) {
+							if(result != null && !result.hasErrors()) {
 								SuccessMessage.show(getString(R.string.checkinSuccess), TabDashboardActivity.this);
 							} else {
 								ErrorMessage.show(getString(R.string.checkinError), TabDashboardActivity.this);
@@ -149,9 +135,12 @@ public class TabDashboardActivity extends TabActivity {
 			confirm.setNegativeButton(getString(R.string.no), new DialogInterface.OnClickListener() {
 				public void onClick(final DialogInterface dialog, final int id) {
 					dialog.cancel();
+					// force shutdown service
+					locationService.stopService();
 				}
 			});
 
+			//get GPS service
 			locationService = new GpsLocationService((LocationManager) getSystemService(Context.LOCATION_SERVICE));
 
 			// Chama servico de localização do GPS
@@ -167,16 +156,18 @@ public class TabDashboardActivity extends TabActivity {
 
 					//search for current local for checkin
 					final android.location.Location checkin = locationService.getCurrentLocation();
+					if (checkin != null) {
 
-					//create a location checkin
-					final Location location = new Location(
-							checkin.getLatitude(),
-							checkin.getLongitude());
-					localDevice.addLocation(location);
+						//create a location checkin
+						final Location location = new Location(
+								checkin.getLatitude(),
+								checkin.getLongitude());
+						localDevice.addLocation(location);
 
-					// busca dados da localizacao
-					final String geocoderAddress = LocationUtils.getGeocoderAddress(location, getApplicationContext());
-					confirm.setMessage(geocoderAddress);
+						// busca dados da localizacao
+						final String geocoderAddress = LocationUtils.getGeocoderAddress(location, getApplicationContext());
+						confirm.setMessage(geocoderAddress);
+					}
 
 					return null;
 				}
@@ -194,8 +185,10 @@ public class TabDashboardActivity extends TabActivity {
 					// force shutdown service
 					locationService.stopService();
 
-					// mostra o alerta de confirmação
-					confirm.show();
+					if (!localDevice.getLocations().isEmpty()) {
+						// mostra o alerta de confirmação
+						confirm.show();
+					}
 				}
 			}.execute();
 		}
@@ -203,17 +196,25 @@ public class TabDashboardActivity extends TabActivity {
 
 	@Override
 	protected void onPause() {
-		super.onPause();
 		if (locationService != null) {
 			locationService.stopService();
 		}
+		super.onPause();
+	}
+
+	@Override
+	protected void onStop() {
+		if (locationService != null) {
+			locationService.stopService();
+		}
+		super.onStop();
 	}
 
 	@Override
 	protected void onDestroy() {
-		super.onDestroy();
 		if (locationService != null) {
 			locationService.stopService();
 		}
+		super.onDestroy();
 	}
 }

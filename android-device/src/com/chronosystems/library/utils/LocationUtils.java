@@ -137,7 +137,7 @@ public class LocationUtils {
 		if (seconds > 0) {
 			return String.format("%ss", seconds);
 		}
-		return null;
+		return "now";
 	}
 
 	public static String getDateTimeDescrition(final Location location) {

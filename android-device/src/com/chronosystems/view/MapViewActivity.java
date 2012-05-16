@@ -167,6 +167,15 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 	}
 
 	@Override
+	protected void onStop() {
+		super.onPause();
+		if (myLocationOverlay != null) {
+			myLocationOverlay.disableMyLocation();
+			myLocationOverlay.disableCompass();
+		}
+	}
+
+	@Override
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
@@ -187,14 +196,6 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 		super.onSaveInstanceState(outState);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(final Menu menu) {
-		final MenuInflater menuInflater = getMenuInflater();
-		menuInflater.inflate(R.layout.menu_map, menu);
-
-		return true;
-	}
-
 	public boolean onSingleTap(final MotionEvent e) {
 		if (mapOverlays.size() > 0) {
 			for (final Overlay overlay : mapOverlays) {
@@ -205,6 +206,17 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 					break;
 				}
 			}
+		}
+		return true;
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		final MenuInflater menuInflater = getMenuInflater();
+		menuInflater.inflate(R.layout.menu_map, menu);
+		if (mapView.isSatellite()) {
+			final MenuItem item = menu.findItem(R.id.map);
+			item.setTitle(getString(R.string.map));
 		}
 		return true;
 	}
@@ -223,6 +235,17 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 				} else {
 					GpsUtils.checkConfiguration(this);
 				}
+			}
+			return true;
+		case R.id.map:
+			final String satellite = getString(R.string.satellite);
+			if (item.getTitle().equals(satellite)) {
+				mapView.setSatellite(true);
+				item.setTitle(getString(R.string.map));
+				item.setChecked(true);
+			} else {
+				mapView.setSatellite(false);
+				item.setTitle(satellite);
 			}
 			return true;
 		case R.id.menu_chance_account:
