@@ -4,6 +4,8 @@
 package com.chronosystems.model.service;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.chronosystems.entity.Device;
@@ -50,6 +52,14 @@ public class DeviceService extends DeviceDao implements Serializable {
 
 		// return only last device location
 		final List<Device> devices = resultEntity.getDevices();
+
+		//order by lastLocation
+		Collections.sort(devices, new Comparator<Device>() {
+			@Override
+			public int compare(final Device o1, final Device o2) {
+				return o2.getLocations().get(0).getTimeline().compareTo(o1.getLocations().get(0).getTimeline());
+			};
+		});
 		for (final Device device : devices) {
 			device.setDateInTime(device.getDatecreated().getTime());
 

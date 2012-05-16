@@ -41,27 +41,33 @@ public class GooglePlacesActivity extends Activity {
 					adapter.clear();
 
 					// create the task
-					final AsyncGooglePlacesService task = new AsyncGooglePlacesService(){
+					final AsyncGooglePlacesService task = new AsyncGooglePlacesService(GooglePlacesActivity.this){
 						// then our post
 						@Override
 						protected void onPostExecute(final PlaceSearch result) {
 							if (result == null) {
 								return;
 							}
-							final List<Place> placeResult = result.getResult();
-							Log.d("YourApp", "onPostExecute : " + placeResult.size());
-							// update the adapter
-							adapter = new ArrayAdapter<String>(getBaseContext(), R.layout.list_item);
-							adapter.setNotifyOnChange(true);
-							// attach the adapter to textview
-							textView.setAdapter(adapter);
+							// updating UI from Background Thread
+							runOnUiThread(new Runnable() {
+								@Override
+								public void run() {
+									final List<Place> placeResult = result.getResult();
+									Log.d("YourApp", "onPostExecute : " + placeResult.size());
+									// update the adapter
+									adapter = new ArrayAdapter<String>(getBaseContext(), R.layout.list_item);
+									adapter.setNotifyOnChange(true);
+									// attach the adapter to textview
+									textView.setAdapter(adapter);
 
-							for (final Place place : placeResult) {
-								Log.d("YourApp", "onPostExecute : result = " + place.getName());
-								adapter.add(place.getName());
-								adapter.notifyDataSetChanged();
-							}
-							Log.d("YourApp", "onPostExecute : autoCompleteAdapter" + adapter.getCount());
+									for (final Place place : placeResult) {
+										Log.d("YourApp", "onPostExecute : result = " + place.getName());
+										adapter.add(place.getName());
+										adapter.notifyDataSetChanged();
+									}
+									Log.d("YourApp", "onPostExecute : autoCompleteAdapter" + adapter.getCount());
+								}
+							});
 						}
 					};
 

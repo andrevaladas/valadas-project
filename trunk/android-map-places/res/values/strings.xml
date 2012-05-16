@@ -4,4 +4,10 @@
     <string name="hello">Hello World, GooglePlacesActivity!</string>
     <string name="app_name">Google-places-android</string>
 
+    <string name="notFoundTitle">We could not find anywhere...</string>
+    <string name="notFoundMessage">you want to try again?</string>
+    
+    <string name="tryAgain">you want to try again?</string>
+    <string name="cancel">Cancel</string>
+
 </resources>

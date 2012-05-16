@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -53,7 +52,7 @@ public class Device extends TimeEntity implements Serializable {
 	private byte[] image;
 
 	@ElementList(entry="locations", inline=true, required=false)
-	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="device")
+	@OneToMany(fetch=FetchType.EAGER, mappedBy="device")
 	@OrderBy("timeline DESC")
 	private List<Location> locations;
 
