@@ -10,7 +10,7 @@
           android:icon="@drawable/search"
           android:title="@string/search_places"/>
     
-    <item android:id="@+id/map"
+    <item android:id="@+id/road"
           android:icon="@drawable/global_map"
           android:title="@string/satellite"/>
 </menu>

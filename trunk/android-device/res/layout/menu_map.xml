@@ -7,7 +7,7 @@
           android:title="@string/home"/>
 
     <item android:id="@+id/menu_me"
-          android:icon="@drawable/black_flag"
+          android:icon="@drawable/black_pin"
           android:title="@string/find_me"/>
     
     <item android:id="@+id/road"
