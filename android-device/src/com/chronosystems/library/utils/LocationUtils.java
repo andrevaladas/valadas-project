@@ -66,7 +66,7 @@ public class LocationUtils {
 
 	public static CustomItemizedOverlay<CustomOverlayItem> getItemizedOverlay(final Location location, final TapControlledMapView mapView, final Resources resources) {
 		final Bitmap marker = getMarker(location, resources);
-		final BitmapDrawable bitmapDrawable = new BitmapDrawable(ImageHelper.adjustOpacity(marker, 100));
+		final BitmapDrawable bitmapDrawable = new BitmapDrawable(ImageHelper.adjustOpacity(marker, 255));//no effect
 		final CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(bitmapDrawable, mapView);
 		// set iOS behavior attributes for overlay
 		itemizedOverlay.setShowClose(false);
@@ -94,16 +94,14 @@ public class LocationUtils {
 		/* Hours */
 		final long hours = TimeUnit.MILLISECONDS.toHours(System.currentTimeMillis()-timeline);
 		if (hours > 0) {
-			/** between 1-24 hrs */
-			return BitmapFactory.decodeResource(resources,R.drawable.blue_sphere);
-		}
-		/* Minutes */
-		final long minutes = TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis()-timeline);
-		if (minutes > 30) {
-			/** between 30-60 min */
+			/** between 12-24 hrs */
+			if (hours > 12) {
+				return BitmapFactory.decodeResource(resources,R.drawable.blue_sphere);
+			}
+			/** between 1-12 hrs */
 			return BitmapFactory.decodeResource(resources,R.drawable.green_sphere);
 		}
-		/* less than 15 minutes, now! */
+		/* less than 1 hour! */
 		return BitmapFactory.decodeResource(resources,R.drawable.red_sphere);
 		/* lastLocation */
 		//final Bitmap bitmap = ImageHelper.getRoundedBitmap(location.getDevice().getImage());

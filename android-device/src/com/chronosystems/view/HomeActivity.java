@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -21,6 +22,12 @@ public class HomeActivity extends Activity {
 		final TextView displayName = (TextView) findViewById(R.id.displayName);
 		final Device device = UserFunctions.getCurrentUser(this);
 		displayName.setText(device.getName());
+		displayName.setOnClickListener(new OnClickListener() {
+			public void onClick(final View v) {
+				final Intent i = new Intent(getApplicationContext(), PlacesHorzScrollListMenu.class);
+				startActivity(i);
+			}
+		});
 
 		final Button btnLogout = (Button) findViewById(R.id.btnLogout);
 		btnLogout.setOnClickListener(new View.OnClickListener() {

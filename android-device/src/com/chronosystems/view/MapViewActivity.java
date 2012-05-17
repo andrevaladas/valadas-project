@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
@@ -21,6 +23,7 @@ import com.chronosystems.library.utils.LocationUtils;
 import com.chronosystems.maps.core.OnSingleTapListener;
 import com.chronosystems.maps.core.TapControlledMapView;
 import com.chronosystems.service.local.AsyncService;
+import com.chronosystems.service.local.CheckinService;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -29,10 +32,13 @@ import com.google.android.maps.Overlay;
 
 public class MapViewActivity extends MapActivity implements OnSingleTapListener {
 
-	List<CustomItemizedOverlay<CustomOverlayItem>> itemizedOverlayList;
-	TapControlledMapView mapView;
-	List<Overlay> mapOverlays;
-	MyLocationOverlay myLocationOverlay;
+	private List<CustomItemizedOverlay<CustomOverlayItem>> itemizedOverlayList;
+	private TapControlledMapView mapView;
+	private List<Overlay> mapOverlays;
+	private MyLocationOverlay myLocationOverlay;
+
+	// Checkin Service
+	final CheckinService checkinService = new CheckinService();
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -123,10 +129,14 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 						//Show on Map
 						if (savedInstanceState == null) {
 							final MapController mc = mapView.getController();
-							final Location lastLocation = locations.get(0);
-							final GeoPoint lastPoint = new GeoPoint((int)(lastLocation.getLatitude()*1E6),(int)(lastLocation.getLongitude()*1E6));
-							mc.animateTo(lastPoint);
-							mc.setZoom(15);
+							if (allFriends == null || myLocationOverlay.getMyLocation() == null) {
+								final Location lastLocation = locations.get(0);
+								final GeoPoint lastPoint = new GeoPoint((int)(lastLocation.getLatitude()*1E6),(int)(lastLocation.getLongitude()*1E6));
+								mc.animateTo(lastPoint);
+							} else {
+								mc.animateTo(myLocationOverlay.getMyLocation());
+							}
+							mc.setZoom(14);
 						} else {
 							// restoring focused state of overlays
 							final int focused = savedInstanceState.getInt("focused", -1);
@@ -143,6 +153,13 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 				});
 			}
 		}.execute();
+
+		final ImageButton btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
+		btnCheckin.setOnClickListener(new View.OnClickListener() {
+			public void onClick(final View v) {
+				checkinService.execute(MapViewActivity.this);
+			}
+		});
 	}
 
 
@@ -160,6 +177,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		checkinService.stopService();
 		if (myLocationOverlay != null) {
 			myLocationOverlay.disableMyLocation();
 			myLocationOverlay.disableCompass();
@@ -169,6 +187,17 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 	@Override
 	protected void onStop() {
 		super.onPause();
+		checkinService.stopService();
+		if (myLocationOverlay != null) {
+			myLocationOverlay.disableMyLocation();
+			myLocationOverlay.disableCompass();
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		checkinService.stopService();
 		if (myLocationOverlay != null) {
 			myLocationOverlay.disableMyLocation();
 			myLocationOverlay.disableCompass();
@@ -215,7 +244,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 		final MenuInflater menuInflater = getMenuInflater();
 		menuInflater.inflate(R.layout.menu_map, menu);
 		if (mapView.isSatellite()) {
-			final MenuItem item = menu.findItem(R.id.map);
+			final MenuItem item = menu.findItem(R.id.road);
 			item.setTitle(getString(R.string.road));
 		}
 		return true;
@@ -237,7 +266,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 				}
 			}
 			return true;
-		case R.id.map:
+		case R.id.road:
 			final String satellite = getString(R.string.satellite);
 			if (item.getTitle().equals(satellite)) {
 				mapView.setSatellite(true);

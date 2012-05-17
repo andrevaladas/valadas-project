@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageButton;
 
 import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
@@ -27,6 +29,7 @@ import com.chronosystems.places.data.Place;
 import com.chronosystems.places.data.PlaceFilter;
 import com.chronosystems.places.data.PlaceSearch;
 import com.chronosystems.places.view.R;
+import com.chronosystems.service.local.CheckinService;
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MyLocationOverlay;
@@ -40,13 +43,16 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 	private CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay;
 	private GeoPoint currentPoint;
 
+	// Checkin Service
+	final CheckinService checkinService = new CheckinService();
+
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.places_view);
 		placesView = (TapControlledMapView) findViewById(R.id.places_view);
 		placesView.setBuiltInZoomControls(true);
-		placesView.getController().setZoom(15);
+		placesView.getController().setZoom(14);
 
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
@@ -67,6 +73,13 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 
 		// dismiss balloon upon single tap of MapView (iOS behavior)
 		placesView.setOnSingleTapListener(this);
+
+		final ImageButton btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
+		btnCheckin.setOnClickListener(new View.OnClickListener() {
+			public void onClick(final View v) {
+				checkinService.execute(PlacesViewActivity.this);
+			}
+		});
 	}
 
 	private void executePlaceSearch(final PlaceFilter placeFilter) {
@@ -149,6 +162,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 	@Override
 	protected void onPause() {
 		super.onPause();
+		checkinService.stopService();
 		if (myLocationOverlay != null) {
 			myLocationOverlay.disableMyLocation();
 			myLocationOverlay.disableCompass();
@@ -159,6 +173,18 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 	@Override
 	protected void onStop() {
 		super.onPause();
+		checkinService.stopService();
+		if (myLocationOverlay != null) {
+			myLocationOverlay.disableMyLocation();
+			myLocationOverlay.disableCompass();
+			locationManager.removeUpdates(this);
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		checkinService.stopService();
 		if (myLocationOverlay != null) {
 			myLocationOverlay.disableMyLocation();
 			myLocationOverlay.disableCompass();
@@ -190,7 +216,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		final MenuInflater menuInflater = getMenuInflater();
 		menuInflater.inflate(R.layout.menu_places, menu);
 		if (placesView.isSatellite()) {
-			final MenuItem item = menu.findItem(R.id.map);
+			final MenuItem item = menu.findItem(R.id.road);
 			item.setTitle(getString(R.string.road));
 		}
 		return true;
@@ -220,7 +246,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 				executePlaceSearch(placeFilter);
 			}
 			return true;
-		case R.id.map:
+		case R.id.road:
 			final String satellite = getString(R.string.satellite);
 			if (item.getTitle().equals(satellite)) {
 				placesView.setSatellite(true);
