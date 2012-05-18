@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="hello">Hello World, BindSpinnerActivity!</string>
+    <string name="app_name">BindSpinner</string>
+    <string-array name="arr_cities">
+        <item>Hyderbad</item>
+        <item>Mumbai</item>
+        <item>Bangalore</item>
+    </string-array>
+     <string-array name="arr_localities">
+        <item>Begumpet</item>
+        <item>Ameerpet</item>
+        <item>Sri Nagar colony</item>
+    </string-array>
+
+</resources>
