@@ -19,12 +19,11 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.util.EntityUtils;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.chronosystems.places.data.PlaceFilter;
 import com.chronosystems.places.data.PlaceSearch;
@@ -101,24 +100,8 @@ public class AsyncGooglePlacesService extends AsyncTask<PlaceFilter, Void, Place
 		// dismiss the dialog once done
 		pDialog.dismiss();
 		if (result == null) {
-			// Cria mensagem de confirmação do usuário para checkin
-			final AlertDialog.Builder confirm = new AlertDialog.Builder(currentContext);
-			confirm.setTitle(currentContext.getString(R.string.notFoundTitle));
-			confirm.setMessage(currentContext.getString(R.string.notFoundMessage));
-			confirm.setIcon(R.drawable.info);
-			confirm.setPositiveButton(currentContext.getString(R.string.tryAgain), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(final DialogInterface dialog, final int id) {
-					onPreExecute();
-				}
-			});
-			confirm.setNegativeButton(currentContext.getString(R.string.cancel), new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(final DialogInterface dialog, final int id) {
-					dialog.cancel();
-				}
-			});
-			confirm.show();
+			// Places no found
+			Toast.makeText(currentContext, R.string.placesNotFound, Toast.LENGTH_LONG);
 		}
 	}
 }

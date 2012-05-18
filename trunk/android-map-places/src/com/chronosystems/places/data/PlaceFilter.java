@@ -79,7 +79,7 @@ public class PlaceFilter {
 		}
 
 		if(type != null && !getType().isEmpty()) {
-			url.append("&type=");
+			url.append("&types=");
 			for (final String type : getType()) {
 				url.append(type+"|");
 			}

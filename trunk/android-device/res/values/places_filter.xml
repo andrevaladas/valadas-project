@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="hello">Hello World, GooglePlacesActivity!</string>
-    <string name="app_name">Google-places-android</string>
-    <string name="placesNotFound">No places found. Change your filter and try again.</string>
-
     <!-- places search types -->
     <string name="accounting">-</string>
     <string name="airport">Airport</string>
