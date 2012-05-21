@@ -17,14 +17,13 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.CheckBox;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.Spinner;
 
 import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.library.enumeration.PlacesTypes;
@@ -76,6 +75,13 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 			PlacesTypes.store,
 			PlacesTypes.university
 	};
+	private List<String> getPlacesTypesLabel() {
+		final List<String> labels = new ArrayList<String>(placesTypesList.length);
+		for (final PlacesTypes placeType : placesTypesList) {
+			labels.add(placeType.getLabel(getApplicationContext()));
+		}
+		return labels;
+	}
 
 	//sroll control
 	private MyHorizontalScrollView scrollView;
@@ -101,52 +107,15 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 		final View filterList = inflater.inflate(R.layout.place_types_list, null);
 		final View mainView = inflater.inflate(R.layout.places_view, null);
 
-		final ListView listViewPlaceTypes = (ListView) filterList.findViewById(R.id.place_types_list);
+		// spinner
+		final Spinner spinnerPlaceType = (Spinner) filterList.findViewById(R.id.spinner_place_types);
 		// Adapter para implementar o layout customizado de cada item
-		final ArrayAdapter<String> placeTypesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1) {
-			@Override
-			public View getView(final int position, final View convertView, final ViewGroup parent) {
-				// filterList
-				final PlacesTypes placeType = placesTypesList[position];
-
-				View view = convertView;
-				if(view==null) {
-					final LayoutInflater inflater = getLayoutInflater();
-					view = inflater.inflate(R.layout.place_types, null);
-				}
-
-				// checkbox
-				final CheckBox chkPlaceType = (CheckBox) view.findViewById(R.id.chk_place_types);
-				chkPlaceType.setTag(placeType); //data
-				chkPlaceType.setOnClickListener(new View.OnClickListener() {
-					public void onClick(final View v) {
-						final CheckBox chk = (CheckBox) v;
-						final PlacesTypes type = (PlacesTypes) chk.getTag();
-						if(chk.isChecked()) {
-							typesFilter.add(type.toString());
-						} else {
-							typesFilter.remove(type.toString());
-						}
-					}
-				});
-
-				// text
-				final TextView txv = (TextView) view.findViewById(R.id.tx_place_types);
-				txv.setText(placeType.getLabel(getApplicationContext()));
-				return view;
-			}
-
-			@Override
-			public long getItemId(final int position) {
-				return position;
-			}
-
-			@Override
-			public int getCount() {
-				return placesTypesList.length;
-			}
-		};
-		listViewPlaceTypes.setAdapter(placeTypesAdapter);
+		final ArrayAdapter<String> placeTypesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getPlacesTypesLabel());
+		placeTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerPlaceType.setAdapter(placeTypesAdapter);
+		//attach the listener to the spinner
+		spinnerPlaceType.setOnItemSelectedListener(new FilterOnItemSelectedListener());
+		spinnerPlaceType.setSelection(0);
 
 		btnSlide = (ImageView) mainView.findViewById(R.id.btnPlaceTypes);
 		btnSlide.setOnClickListener(new ClickListenerForScrolling(scrollView, filterList));
@@ -187,6 +156,27 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 				checkinService.execute(PlacesHorzScrollListMenu.this);
 			}
 		});
+	}
+
+	public class FilterOnItemSelectedListener implements OnItemSelectedListener {
+
+		public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
+			typesFilter.clear();
+
+			//check which spinner triggered the listener
+			switch (parent.getId()) {
+			//country spinner
+			case R.id.spinner_place_types:
+				// filterList
+				final PlacesTypes placeType = placesTypesList[position];
+				typesFilter.add(placeType.toString());
+				break;
+			}
+		}
+
+		public void onNothingSelected(final AdapterView<?> parent) {
+			// Do nothing.
+		}
 	}
 
 	/**

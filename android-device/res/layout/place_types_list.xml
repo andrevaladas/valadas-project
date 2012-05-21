@@ -10,9 +10,10 @@
 	 	android:layout_height="wrap_content"
 	 	android:layout_width="fill_parent"/>
     
-    <ListView
-        android:id="@+id/place_types_list"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content" />
+    <Spinner
+        android:id="@+id/spinner_place_types"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true" />
 
 </LinearLayout>

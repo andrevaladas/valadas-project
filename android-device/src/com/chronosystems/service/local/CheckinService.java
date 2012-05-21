@@ -47,7 +47,7 @@ public class CheckinService {
 					// force shutdown service
 					locationService.stopService();
 
-					new AsyncService(parent) {
+					new AsyncService<Entity>(parent) {
 						@Override
 						protected Entity doInBackground(final String... args) {
 							// get current user and set current location
@@ -81,7 +81,7 @@ public class CheckinService {
 			locationService = new GpsLocationService((LocationManager) parent.getSystemService(Context.LOCATION_SERVICE));
 
 			// Chama servico de localização do GPS
-			new AsyncService(parent, "Checking your location...") {
+			new AsyncService<Entity>(parent, "Checking your location...") {
 				@Override
 				protected void onPreExecute() {
 					super.onPreExecute();

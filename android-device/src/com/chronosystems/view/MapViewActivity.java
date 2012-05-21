@@ -70,7 +70,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 		}
 
 		/** Execute map layers generation */
-		new AsyncService(this) {
+		new AsyncService<Entity>(this) {
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();

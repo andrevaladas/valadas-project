@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.chronosystems.model.dao;
 
 import java.util.List;
@@ -103,13 +100,86 @@ public abstract class DeviceDao {
 	protected Entity search(final Entity entity) {
 		try {
 			session = HibernateUtil.getSessionFactory().openSession();
-			final Query query = session.createQuery(
-					" select dev from Device dev " +
-							" where dev.id <> :id" +
-							"	and dev.locations.id in (" +
-							"		select max(loc.id) " +
-							"		from Location loc " +
-					"		where loc.device.id = dev.id order by loc.timeline desc)");
+			final StringBuilder hql = new StringBuilder();
+			hql.append(" select dev ");
+			hql.append(" from Device dev ");
+			hql.append(" where dev.id <> :id");
+			hql.append("   and dev.locations.size > 0");
+			hql.append("   and not exists (from Relationship rel");
+			hql.append("   				   where rel.follower.id = :id");
+			hql.append("   				     and rel.following.id = dev.id)");
+			hql.append(" order by dev.name");
+
+			final Query query = session.createQuery(hql.toString());
+			query.setLong("id", entity.getDevices().get(0).getId());
+
+			// paginacao
+			query.setFirstResult(entity.getMaxRecords() * ((entity.getCurrentPage()-1)+1));
+			query.setMaxResults(entity.getMaxRecords()+1);
+
+			// execute query
+			final List<Device> result = query.list();
+
+			// has more rows?
+			entity.setHasNext(result.size());
+			if(Boolean.TRUE.equals(entity.getHasNext())) {
+				result.remove(result.size()-1);//remove last record
+			}
+			/** set device result list */
+			entity.setDevices(result);
+			return entity;
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Entity findFollowing(final Entity entity) {
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			final StringBuilder hql = new StringBuilder();
+			hql.append(" select dev.following ");
+			hql.append(" from Device dev ");
+			hql.append(" where dev.id = :id");
+
+			final Query query = session.createQuery(hql.toString());
+			query.setLong("id", entity.getDevices().get(0).getId());
+
+			// paginacao
+			query.setFirstResult(entity.getMaxRecords() * ((entity.getCurrentPage()-1)+1));
+			query.setMaxResults(entity.getMaxRecords()+1);
+
+			// execute query
+			final List<Device> result = query.list();
+
+			// has more rows?
+			entity.setHasNext(result.size());
+			if(Boolean.TRUE.equals(entity.getHasNext())) {
+				result.remove(result.size()-1);//remove last record
+			}
+			/** set device result list */
+			entity.setDevices(result);
+			return entity;
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	protected Entity findFollowers(final Entity entity) {
+		try {
+			session = HibernateUtil.getSessionFactory().openSession();
+			final StringBuilder hql = new StringBuilder();
+			hql.append(" select dev.follower ");
+			hql.append(" from Device dev ");
+			hql.append(" where dev.id = :id");
+			hql.append("   and dev.follower.locations.size > 0");
+
+			final Query query = session.createQuery(hql.toString());
 			query.setLong("id", entity.getDevices().get(0).getId());
 
 			// paginacao
