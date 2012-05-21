@@ -3,6 +3,8 @@
  */
 package com.chronosystems.service.local;
 
+import java.util.List;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
@@ -13,8 +15,9 @@ import com.chronosystems.library.dialog.EntityErrorMessage;
 
 /**
  * @author andrevaladas
+ * @param <T>
  */
-public class AsyncService extends AsyncTask<String, String, Entity> {
+public class AsyncService<T> extends AsyncTask<String, String, T> {
 
 	// Progress Dialog
 	private ProgressDialog pDialog;
@@ -57,7 +60,7 @@ public class AsyncService extends AsyncTask<String, String, Entity> {
 	 * Execute process...
 	 */
 	@Override
-	protected Entity doInBackground(final String... args) {
+	protected T doInBackground(final String... args) {
 		return doInBackground(args);
 	}
 
@@ -65,12 +68,15 @@ public class AsyncService extends AsyncTask<String, String, Entity> {
 	 * After completing background task Dismiss the progress dialog
 	 */
 	@Override
-	protected void onPostExecute(final Entity result) {
+	protected void onPostExecute(final T result) {
 		// dismiss the dialog once done
 		pDialog.dismiss();
-		if (result != null && result.hasErrors()) {
-			for (final Error error : result.getErrors()) {
-				EntityErrorMessage.show(error, currentContext, backOnError);
+		if (result != null) {
+			if (result instanceof Entity) {
+				final List<Error> errors = ((Entity)result).getErrors();
+				for (final Error error : errors) {
+					EntityErrorMessage.show(error, currentContext, backOnError);
+				}
 			}
 		}
 	}

@@ -40,12 +40,18 @@
             android:name=".HomeActivity"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
 
-        <!-- Friend List Activity -->
+        <!-- Following List Activity -->
         <activity
-            android:label="Friends" 
-            android:name=".ListViewActivity"
+            android:label="Following" 
+            android:name=".FollowingListViewActivity"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
 
+        <!-- Search List Activity -->
+        <activity
+            android:label="Search" 
+            android:name=".ListViewActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
+        
         <!-- Places Activity -->
         <activity
             android:label="Places" 

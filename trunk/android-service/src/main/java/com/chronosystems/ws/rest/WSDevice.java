@@ -59,4 +59,13 @@ public class WSDevice {
 		final Entity result = new DeviceService().search(entity);
 		return Response.ok(XMLParser.parseXML(result)).build();
 	}
+
+	@POST
+	@Path("/findFollowing")
+	@Produces(MediaType.TEXT_XML)
+	public Response findFollowing(final String xml) {
+		final Entity entity = XMLParser.parseXML(xml, Entity.class);
+		final Entity result = new DeviceService().findFollowing(entity);
+		return Response.ok(XMLParser.parseXML(result)).build();
+	}
 }

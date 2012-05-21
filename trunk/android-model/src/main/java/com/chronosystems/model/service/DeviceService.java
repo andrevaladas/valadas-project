@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.chronosystems.model.service;
 
 import java.io.Serializable;
@@ -48,10 +45,31 @@ public class DeviceService extends DeviceDao implements Serializable {
 
 	@Override
 	public Entity search(final Entity entity) {
-		final Entity resultEntity = super.search(entity);
+		return super.search(entity);
+	}
 
+	@Override
+	public Entity findFollowing(final Entity entity) {
+		final Entity resultEntity = super.findFollowing(entity);
+		loadLastLocations(resultEntity);
+		return resultEntity;
+	}
+
+	@Override
+	public Entity findFollowers(final Entity entity) {
+		final Entity resultEntity = super.findFollowers(entity);
+		loadLastLocations(resultEntity);
+		return resultEntity;
+	}
+
+	private void loadLastLocations(final Entity resultEntity) {
 		// return only last device location
 		final List<Device> devices = resultEntity.getDevices();
+		for (final Device device : devices) {
+			device.setDateInTime(device.getDatecreated().getTime());
+			final List<Location> locations = new LocationService().findLastLocations(device.getId());
+			device.setLocations(locations);
+		}
 
 		//order by lastLocation
 		Collections.sort(devices, new Comparator<Device>() {
@@ -60,14 +78,5 @@ public class DeviceService extends DeviceDao implements Serializable {
 				return o2.getLocations().get(0).getTimeline().compareTo(o1.getLocations().get(0).getTimeline());
 			};
 		});
-		for (final Device device : devices) {
-			device.setDateInTime(device.getDatecreated().getTime());
-
-			final List<Location> locations = device.getLocations();
-			for (final Location location : locations) {
-				location.updateTimeline();
-			}
-		}
-		return resultEntity;
 	}
 }

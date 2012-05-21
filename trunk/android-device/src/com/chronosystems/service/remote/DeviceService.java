@@ -7,13 +7,16 @@ public class DeviceService {
 
 	private static String loginURL = "/device/login";
 	private static String registerURL = "/device/register";
-	private static String findAllURL = "/device/search";
+
+	private static String searchURL = "/device/search";
+
+	private static String findFollowingURL = "/device/findFollowing";
+	private static String findFollowersURL = "/device/findFollowers";
 
 	/**
 	 * function make Login Request
 	 * */
 	public static Entity loginUser(final Device device){
-		// getting Entity Object
 		return WebServiceManager.executeRequest(loginURL, device);
 	}
 
@@ -21,15 +24,27 @@ public class DeviceService {
 	 * function make Login Request
 	 * */
 	public static Entity registerUser(final Device device){
-		// getting Entity Object
 		return WebServiceManager.executeRequest(registerURL, device);
 	}
 
 	/**
 	 * search devices
 	 * */
-	public static Entity searchDevices(final Entity entity){
-		// getting Entity Object
-		return WebServiceManager.executeRequest(findAllURL, entity);
+	public static Entity search(final Entity entity){
+		return WebServiceManager.executeRequest(searchURL, entity);
+	}
+
+	/**
+	 * search following
+	 * */
+	public static Entity findFollowing(final Entity entity){
+		return WebServiceManager.executeRequest(findFollowingURL, entity);
+	}
+
+	/**
+	 * search followers
+	 * */
+	public static Entity findFollowers(final Entity entity){
+		return WebServiceManager.executeRequest(findFollowersURL, entity);
 	}
 }

@@ -45,7 +45,7 @@ public class LoginActivity extends Activity {
 				}
 
 				//Execute service
-				new AsyncService(LoginActivity.this) {
+				new AsyncService<Entity>(LoginActivity.this) {
 					@Override
 					protected Entity doInBackground(final String... args) {
 						final Device login = new Device();

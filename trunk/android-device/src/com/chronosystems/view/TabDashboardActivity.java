@@ -35,11 +35,11 @@ public class TabDashboardActivity extends TabActivity {
 			final Intent homeIntent = new Intent(this, HomeActivity.class);
 			homeTab.setContent(homeIntent);
 
-			// Tab for Friends
-			final TabSpec friendsTab = tabHost.newTabSpec(getString(R.string.friends));
-			friendsTab.setIndicator(getString(R.string.friends), getResources().getDrawable(R.drawable.icon_friends_tab));
-			final Intent friendsIntent = new Intent(this, ListViewActivity.class);
-			friendsTab.setContent(friendsIntent);
+			// Tab for Following
+			final TabSpec followTab = tabHost.newTabSpec(getString(R.string.following));
+			followTab.setIndicator(getString(R.string.following), getResources().getDrawable(R.drawable.icon_following_tab));
+			final Intent followIntent = new Intent(this, FollowingListViewActivity.class);
+			followTab.setContent(followIntent);
 
 			// Tab for Places
 			final TabSpec placesTab = tabHost.newTabSpec(getString(R.string.places));
@@ -48,16 +48,22 @@ public class TabDashboardActivity extends TabActivity {
 			placesTab.setContent(placesIntent);
 
 			// Tab for Profile
-			final TabSpec profileTab = tabHost.newTabSpec(getString(R.string.profile));
-			profileTab.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
-			final Intent profileIntent = new Intent(this, HomeActivity.class);
-			profileTab.setContent(profileIntent);
+			//			final TabSpec profileTab = tabHost.newTabSpec(getString(R.string.profile));
+			//			profileTab.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
+			//			final Intent profileIntent = new Intent(this, HomeActivity.class);
+			//			profileTab.setContent(profileIntent);
+
+			final TabSpec searchTab = tabHost.newTabSpec(getString(R.string.search));
+			searchTab.setIndicator(getString(R.string.search), getResources().getDrawable(R.drawable.icon_search_tab));
+			final Intent searchIntent = new Intent(this, ListViewActivity.class);
+			searchTab.setContent(searchIntent);
 
 			// Adding all TabSpec to TabHost
 			tabHost.addTab(homeTab);
-			tabHost.addTab(friendsTab);
+			tabHost.addTab(followTab);
 			tabHost.addTab(placesTab);
-			tabHost.addTab(profileTab);
+			tabHost.addTab(searchTab);
+			//tabHost.addTab(profileTab);
 			tabHost.setOnTabChangedListener(new OnTabChangeListener() {
 				public void onTabChanged(final String tabId) {
 					// Call external PlacesViewActivity

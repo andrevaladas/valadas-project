@@ -23,7 +23,7 @@
 		<property name="connection.password">hide0721</property>
 
 		<!-- JDBC connection pool (use the built-in) -->
-		<property name="connection.pool_size">3</property>
+		<property name="connection.pool_size">100</property>
 		<!-- SQL dialect -->
 		<property name="dialect">
 			org.hibernate.dialect.MySQL5Dialect
@@ -39,6 +39,7 @@
 
 		<mapping class="com.chronosystems.entity.Device"/>
 		<mapping class="com.chronosystems.entity.Location"/>
+		<mapping class="com.chronosystems.entity.Relationship"/>
 		
 	</session-factory>
 </hibernate-configuration>

@@ -1,6 +1,5 @@
 package com.chronosystems.view;
 
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
@@ -88,7 +87,7 @@ public class RegisterActivity extends Activity {
 				}
 
 				//Execute service
-				new AsyncService(RegisterActivity.this) {
+				new AsyncService<Entity>(RegisterActivity.this) {
 					@Override
 					protected Entity doInBackground(final String... args) {
 

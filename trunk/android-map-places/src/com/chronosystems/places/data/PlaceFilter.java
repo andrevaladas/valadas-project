@@ -21,7 +21,7 @@ public class PlaceFilter {
 	private String name;
 	private List<String> type = Arrays.asList("establishment");//food|restaurant|establishment|store|grocery_or_supermarket|bakery
 	private String language = "pt-BR"; //en
-	private int radius = 100;
+	private int radius = 500;
 	private boolean sensor;
 
 	public GeoPoint getLocation() {
@@ -79,11 +79,19 @@ public class PlaceFilter {
 		}
 
 		if(type != null && !getType().isEmpty()) {
+			String pipeEncoded = "|";
+			try {
+				pipeEncoded = URLEncoder.encode(pipeEncoded, "UTF-8");
+			} catch (final UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
+
 			url.append("&types=");
 			for (final String type : getType()) {
-				url.append(type+"|");
+				url.append(type+pipeEncoded);
 			}
-			url = url.deleteCharAt(url.lastIndexOf("|"));
+			final int lastIndexOf = url.lastIndexOf(pipeEncoded);
+			url = url.delete(lastIndexOf, url.toString().length());
 		}
 
 		url.append("&radius="+radius);

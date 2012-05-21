@@ -1,12 +1,11 @@
-/**
- * 
- */
 package com.chronosystems.entity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,7 +13,10 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
@@ -56,6 +58,18 @@ public class Device extends TimeEntity implements Serializable {
 	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, mappedBy="device")
 	@OrderBy("timeline DESC")
 	private List<Location> locations;
+
+	@ManyToMany()
+	@JoinTable(name = "RELATIONSHIP",
+	joinColumns = { @JoinColumn(name = "ID_FOLLOWER") },
+	inverseJoinColumns = { @JoinColumn(name = "ID_FOLLOWING") })
+	private Set<Device> following = new HashSet<Device>(0);
+
+	@ManyToMany()
+	@JoinTable(name = "RELATIONSHIP",
+	joinColumns = { @JoinColumn(name = "ID_FOLLOWING") },
+	inverseJoinColumns = { @JoinColumn(name = "ID_FOLLOWER") })
+	private Set<Device> followers = new HashSet<Device>(0);
 
 	public Long getId() {
 		return id;
@@ -122,6 +136,19 @@ public class Device extends TimeEntity implements Serializable {
 	}
 	public void setImage(final byte[] image) {
 		this.image = image;
+	}
+
+	public Set<Device> getFollowing() {
+		return following;
+	}
+	public void setFollowing(final Set<Device> following) {
+		this.following = following;
+	}
+	public Set<Device> getFollowers() {
+		return followers;
+	}
+	public void setFollowers(final Set<Device> followers) {
+		this.followers = followers;
 	}
 
 	@Override

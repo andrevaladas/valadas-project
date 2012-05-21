@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="#cccccc">
+
+    <!--
+	  The PullToRefresh-ListView replaces a standard ListView widget,
+	  and has all the features android.widget.ListView has.
+	-->
+    <com.chronosystems.pulltorefresh.library.PullToRefreshListView
+        android:id="@+id/pull_refresh_listview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:divider="#cccccc"
+        android:stackFromBottom="@drawable/list_selector" />
+
+</LinearLayout>
