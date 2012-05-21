@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.location.LocationManager;
 
+import com.chronosystems.R;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.entity.Location;
@@ -18,7 +19,6 @@ import com.chronosystems.library.dialog.SuccessMessage;
 import com.chronosystems.library.utils.GpsUtils;
 import com.chronosystems.library.utils.LocationUtils;
 import com.chronosystems.service.remote.LocationService;
-import com.chronosystems.view.R;
 
 /**
  * @author Andre Valadas
@@ -26,7 +26,7 @@ import com.chronosystems.view.R;
  */
 public class CheckinService {
 
-	GpsLocationService locationService;
+	private GpsLocationService locationService;
 
 	/**
 	 * Checkin Location
@@ -82,12 +82,6 @@ public class CheckinService {
 
 			// Chama servico de localização do GPS
 			new AsyncService<Entity>(parent, "Checking your location...") {
-				@Override
-				protected void onPreExecute() {
-					super.onPreExecute();
-					locationService.startService();
-				}
-
 				@Override
 				protected Entity doInBackground(final String... args) {
 

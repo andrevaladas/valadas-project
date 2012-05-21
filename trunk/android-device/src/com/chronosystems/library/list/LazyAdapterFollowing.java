@@ -15,11 +15,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.chronosystems.R;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.entity.Location;
 import com.chronosystems.library.utils.LocationUtils;
-import com.chronosystems.view.R;
 
 public class LazyAdapterFollowing extends BaseAdapter {
 

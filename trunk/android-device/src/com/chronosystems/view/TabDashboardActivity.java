@@ -8,7 +8,11 @@ import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
+import android.widget.Toast;
 
+import com.chronosystems.R;
+import com.chronosystems.service.MyLocationService;
+import com.chronosystems.service.ServiceUpdateListener;
 import com.chronosystems.service.local.CheckinService;
 import com.chronosystems.service.local.UserFunctions;
 
@@ -27,6 +31,17 @@ public class TabDashboardActivity extends TabActivity {
 		// Check login status in database
 		if(UserFunctions.isUserLoggedIn(getApplicationContext())){
 			setContentView(R.layout.tab_dashboard);
+
+			/** START THE UPDATE LOCATION SERVICE*/
+			MyLocationService.setMainActivity(this);
+			final Intent svc = new Intent(getApplicationContext(), MyLocationService.class);
+			startService(svc);
+			MyLocationService.setUpdateListener(new ServiceUpdateListener() {
+				public void update(final String message) {
+					Toast.makeText(TabDashboardActivity.this, message, Toast.LENGTH_SHORT);
+				}
+			});
+
 			final TabHost tabHost = getTabHost();
 
 			// Tab for Home
@@ -106,6 +121,8 @@ public class TabDashboardActivity extends TabActivity {
 	@Override
 	protected void onDestroy() {
 		checkinService.stopService();
+		final Intent svc = new Intent(this, MyLocationService.class);
+		stopService(svc);
 		super.onDestroy();
 	}
 }

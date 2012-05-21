@@ -15,9 +15,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 
+import com.chronosystems.R;
 import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.entity.Device;
-import com.chronosystems.view.R;
 
 public class ImageLoader {
 

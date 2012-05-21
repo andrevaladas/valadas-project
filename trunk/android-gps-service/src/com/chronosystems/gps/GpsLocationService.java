@@ -23,6 +23,7 @@ public class GpsLocationService {
 
 	public GpsLocationService(final LocationManager locationManager) {
 		this.locationManager = locationManager;
+		startService();
 	}
 
 	public void startService() {
@@ -60,12 +61,9 @@ public class GpsLocationService {
 		}
 
 		@Override
-		public void onProviderDisabled(final String provider) {
-		}
-
+		public void onProviderDisabled(final String provider) {}
 		@Override
-		public void onProviderEnabled(final String provider) {
-		}
+		public void onProviderEnabled(final String provider) {}
 
 		@Override
 		public void onStatusChanged(final String provider, final int status, final Bundle extras) {

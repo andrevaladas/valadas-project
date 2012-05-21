@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.chronosystems.R;
 import com.chronosystems.entity.Device;
 import com.chronosystems.service.local.UserFunctions;
 
