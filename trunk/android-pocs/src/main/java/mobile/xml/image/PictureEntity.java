@@ -36,11 +36,11 @@ public class PictureEntity {
 	private byte[] image;
 
 	public BufferedImage getBImage() throws IOException {
-		InputStream in = new ByteArrayInputStream(image);
+		final InputStream in = new ByteArrayInputStream(image);
 		return ImageIO.read(in);
 	}
 
-	public void setImage(BufferedImage bImage) throws IOException {
+	public void setImage(final BufferedImage bImage) throws IOException {
 		final ByteArrayOutputStream out = new ByteArrayOutputStream();
 		ImageIO.write(bImage, "PNG" /* for instance */, out);
 		image = out.toByteArray();
@@ -50,34 +50,33 @@ public class PictureEntity {
 		return this.image;
 	}
 
-	public void setImage(byte[] image) {
+	public void setImage(final byte[] image) {
 		this.image = image;
 	}
 
 	@SuppressWarnings("unused")
-	private void setBlob(Blob imageBlob) {
+	private void setBlob(final Blob imageBlob) {
 		this.image = toByteArray(imageBlob);
 	}
 
-	@SuppressWarnings("unused")
 	private Blob getBlob() {
 		return Hibernate.createBlob(this.image);
 	}
 
-	private byte[] toByteArray(Blob fromImageBlob) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	private byte[] toByteArray(final Blob fromImageBlob) {
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		try {
 			return toByteArrayImpl(fromImageBlob, baos);
-		} catch (Exception e) {
+		} catch (final Exception e) {
 		}
 		return null;
 	}
 
-	private byte[] toByteArrayImpl(Blob fromImageBlob,
-			ByteArrayOutputStream baos) throws SQLException, IOException {
-		byte buf[] = new byte[4000];
+	private byte[] toByteArrayImpl(final Blob fromImageBlob,
+			final ByteArrayOutputStream baos) throws SQLException, IOException {
+		final byte buf[] = new byte[4000];
 		int dataSize;
-		InputStream is = fromImageBlob.getBinaryStream();
+		final InputStream is = fromImageBlob.getBinaryStream();
 
 		try {
 			while ((dataSize = is.read(buf)) != -1) {
@@ -93,22 +92,22 @@ public class PictureEntity {
 
 	/**
 	 * @param args
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public static void main(String[] args) throws IOException {
+	public static void main(final String[] args) throws IOException {
 		// save image into database
-		File file = new File("C:\\imagem.png");
-		byte[] bFile = new byte[(int) file.length()];
+		final File file = new File("C:\\imagem.png");
+		final byte[] bFile = new byte[(int) file.length()];
 
 		try {
-			FileInputStream fileInputStream = new FileInputStream(file);
+			final FileInputStream fileInputStream = new FileInputStream(file);
 			// convert file into array of bytes
 			fileInputStream.read(bFile);
 			fileInputStream.close();
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		final PictureEntity pictureEntity = new PictureEntity();
 		pictureEntity.setImage(bFile);
 		final Blob blob = pictureEntity.getBlob();
@@ -117,9 +116,9 @@ public class PictureEntity {
 
 		try {
 			final String xml = XMLParser.parseXML(pictureEntity);
-			PictureEntity obj = XMLParser.parseXML(xml, PictureEntity.class);
+			final PictureEntity obj = XMLParser.parseXML(xml, PictureEntity.class);
 			System.out.println(obj.toString());
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
 	}

@@ -88,7 +88,7 @@ public class ModelDeviceApp {
 	@SuppressWarnings("unused")
 	private static void printAll(final DeviceService service) {
 		System.out.println("-------------- PRINT ALL --------------");
-		final Entity searchResult = service.search(new Entity());
+		final Entity searchResult = service.findFollowing(new Entity());
 		final List<Device> list = searchResult.getDevices();
 		for (final Device entity : list) {
 			XMLParser.printAll(entity);
