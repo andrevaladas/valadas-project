@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.chronosystems.library.utils;
 
 import java.io.IOException;
@@ -18,17 +15,16 @@ import android.graphics.drawable.BitmapDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 
+import com.chronosystems.R;
 import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.entity.Location;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
 import com.chronosystems.library.maps.CustomOverlayItem;
 import com.chronosystems.maps.core.TapControlledMapView;
-import com.chronosystems.view.R;
 import com.google.android.maps.GeoPoint;
 
 /**
  * @author Andre Valadas
- *
  */
 public class LocationUtils {
 

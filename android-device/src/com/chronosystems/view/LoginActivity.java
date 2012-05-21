@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.chronosystems.R;
 import com.chronosystems.entity.Device;
 import com.chronosystems.entity.Entity;
 import com.chronosystems.library.dialog.AlertMessage;

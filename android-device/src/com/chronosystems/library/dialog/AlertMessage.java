@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.chronosystems.library.dialog;
 
 import android.app.AlertDialog;
@@ -8,11 +5,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 
-import com.chronosystems.view.R;
+import com.chronosystems.R;
 
 /**
  * @author andrevaladas
- *
  */
 public class AlertMessage {
 

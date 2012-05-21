@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.chronosystems.library.utils;
 
 import android.app.Activity;
@@ -10,11 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.location.LocationManager;
 
-import com.chronosystems.view.R;
+import com.chronosystems.R;
 
 /**
  * @author Andre Valadas
- *
  */
 public class GpsUtils {
 
