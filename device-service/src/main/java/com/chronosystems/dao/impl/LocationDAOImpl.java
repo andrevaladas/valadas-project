@@ -34,7 +34,7 @@ public class LocationDAOImpl extends CustomHibernateDaoSupport implements Locati
 
 		// limit
 		query.setFirstResult(0);
-		query.setMaxResults(10);
+		query.setMaxResults(20);
 
 		// execute query
 		return query.list();
