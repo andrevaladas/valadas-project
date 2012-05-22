@@ -55,12 +55,10 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 
 	// Places filter list
 	private final PlacesTypes[] placesTypesList = new PlacesTypes[] {
-			PlacesTypes.airport,
 			PlacesTypes.bank,
 			PlacesTypes.bar,
 			PlacesTypes.beauty_salon,
 			PlacesTypes.cafe,
-			PlacesTypes.cemetery,
 			PlacesTypes.church,
 			PlacesTypes.city_hall,
 			PlacesTypes.dentist,
@@ -93,8 +91,9 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 	private LocationManager locationManager;
 	private CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay;
 	private GeoPoint currentPoint;
+	private Drawable defaultPlacesMarker;
 
-	final CheckinService checkinService = new CheckinService();
+	private final CheckinService checkinService = new CheckinService();
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -115,7 +114,7 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 		spinnerPlaceType.setAdapter(placeTypesAdapter);
 		//attach the listener to the spinner
 		spinnerPlaceType.setOnItemSelectedListener(new FilterOnItemSelectedListener());
-		spinnerPlaceType.setSelection(0);
+		spinnerPlaceType.setSelection(7);//establishment
 
 		btnSlide = (ImageView) mainView.findViewById(R.id.btnPlaceTypes);
 		btnSlide.setOnClickListener(new ClickListenerForScrolling(scrollView, filterList));
@@ -141,14 +140,11 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 			}
 		});
 
-		final Drawable drawable = getResources().getDrawable(R.drawable.places_pin);
-		itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(drawable, placesView);
-		itemizedOverlay.setShowClose(false);
-		itemizedOverlay.setShowDisclosure(true);
-		itemizedOverlay.setSnapToCenter(true);
-
 		// dismiss balloon upon single tap of MapView (iOS behavior)
 		placesView.setOnSingleTapListener(this);
+
+		// places marker
+		defaultPlacesMarker = getResources().getDrawable(R.drawable.places_pin);
 
 		final ImageButton btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
 		btnCheckin.setOnClickListener(new View.OnClickListener() {
@@ -247,6 +243,10 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
+				itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(defaultPlacesMarker, placesView);
+				itemizedOverlay.setShowClose(false);
+				itemizedOverlay.setShowDisclosure(true);
+				itemizedOverlay.setSnapToCenter(true);
 				removeOverlays();
 			};
 
@@ -294,6 +294,7 @@ public class PlacesHorzScrollListMenu extends MapActivity implements OnSingleTap
 				}
 			}
 			placesView.getOverlays().removeAll(overlaysToRemove);
+			placesView.invalidate();
 		}
 	}
 
