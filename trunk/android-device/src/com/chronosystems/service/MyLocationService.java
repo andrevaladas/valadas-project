@@ -106,8 +106,6 @@ public class MyLocationService extends Service {
 			locationService.startService();
 			final Location currentLocation = locationService.getCurrentLocation();
 			if (currentLocation != null) {
-				Log.i(getClass().getSimpleName(), currentLocation.toString());
-
 				// validate the minimum distance in meters
 				if (verifyAccuracyDistance(currentLocation)) {
 					// get current user and set current location
