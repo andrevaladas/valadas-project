@@ -1,13 +1,19 @@
 package com.chronosystems.service;
 
-import java.util.List;
-
-import com.chronosystems.form.Contact;
-
+import com.chronosystems.entity.Device;
+import com.chronosystems.entity.Entity;
 
 public interface DeviceService {
-	
-	public void addContact(Contact contact);
-	public List<Contact> listContact();
-	public void removeContact(Integer id);
+
+	public void save(final Device device);
+
+	public Device find(final Long id);
+	public Device find(final String email);
+	public Device find(final String email, final String password);
+
+	public Long rowCount(final String email);
+
+	public Entity search(final Entity entity);
+	public Entity findFollowing(final Entity entity);
+	public Entity findFollowers(final Entity entity);
 }

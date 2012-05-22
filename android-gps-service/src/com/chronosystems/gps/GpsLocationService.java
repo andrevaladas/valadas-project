@@ -46,8 +46,9 @@ public class GpsLocationService {
 			} catch (final Exception e) {}
 
 			//set networkLocation after x attempts
-			if(count.getAndIncrement() > 10 && currentLocation == null && networkLocation != null) {
+			if(count.getAndIncrement() > 10 && currentLocation == null) {
 				currentLocation = networkLocation;
+				break;
 			}
 		}
 		return currentLocation;
