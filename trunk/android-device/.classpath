@@ -4,8 +4,8 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/device-entities"/>
 	<classpathentry exported="true" kind="lib" path="assets/simple-xml-2.6.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="assets/persistence-api-1.0.jar"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/android-entities"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

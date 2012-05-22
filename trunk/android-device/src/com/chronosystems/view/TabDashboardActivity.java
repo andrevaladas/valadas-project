@@ -38,7 +38,13 @@ public class TabDashboardActivity extends TabActivity {
 			startService(svc);
 			MyLocationService.setUpdateListener(new ServiceUpdateListener() {
 				public void update(final String message) {
-					Toast.makeText(TabDashboardActivity.this, message, Toast.LENGTH_SHORT);
+					// make sure this runs in the UI thread... since it's messing with views...
+					runOnUiThread(
+							new Runnable() {
+								public void run() {
+									Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+								}
+							});
 				}
 			});
 
