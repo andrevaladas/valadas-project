@@ -25,8 +25,10 @@ public class LocationServiceImpl implements LocationService {
 	@Override
 	@Transactional
 	public List<Location> findLastLocations(final Long idDevice) {
-		return locationDAO.findLastLocations(idDevice);
+		final List<Location> locations = locationDAO.findLastLocations(idDevice);
+		for (final Location location : locations) {
+			location.setDateInTime(location.getTimeline().getTime());
+		}
+		return locations;
 	}
-
-
 }
