@@ -10,16 +10,29 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Spinner;
 
 import com.chronosystems.crop.image.ImageHelper;
+import com.chronosystems.library.enumeration.PlacesTypes;
+import com.chronosystems.library.horzscroll.MyHorizontalScrollView;
+import com.chronosystems.library.horzscroll.MyHorizontalScrollView.SizeCallback;
 import com.chronosystems.library.maps.CustomItemizedOverlay;
 import com.chronosystems.library.maps.CustomOverlayItem;
+import com.chronosystems.library.sliding.SlidingPanel;
 import com.chronosystems.library.utils.GpsUtils;
 import com.chronosystems.maps.core.OnSingleTapListener;
 import com.chronosystems.maps.core.TapControlledMapView;
@@ -35,21 +48,91 @@ import com.google.android.maps.MapActivity;
 import com.google.android.maps.MyLocationOverlay;
 import com.google.android.maps.Overlay;
 
+/**
+ * @author Andre Valadas
+ */
 public class PlacesViewActivity extends MapActivity implements OnSingleTapListener, LocationListener {
 
+	private final List<String> typesFilter = new ArrayList<String>();
+
+	// Places filter list
+	private final PlacesTypes[] placesTypesList = new PlacesTypes[] {
+			PlacesTypes.bank,
+			PlacesTypes.bar,
+			PlacesTypes.beauty_salon,
+			PlacesTypes.cafe,
+			PlacesTypes.church,
+			PlacesTypes.city_hall,
+			PlacesTypes.dentist,
+			PlacesTypes.establishment,
+			PlacesTypes.food,
+			PlacesTypes.gym,
+			PlacesTypes.hospital,
+			PlacesTypes.night_club,
+			PlacesTypes.pharmacy,
+			PlacesTypes.police,
+			PlacesTypes.restaurant,
+			PlacesTypes.store,
+			PlacesTypes.university
+	};
+	private List<String> getPlacesTypesLabel() {
+		final List<String> labels = new ArrayList<String>(placesTypesList.length);
+		for (final PlacesTypes placeType : placesTypesList) {
+			labels.add(placeType.getLabel(getApplicationContext()));
+		}
+		return labels;
+	}
+
+	//sroll control
+	private MyHorizontalScrollView scrollView;
+	private View filterView;
+	private ImageView btnSlide;
+
+	//map properties
+	private SlidingPanel menuPanel;
 	private TapControlledMapView placesView;
 	private MyLocationOverlay myLocationOverlay;
 	private LocationManager locationManager;
 	private CustomItemizedOverlay<CustomOverlayItem> itemizedOverlay;
 	private GeoPoint currentPoint;
+	private Drawable defaultPlacesMarker;
 
-	// Checkin Service
-	final CheckinService checkinService = new CheckinService();
+	private final CheckinService checkinService = new CheckinService();
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.places_view);
+
+		final LayoutInflater inflater = LayoutInflater.from(this);
+		scrollView = (MyHorizontalScrollView) inflater.inflate(R.layout.horz_scroll_view, null);
+		setContentView(scrollView);
+
+		filterView = inflater.inflate(R.layout.place_types_list, null);
+		final View mainView = inflater.inflate(R.layout.places_view, null);
+
+		// spinner
+		final Spinner spinnerPlaceType = (Spinner) filterView.findViewById(R.id.spinner_place_types);
+		// Adapter para implementar o layout customizado de cada item
+		final ArrayAdapter<String> placeTypesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getPlacesTypesLabel());
+		placeTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinnerPlaceType.setAdapter(placeTypesAdapter);
+		//attach the listener to the spinner
+		spinnerPlaceType.setOnItemSelectedListener(new FilterOnItemSelectedListener());
+		spinnerPlaceType.setSelection(7);//establishment
+
+		btnSlide = (ImageView) mainView.findViewById(R.id.btnPlaceTypes);
+		btnSlide.setOnClickListener(new ClickListenerForScrolling(scrollView, filterView));
+
+		menuPanel = (SlidingPanel) mainView.findViewById(R.id.panel);
+		final Button btnSlide2 = (Button) menuPanel.findViewById(R.id.places_filter);
+		btnSlide2.setOnClickListener(new ClickListenerForScrolling(scrollView, filterView));
+
+		final View[] children = new View[] {filterView, mainView};
+		// Scroll to placesView (view[1]) when layout finished.
+		final int scrollToViewIdx = 1;
+		scrollView.initViews(children, scrollToViewIdx, new SizeCallbackForMenu(btnSlide));
+
+		// map view
 		placesView = (TapControlledMapView) findViewById(R.id.places_view);
 		placesView.setBuiltInZoomControls(true);
 		placesView.getController().setZoom(14);
@@ -65,14 +148,11 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 			}
 		});
 
-		final Drawable drawable = getResources().getDrawable(R.drawable.places_pin);
-		itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(drawable, placesView);
-		itemizedOverlay.setShowClose(false);
-		itemizedOverlay.setShowDisclosure(true);
-		itemizedOverlay.setSnapToCenter(true);
-
 		// dismiss balloon upon single tap of MapView (iOS behavior)
 		placesView.setOnSingleTapListener(this);
+
+		// places marker
+		defaultPlacesMarker = getResources().getDrawable(R.drawable.places_pin);
 
 		final ImageButton btnCheckin = (ImageButton) findViewById(R.id.btnCheckin);
 		btnCheckin.setOnClickListener(new View.OnClickListener() {
@@ -82,11 +162,99 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		});
 	}
 
+	public class FilterOnItemSelectedListener implements OnItemSelectedListener {
+
+		public void onItemSelected(final AdapterView<?> parent, final View view, final int position, final long id) {
+			typesFilter.clear();
+
+			//check which spinner triggered the listener
+			switch (parent.getId()) {
+			//country spinner
+			case R.id.spinner_place_types:
+				// filterList
+				final PlacesTypes placeType = placesTypesList[position];
+				typesFilter.add(placeType.toString());
+				break;
+			}
+		}
+
+		public void onNothingSelected(final AdapterView<?> parent) {
+			// Do nothing.
+		}
+	}
+
+	/**
+	 * Helper for examples with a HSV that should be scrolled by a menu View's width.
+	 */
+	static class ClickListenerForScrolling implements OnClickListener {
+		HorizontalScrollView scrollView;
+		View menu;
+		/**
+		 * Menu must NOT be out/shown to start with.
+		 */
+		boolean menuOut = false;
+
+		public ClickListenerForScrolling(final HorizontalScrollView scrollView, final View menu) {
+			super();
+			this.scrollView = scrollView;
+			this.menu = menu;
+		}
+
+		public void onClick(final View v) {
+			final int menuWidth = menu.getMeasuredWidth();
+
+			// Ensure menu is visible
+			menu.setVisibility(View.VISIBLE);
+
+			if (!menuOut) {
+				// Scroll to 0 to reveal menu
+				final int left = 0;
+				scrollView.smoothScrollTo(left, 0);
+			} else {
+				// Scroll to menuWidth so menu isn't on screen.
+				final int left = menuWidth;
+				scrollView.smoothScrollTo(left, 0);
+			}
+			menuOut = !menuOut;
+		}
+	}
+
+	/**
+	 * Helper that remembers the width of the 'slide' button, so that the 'slide' button remains in view, even when the menu is
+	 * showing.
+	 */
+	static class SizeCallbackForMenu implements SizeCallback {
+		int btnWidth;
+		View btnSlide;
+
+		public SizeCallbackForMenu(final View btnSlide) {
+			super();
+			this.btnSlide = btnSlide;
+		}
+
+		public void onGlobalLayout() {
+			btnWidth = btnSlide.getMeasuredWidth();
+		}
+
+		public void getViewSize(final int idx, final int w, final int h, final int[] dims) {
+			dims[0] = w;
+			dims[1] = h;
+			final int menuIdx = 0;
+			if (idx == menuIdx) {
+				dims[0] = w - btnWidth;
+			}
+		}
+	}
+
 	private void executePlaceSearch(final PlaceFilter placeFilter) {
 		new AsyncGooglePlacesService(this) {
 			@Override
 			protected void onPreExecute() {
 				super.onPreExecute();
+				itemizedOverlay = new CustomItemizedOverlay<CustomOverlayItem>(defaultPlacesMarker, placesView);
+				itemizedOverlay.setShowClose(false);
+				itemizedOverlay.setShowDisclosure(true);
+				itemizedOverlay.setSnapToCenter(true);
 				removeOverlays();
 			};
 
@@ -134,6 +302,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 				}
 			}
 			placesView.getOverlays().removeAll(overlaysToRemove);
+			placesView.invalidate();
 		}
 	}
 
@@ -214,7 +383,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		final MenuInflater menuInflater = getMenuInflater();
-		menuInflater.inflate(R.layout.menu_places, menu);
+		menuInflater.inflate(R.menu.menu_places, menu);
 		if (placesView.isSatellite()) {
 			final MenuItem item = menu.findItem(R.id.road);
 			item.setTitle(getString(R.string.road));
@@ -231,9 +400,9 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		case R.id.search_places:
 			if (GpsUtils.isEnabled(this)) {
 				if (currentPoint == null) {
-					android.location.Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					android.location.Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 					if (lastKnownLocation == null) {
-						lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+						lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 					}
 					currentPoint = new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6));;
 				}
@@ -243,6 +412,9 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 				placeFilter.setLanguage("pt-BR");
 				placeFilter.setRadius(500);
 				placeFilter.setSensor(true);
+				if(!typesFilter.isEmpty()) {
+					placeFilter.setType(typesFilter);
+				}
 				executePlaceSearch(placeFilter);
 			}
 			return true;
@@ -256,6 +428,9 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 				placesView.setSatellite(false);
 				item.setTitle(satellite);
 			}
+			return true;
+		case R.id.toggle:
+			placesView.setBuiltInZoomControls(!menuPanel.toggle());
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
