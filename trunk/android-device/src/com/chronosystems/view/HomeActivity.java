@@ -25,7 +25,7 @@ public class HomeActivity extends Activity {
 		displayName.setText(device.getName());
 		displayName.setOnClickListener(new OnClickListener() {
 			public void onClick(final View v) {
-				final Intent i = new Intent(getApplicationContext(), PlacesHorzScrollListMenu.class);
+				final Intent i = new Intent(getApplicationContext(), PlacesViewActivity.class);
 				startActivity(i);
 			}
 		});

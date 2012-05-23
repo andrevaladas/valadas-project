@@ -106,7 +106,7 @@ public class FollowingListViewActivity extends Activity implements OnItemClickLi
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		final MenuInflater menuInflater = getMenuInflater();
-		menuInflater.inflate(R.layout.menu_list, menu);
+		menuInflater.inflate(R.menu.menu_list, menu);
 		return true;
 	}
 

@@ -64,12 +64,7 @@
             android:label="Map Location" 
             android:name=".view.MapViewActivity"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
-        
-        <activity
-            android:label="PlacesHorzScrollListMenu" 
-            android:name=".view.PlacesHorzScrollListMenu"
-            android:theme="@android:style/Theme.NoTitleBar"></activity>
-        
+     
         <uses-library android:name="com.google.android.maps" android:required="true"/>
     </application>
     

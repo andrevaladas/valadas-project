@@ -243,7 +243,7 @@ public class MapViewActivity extends MapActivity implements OnSingleTapListener 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		final MenuInflater menuInflater = getMenuInflater();
-		menuInflater.inflate(R.layout.menu_map, menu);
+		menuInflater.inflate(R.menu.menu_map, menu);
 		if (mapView.isSatellite()) {
 			final MenuItem item = menu.findItem(R.id.road);
 			item.setTitle(getString(R.string.road));
