@@ -14,12 +14,11 @@ import android.util.Log;
  */
 public class GpsLocationService {
 
-	AtomicInteger count;
-	Location currentLocation;
-	Location networkLocation;
-	LocationManager locationManager;
-	final LocationListenerGps locationListenerGps = new LocationListenerGps();
-	final LocationListenerNetwork locationListenerNetwork = new LocationListenerNetwork();
+	private AtomicInteger count;
+	private Location currentLocation;
+	private final LocationManager locationManager;
+	private final LocationListenerGps locationListenerGps = new LocationListenerGps();
+	private final LocationListenerNetwork locationListenerNetwork = new LocationListenerNetwork();
 
 	public GpsLocationService(final LocationManager locationManager) {
 		this.locationManager = locationManager;
@@ -39,15 +38,23 @@ public class GpsLocationService {
 	}
 
 	public Location getCurrentLocation() {
+		//start variables
 		count = new AtomicInteger();
+		currentLocation = null;
+
+		//verify locations
 		while (currentLocation == null) {
 			try {
 				Thread.sleep(1000);
 			} catch (final Exception e) {}
 
-			//set networkLocation after x attempts
-			if(count.getAndIncrement() > 10 && currentLocation == null) {
-				currentLocation = networkLocation;
+			//set lastKnownLocation after x attempts
+			if(count.getAndIncrement() >= 5 && currentLocation == null) {
+				if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+					currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+				} else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+					currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				}
 				break;
 			}
 		}
@@ -58,7 +65,7 @@ public class GpsLocationService {
 
 		@Override
 		public void onLocationChanged(final Location location) {
-			networkLocation = location;
+			System.out.println("LocationListenerNetwork Accuracy: "+location.getAccuracy());
 		}
 
 		@Override
@@ -90,9 +97,7 @@ public class GpsLocationService {
 		@Override
 		public void onLocationChanged(final Location location) {
 			System.out.println("LocationListenerGps Accuracy: "+location.getAccuracy());
-			if (location.getAccuracy() < 50f) {
-				currentLocation = location;
-			}
+			currentLocation = location;
 		}
 
 		@Override
