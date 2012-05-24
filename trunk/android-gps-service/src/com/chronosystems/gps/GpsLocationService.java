@@ -1,5 +1,6 @@
 package com.chronosystems.gps;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.location.Location;
@@ -14,7 +15,8 @@ import android.util.Log;
  */
 public class GpsLocationService {
 
-	private AtomicInteger count;
+	private AtomicInteger verifyCount;
+	private AtomicInteger locationCount;
 	private Location currentLocation;
 	private final LocationManager locationManager;
 	private final LocationListenerGps locationListenerGps = new LocationListenerGps();
@@ -27,8 +29,12 @@ public class GpsLocationService {
 
 	public void startService() {
 		//start service
-		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
+		if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListenerNetwork);
+		}
+		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListenerGps);
+		}
 	}
 
 	public void stopService() {
@@ -37,27 +43,49 @@ public class GpsLocationService {
 		locationManager.removeUpdates(locationListenerGps);
 	}
 
+	private Location getLastKnownLocation() {
+		Location lastKnownLocation = null;
+		if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+		}
+		if (lastKnownLocation == null && locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+			lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+		}
+		return lastKnownLocation;
+	}
+
+	/**
+	 * Return the last known location
+	 * @return
+	 */
 	public Location getCurrentLocation() {
-		//start variables
-		count = new AtomicInteger();
-		currentLocation = null;
+		verifyCount = new AtomicInteger();
+		locationCount = new AtomicInteger();
+		currentLocation = getLastKnownLocation();
 
-		//verify locations
-		while (currentLocation == null) {
-			try {
-				Thread.sleep(1000);
-			} catch (final Exception e) {}
+		Log.v("GPS_PROVIDER", "START");
+		//provider enabled
+		if (currentLocation != null) {
+			while (true) {
+				try {
+					Thread.sleep(1000);
+				} catch (final Exception e) {}
 
-			//set lastKnownLocation after x attempts
-			if(count.getAndIncrement() >= 5 && currentLocation == null) {
-				if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-					currentLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-				} else if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-					currentLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+				final Location verifyLocation = getLastKnownLocation();
+				Log.v("GPS_PROVIDER", verifyCount.get()+"#"+locationCount.get()+": "+TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - verifyLocation.getTime())+"s | "+verifyLocation.getLatitude()+" | "+verifyLocation.getLongitude()+" | "+verifyLocation.getAccuracy());
+				if (currentLocation.getTime() != verifyLocation.getTime() && locationCount.getAndIncrement() >= 3) {
+					if (verifyLocation.getAccuracy() < 20f) {
+						Log.v("GPS_PROVIDER", "FOUND");
+						return verifyLocation;
+					}
 				}
-				break;
+				currentLocation = verifyLocation;
+				if (verifyCount.getAndIncrement() >= 30) {
+					break;
+				}
 			}
 		}
+		Log.v("GPS_PROVIDER", "DEFAULT");
 		return currentLocation;
 	}
 
@@ -97,7 +125,6 @@ public class GpsLocationService {
 		@Override
 		public void onLocationChanged(final Location location) {
 			System.out.println("LocationListenerGps Accuracy: "+location.getAccuracy());
-			currentLocation = location;
 		}
 
 		@Override

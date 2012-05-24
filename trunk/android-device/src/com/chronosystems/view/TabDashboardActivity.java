@@ -1,5 +1,7 @@
 package com.chronosystems.view;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,17 +10,21 @@ import android.widget.ImageButton;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.chronosystems.R;
-import com.chronosystems.service.MyLocationService;
+import com.chronosystems.library.utils.GpsUtils;
 import com.chronosystems.service.ServiceUpdateListener;
+import com.chronosystems.service.TrackLocationService;
 import com.chronosystems.service.local.CheckinService;
 import com.chronosystems.service.local.UserFunctions;
 
 public class TabDashboardActivity extends TabActivity {
 	// Checkin Service
-	final CheckinService checkinService = new CheckinService();
+	private final CheckinService checkinService = new CheckinService();
+	private TextView trackCount;
+	private static final AtomicInteger count = new AtomicInteger(1);
 
 	/** Called when the activity is first created. */
 	@Override
@@ -33,15 +39,19 @@ public class TabDashboardActivity extends TabActivity {
 			setContentView(R.layout.tab_dashboard);
 
 			/** START THE UPDATE LOCATION SERVICE*/
-			MyLocationService.setMainActivity(this);
-			final Intent svc = new Intent(getApplicationContext(), MyLocationService.class);
-			startService(svc);
-			MyLocationService.setUpdateListener(new ServiceUpdateListener() {
+			trackCount = (TextView)findViewById(R.id.trackCount);
+			trackCount.setText(String.valueOf(count.get()));
+			GpsUtils.checkConfiguration(this);
+			TrackLocationService.setMainActivity(this);
+			final Intent service = new Intent(getApplicationContext(), TrackLocationService.class);
+			startService(service);
+			TrackLocationService.setUpdateListener(new ServiceUpdateListener() {
 				public void update(final String message) {
 					// make sure this runs in the UI thread... since it's messing with views...
 					runOnUiThread(
 							new Runnable() {
 								public void run() {
+									trackCount.setText(String.valueOf(count.getAndIncrement()));
 									Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 								}
 							});
@@ -102,6 +112,7 @@ public class TabDashboardActivity extends TabActivity {
 					checkinService.execute(TabDashboardActivity.this);
 				}
 			});
+
 		} else {
 			// user is not logged in show login screen
 			final Intent login = new Intent(getApplicationContext(), LoginActivity.class);
@@ -127,7 +138,7 @@ public class TabDashboardActivity extends TabActivity {
 	@Override
 	protected void onDestroy() {
 		checkinService.stopService();
-		final Intent svc = new Intent(this, MyLocationService.class);
+		final Intent svc = new Intent(this, TrackLocationService.class);
 		stopService(svc);
 		super.onDestroy();
 	}
