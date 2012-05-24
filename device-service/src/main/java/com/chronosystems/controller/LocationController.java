@@ -36,7 +36,7 @@ public class LocationController {
 		locationChechin.setDevice(device);
 		locationService.save(locationChechin);
 
-		return XMLParser.parseXML(new Entity(device));
+		return XMLParser.parseXML(new Entity());
 	}
 
 	@RequestMapping(value="/findLastLocations", method = RequestMethod.POST)

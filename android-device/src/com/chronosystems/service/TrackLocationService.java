@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import android.app.Activity;
+import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -26,21 +27,26 @@ import com.chronosystems.service.remote.LocationService;
 /**
  * @author andrevaladas
  */
-public class MyLocationService extends Service {
+public class TrackLocationService extends Service {
 
 	// static data/shared references, etc.
 	public static ServiceUpdateListener UPDATE_LISTENER;
 	private static Activity MAIN_ACTIVITY;
 
 	// data
+	private float distance = -1f;
 	private Location lastLocation;
-	private GpsLocationService locationService;
-	private final Timer timer = new Timer();
+	private static GpsLocationService locationService;
+	private static final Timer timer = new Timer();
 	private static final long UPDATE_INTERVAL = 3 * 60 * 1000;
 	private static final float UPDATE_DISTANCE = 200f; //the approximate distance in meters
 
-	// temp
-	float distance = 0f;
+	@Override
+	public void onStart(final Intent intent, final int startId) {
+		super.onStart(intent, startId);
+		final Notification notification = new Notification();
+		startForeground(1, notification);
+	}
 
 	// hooks into other activities
 	public static void setMainActivity(final Activity activity) {
@@ -63,7 +69,7 @@ public class MyLocationService extends Service {
 		// init the service here
 		_startService();
 		if (MAIN_ACTIVITY != null) {
-			Toast.makeText(MAIN_ACTIVITY, "MyLocationService started", Toast.LENGTH_SHORT).show();
+			Toast.makeText(MAIN_ACTIVITY, "TrackLocationService started", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -71,32 +77,34 @@ public class MyLocationService extends Service {
 	public void onDestroy() {
 		super.onDestroy();
 
-		_shutdownService();
-		if (MAIN_ACTIVITY != null) {
-			Toast.makeText(MAIN_ACTIVITY, "MyLocationService stopped", Toast.LENGTH_SHORT).show();
-		}
+		//_shutdownService();
+		//if (MAIN_ACTIVITY != null) {
+		//	Toast.makeText(MAIN_ACTIVITY, "TrackLocationService stopped", Toast.LENGTH_SHORT).show();
+		//}
 	}
 
 	// service business logic
 	private void _startService() {
-		locationService = new GpsLocationService((LocationManager) MAIN_ACTIVITY.getSystemService(Context.LOCATION_SERVICE));
-		timer.scheduleAtFixedRate(
-				new TimerTask() {
-					@Override
-					public void run() {
-						_runUpdateLocation();
-					}
-				},
-				1000,
-				UPDATE_INTERVAL);
-		Log.i(getClass().getSimpleName(), "Timer started!!!");
+		if (locationService == null) {
+			locationService = new GpsLocationService((LocationManager) MAIN_ACTIVITY.getSystemService(Context.LOCATION_SERVICE));
+			timer.scheduleAtFixedRate(
+					new TimerTask() {
+						@Override
+						public void run() {
+							_runUpdateLocation();
+						}
+					},
+					3000,
+					UPDATE_INTERVAL);
+			Log.i(getClass().getSimpleName(), "Timer started!!!");
+		}
 	}
 
 	/** dont forget to fire update to the ui listener */
 	private void _runUpdateLocation() {
 		// http post to the service
 		Log.i(getClass().getSimpleName(), "background task - start");
-		String serviceMessage = "#LocationService error";
+		String serviceMessage = "#LocationService can't find location";
 
 		try {
 			try {
@@ -114,15 +122,17 @@ public class MyLocationService extends Service {
 					final com.chronosystems.entity.Location location = new com.chronosystems.entity.Location(
 							currentLocation.getLatitude(),
 							currentLocation.getLongitude());
-					currentUser.addLocation(location);
 
 					// send data to server
-					final Entity checkinEntity = LocationService.checkinLocation(currentUser);
+					final Device checkin = new Device();
+					checkin.setId(currentUser.getId());
+					checkin.addLocation(location);
+					final Entity checkinEntity = LocationService.checkinLocation(checkin);
 					if (checkinEntity != null && !checkinEntity.hasErrors()) {
-						serviceMessage = "#LocationService updated: "+(int)distance +" speed: "+(int)(currentLocation.getSpeed()*3.6);
+						serviceMessage = "#LocationService updated: "+distance +" speed: "+(int)(currentLocation.getSpeed()*3.6);
 					}
 				} else {
-					serviceMessage = "#LocationService distance is not enough: "+(int)distance +" speed: "+(int)(currentLocation.getSpeed()*3.6);
+					serviceMessage = "#LocationService distance is not enough: "+distance +" speed: "+(int)(currentLocation.getSpeed()*3.6);
 				}
 			}
 		} catch (final Exception e) {
@@ -154,15 +164,16 @@ public class MyLocationService extends Service {
 	}
 
 	private boolean verifyAccuracyDistance(final Location currentLocation) {
+		boolean update = false;
 		if (lastLocation == null) {
 			lastLocation = LocationFunctions.getLastLocation(MAIN_ACTIVITY);//from local DB
-			if (lastLocation == null) {
-				lastLocation = currentLocation; //update location
-			}
+			update = (lastLocation == null); //update my first location
 		}
 		// validate the approximate distance in meters
-		distance = lastLocation.distanceTo(currentLocation);
-		final boolean update = distance >= UPDATE_DISTANCE;
+		if (!update) {
+			distance = lastLocation.distanceTo(currentLocation);
+			update = distance >= UPDATE_DISTANCE;
+		}
 		lastLocation = currentLocation; //update location
 		LocationFunctions.addLastLocation(lastLocation, MAIN_ACTIVITY);
 		return update;
