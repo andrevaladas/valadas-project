@@ -1,9 +1,11 @@
 package com.chronosystems.view;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -15,16 +17,19 @@ import android.widget.Toast;
 
 import com.chronosystems.R;
 import com.chronosystems.library.utils.GpsUtils;
-import com.chronosystems.service.ServiceUpdateListener;
-import com.chronosystems.service.TrackLocationService;
 import com.chronosystems.service.local.CheckinService;
 import com.chronosystems.service.local.UserFunctions;
+import com.chronosystems.service.tracker.TrackListener;
+import com.chronosystems.service.tracker.TrackLocationService;
+import com.chronosystems.service.tracker.TrackUpdateListener;
+import com.chronosystems.wakeful.WakefulIntentService;
 
 public class TabDashboardActivity extends TabActivity {
 	// Checkin Service
 	private final CheckinService checkinService = new CheckinService();
 	private TextView trackCount;
 	private static final AtomicInteger count = new AtomicInteger(1);
+	private static final AtomicInteger updates = new AtomicInteger(1);
 
 	/** Called when the activity is first created. */
 	@Override
@@ -42,21 +47,29 @@ public class TabDashboardActivity extends TabActivity {
 			trackCount = (TextView)findViewById(R.id.trackCount);
 			trackCount.setText(String.valueOf(count.get()));
 			GpsUtils.checkConfiguration(this);
-			TrackLocationService.setMainActivity(this);
-			final Intent service = new Intent(getApplicationContext(), TrackLocationService.class);
-			startService(service);
-			TrackLocationService.setUpdateListener(new ServiceUpdateListener() {
-				public void update(final String message) {
-					// make sure this runs in the UI thread... since it's messing with views...
+
+			final TrackListener listener = new TrackListener(this, new TrackUpdateListener() {
+				public void update(final Location location, final float distance, final boolean update) {
 					runOnUiThread(
 							new Runnable() {
 								public void run() {
-									trackCount.setText(String.valueOf(count.getAndIncrement()));
-									Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+									trackCount.setText(String.valueOf(count.getAndIncrement()+" #"+(update ? updates.getAndIncrement() : updates.get())));
+									if (location != null) {
+										Toast.makeText(getApplicationContext(), "#Location UPDATE ["+update+"]" +
+												"\ndistance: "+distance+
+												"\n\nlat.: "+location.getLatitude()+
+												"\nlog.: "+location.getLongitude()+
+												"\naccuracy.: "+location.getAccuracy()+
+												"\nspeed.: "+location.getSpeed()+
+												"\ntime.: "+new Date(location.getTime()), Toast.LENGTH_LONG).show();
+									} else {
+										Toast.makeText(getApplicationContext(), "LastLocation not found!", Toast.LENGTH_SHORT).show();
+									}
 								}
 							});
 				}
 			});
+			WakefulIntentService.scheduleAlarms(listener, this, false);
 
 			final TabHost tabHost = getTabHost();
 
