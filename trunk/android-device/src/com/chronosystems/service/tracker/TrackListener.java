@@ -13,7 +13,7 @@ public class TrackListener implements WakefulIntentService.AlarmListener {
 	public static Activity mainActivity;
 	public static TrackUpdateListener updateListener;
 	public static final float minimumDistance = 200f; //meters
-	private static final int timerTrack = 10 * 60 * 1000; //minutes
+	private static final int timerTrack = 3 * 60 * 1000; //minutes
 
 	public TrackListener() {
 		super();
@@ -30,7 +30,7 @@ public class TrackListener implements WakefulIntentService.AlarmListener {
 	}
 
 	public void scheduleAlarms(final AlarmManager mgr, final PendingIntent pi, final Context ctxt) {
-		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 1000, timerTrack, pi);
+		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, timerTrack, pi);
 	}
 
 	public void sendWakefulWork(final Context ctxt) {

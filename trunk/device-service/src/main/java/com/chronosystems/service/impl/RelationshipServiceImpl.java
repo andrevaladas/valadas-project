@@ -9,13 +9,13 @@ import com.chronosystems.entity.Relationship;
 import com.chronosystems.service.RelationshipService;
 
 @Service
+@Transactional
 public class RelationshipServiceImpl implements RelationshipService {
 
 	@Autowired
 	private RelationshipDAO relationshipDAO;
 
 	@Override
-	@Transactional
 	public void save(final Relationship relationship) {
 		relationshipDAO.save(relationship);
 	}

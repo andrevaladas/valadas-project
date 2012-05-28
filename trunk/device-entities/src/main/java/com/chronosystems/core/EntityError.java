@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 
+@Root
 public class EntityError implements Serializable {
 
 	private static final long serialVersionUID = -7789051059298620661L;

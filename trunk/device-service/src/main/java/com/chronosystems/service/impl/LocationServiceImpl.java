@@ -11,19 +11,19 @@ import com.chronosystems.entity.Location;
 import com.chronosystems.service.LocationService;
 
 @Service
+@Transactional
 public class LocationServiceImpl implements LocationService {
 
 	@Autowired
 	private LocationDAO locationDAO;
 
 	@Override
-	@Transactional
 	public void save(final Location location) {
 		locationDAO.save(location);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public List<Location> findLastLocations(final Long idDevice) {
 		final List<Location> locations = locationDAO.findLastLocations(idDevice);
 		for (final Location location : locations) {

@@ -16,13 +16,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="0.04"
-        android:src="@drawable/places_filter"
+        android:src="@drawable/places_filter_2"
         android:layout_gravity="left" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="31dp"
-        android:layout_gravity="center_horizontal"
         android:layout_marginLeft="10dip"
         android:src="@drawable/logo" />
 

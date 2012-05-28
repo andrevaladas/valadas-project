@@ -5,15 +5,67 @@
     android:orientation="vertical" >
 
     <!-- Header -->
-	<include
-	 	layout="@layout/places_filter_header"
-	 	android:layout_height="wrap_content"
-	 	android:layout_width="fill_parent"/>
-    
+    <include
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/places_filter_header" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:padding="5dp"
+        android:text="@string/choose_place_type" />
+
     <Spinner
         android:id="@+id/spinner_place_types"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="true" />
 
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="fill_horizontal|left"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="2dp"
+            android:layout_marginRight="5dp"
+            android:gravity="bottom"
+            android:text="@string/range_label" />
+
+        <TextView
+            android:id="@+id/range_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:gravity="bottom"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="2dp"
+            android:layout_marginLeft="3dp"
+            android:gravity="bottom"
+            android:text="@string/meters" />
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/range_slider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="2000"
+        android:paddingBottom="20dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="1dp"
+        android:progress="500"
+        android:progressDrawable="@drawable/seekbar_progress"
+        android:secondaryProgress="0"
+        android:thumb="@drawable/seek_thumb_normal" />
 </LinearLayout>

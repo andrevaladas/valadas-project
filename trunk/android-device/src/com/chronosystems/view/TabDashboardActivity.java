@@ -45,31 +45,10 @@ public class TabDashboardActivity extends TabActivity {
 
 			/** START THE UPDATE LOCATION SERVICE*/
 			trackCount = (TextView)findViewById(R.id.trackCount);
-			trackCount.setText(String.valueOf(count.get()));
-			GpsUtils.checkConfiguration(this);
-
-			final TrackListener listener = new TrackListener(this, new TrackUpdateListener() {
-				public void update(final Location location, final float distance, final boolean update) {
-					runOnUiThread(
-							new Runnable() {
-								public void run() {
-									trackCount.setText(String.valueOf(count.getAndIncrement()+" #"+(update ? updates.getAndIncrement() : updates.get())));
-									if (location != null) {
-										Toast.makeText(getApplicationContext(), "#Location UPDATE ["+update+"]" +
-												"\ndistance: "+distance+
-												"\n\nlat.: "+location.getLatitude()+
-												"\nlog.: "+location.getLongitude()+
-												"\naccuracy.: "+location.getAccuracy()+
-												"\nspeed.: "+location.getSpeed()+
-												"\ntime.: "+new Date(location.getTime()), Toast.LENGTH_LONG).show();
-									} else {
-										Toast.makeText(getApplicationContext(), "LastLocation not found!", Toast.LENGTH_SHORT).show();
-									}
-								}
-							});
-				}
-			});
-			WakefulIntentService.scheduleAlarms(listener, this, false);
+			trackCount.setText(String.valueOf(count.get()+" #"+updates.get()));
+			if (GpsUtils.checkConfiguration(this)) {
+				startTrackLocationService();
+			}
 
 			final TabHost tabHost = getTabHost();
 
@@ -134,6 +113,39 @@ public class TabDashboardActivity extends TabActivity {
 			// Closing dashboard screen
 			finish();
 		}
+	}
+
+	private void startTrackLocationService() {
+		final TrackListener listener = new TrackListener(this, new TrackUpdateListener() {
+			public void update(final Location location, final float distance, final boolean update) {
+				runOnUiThread(
+						new Runnable() {
+							public void run() {
+								trackCount.setText(String.valueOf(count.getAndIncrement()+" #"+(update ? updates.getAndIncrement() : updates.get())));
+								if (location != null) {
+									Toast.makeText(getApplicationContext(), "#Location UPDATE ["+update+"]" +
+											"\ndistance: "+distance+
+											"\n\nlat.: "+location.getLatitude()+
+											"\nlog.: "+location.getLongitude()+
+											"\naccuracy.: "+location.getAccuracy()+
+											"\nspeed.: "+location.getSpeed()+
+											"\ntime.: "+new Date(location.getTime()), Toast.LENGTH_LONG).show();
+								} else {
+									Toast.makeText(getApplicationContext(), "LastLocation not found!", Toast.LENGTH_SHORT).show();
+								}
+							}
+						});
+			}
+		});
+		WakefulIntentService.scheduleAlarms(listener, this, false);
+	}
+
+	@Override
+	protected void onResume() {
+		if (GpsUtils.isEnabled(this)) {
+			startTrackLocationService();
+		}
+		super.onResume();
 	}
 
 	@Override

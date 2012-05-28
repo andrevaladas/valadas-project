@@ -15,7 +15,7 @@
         xmlns:app="http://schemas.android.com/apk/res/com.chronosystems"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
-
+            
         <FrameLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" >
@@ -29,6 +29,24 @@
                 android:clickable="true" />
         </FrameLayout>
 
+        <LinearLayout
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/places_search"
+                android:layout_width="0dp" 
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_weight="2.56"
+                android:src="@drawable/search"/>
+
+        </LinearLayout>
+        
         <com.chronosystems.library.sliding.SlidingPanel
             android:id="@+id/panel"
             android:layout_width="match_parent"
