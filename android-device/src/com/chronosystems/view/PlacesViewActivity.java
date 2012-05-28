@@ -20,11 +20,13 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.chronosystems.crop.image.ImageHelper;
 import com.chronosystems.library.enumeration.PlacesTypes;
@@ -51,7 +53,7 @@ import com.google.android.maps.Overlay;
 /**
  * @author Andre Valadas
  */
-public class PlacesViewActivity extends MapActivity implements OnSingleTapListener, LocationListener {
+public class PlacesViewActivity extends MapActivity implements OnSingleTapListener, LocationListener, OnSeekBarChangeListener {
 
 	private final List<String> typesFilter = new ArrayList<String>();
 
@@ -86,9 +88,18 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 	//sroll control
 	private MyHorizontalScrollView scrollView;
 	private View filterView;
-	private ImageView btnSlide;
+	private ImageView filterSliderButton;
 
-	//map properties
+	//filter
+	private Spinner spinnerPlaceType;
+	private SeekBar rangeSeekBar;
+	private TextView rangeProgressText;
+
+	//search
+	private ImageButton placeSearchButton;
+
+	//map
+	private View mainView;
 	private SlidingPanel menuPanel;
 	private TapControlledMapView placesView;
 	private MyLocationOverlay myLocationOverlay;
@@ -108,10 +119,21 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		setContentView(scrollView);
 
 		filterView = inflater.inflate(R.layout.place_types_list, null);
-		final View mainView = inflater.inflate(R.layout.places_view, null);
+		mainView = inflater.inflate(R.layout.places_view, null);
+
+		// search
+		placeSearchButton = (ImageButton)mainView.findViewById(R.id.places_search);
+		placeSearchButton.setAlpha(200);
+		placeSearchButton.setOnClickListener(new SearchClickListener());
 
 		// spinner
-		final Spinner spinnerPlaceType = (Spinner) filterView.findViewById(R.id.spinner_place_types);
+		spinnerPlaceType = (Spinner) filterView.findViewById(R.id.spinner_place_types);
+		// seekbar
+		rangeSeekBar = (SeekBar)filterView.findViewById(R.id.range_slider);
+		rangeSeekBar.setOnSeekBarChangeListener(this);
+		rangeProgressText = (TextView)filterView.findViewById(R.id.range_progress);
+		rangeProgressText.setText(Integer.toString(rangeSeekBar.getProgress()));
+
 		// Adapter para implementar o layout customizado de cada item
 		final ArrayAdapter<String> placeTypesAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, getPlacesTypesLabel());
 		placeTypesAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -120,22 +142,21 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		spinnerPlaceType.setOnItemSelectedListener(new FilterOnItemSelectedListener());
 		spinnerPlaceType.setSelection(7);//establishment
 
-		btnSlide = (ImageView) mainView.findViewById(R.id.btnPlaceTypes);
-		btnSlide.setOnClickListener(new ClickListenerForScrolling(scrollView, filterView));
-
+		final ClickListenerForScrolling clickListenerForScrolling = new ClickListenerForScrolling(scrollView, filterView);
+		filterSliderButton = (ImageView) mainView.findViewById(R.id.btnPlaceTypes);
+		filterSliderButton.setOnClickListener(clickListenerForScrolling);
 		menuPanel = (SlidingPanel) mainView.findViewById(R.id.panel);
-		final Button btnSlide2 = (Button) menuPanel.findViewById(R.id.places_filter);
-		btnSlide2.setOnClickListener(new ClickListenerForScrolling(scrollView, filterView));
+		filterView.setOnClickListener(clickListenerForScrolling);
 
 		final View[] children = new View[] {filterView, mainView};
 		// Scroll to placesView (view[1]) when layout finished.
 		final int scrollToViewIdx = 1;
-		scrollView.initViews(children, scrollToViewIdx, new SizeCallbackForMenu(btnSlide));
+		scrollView.initViews(children, scrollToViewIdx, new SizeCallbackForMenu(filterSliderButton));
 
 		// map view
 		placesView = (TapControlledMapView) findViewById(R.id.places_view);
 		placesView.setBuiltInZoomControls(true);
-		placesView.getController().setZoom(14);
+		placesView.getController().setZoom(13);
 
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
@@ -147,7 +168,6 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 				placesView.getController().animateTo(myLocationOverlay.getMyLocation());
 			}
 		});
-
 		// dismiss balloon upon single tap of MapView (iOS behavior)
 		placesView.setOnSingleTapListener(this);
 
@@ -246,6 +266,31 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		}
 	}
 
+	class SearchClickListener implements OnClickListener {
+		public void onClick(final View v) {
+			if (GpsUtils.isEnabled(PlacesViewActivity.this)) {
+				if (currentPoint == null) {
+					android.location.Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+					if (lastKnownLocation == null) {
+						lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+					}
+					currentPoint = new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6));;
+				}
+
+				final PlaceFilter placeFilter = new PlaceFilter();
+				placeFilter.setLocation(currentPoint);
+				placeFilter.setLanguage("pt-BR");
+				placeFilter.setRadius(rangeSeekBar.getProgress());
+				placeFilter.setSensor(true);
+				if(!typesFilter.isEmpty()) {
+					placeFilter.setType(typesFilter);
+				}
+				executePlaceSearch(placeFilter);
+			}
+		}
+
+	}
+
 	private void executePlaceSearch(final PlaceFilter placeFilter) {
 		new AsyncGooglePlacesService(this) {
 			@Override
@@ -322,7 +367,7 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		if (myLocationOverlay != null) {
 			if (GpsUtils.isEnabled(this)) {
 				myLocationOverlay.enableMyLocation();
-				myLocationOverlay.enableCompass();
+				//myLocationOverlay.enableCompass();
 				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,this);
 			}
 		}
@@ -397,33 +442,11 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 		case R.id.menu_home:
 			startActivity(new Intent(getApplicationContext(), TabDashboardActivity.class));
 			return true;
-		case R.id.search_places:
-			if (GpsUtils.isEnabled(this)) {
-				if (currentPoint == null) {
-					android.location.Location lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-					if (lastKnownLocation == null) {
-						lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-					}
-					currentPoint = new GeoPoint((int)(lastKnownLocation.getLatitude()*1E6),(int)(lastKnownLocation.getLongitude()*1E6));;
-				}
-
-				final PlaceFilter placeFilter = new PlaceFilter();
-				placeFilter.setLocation(currentPoint);
-				placeFilter.setLanguage("pt-BR");
-				placeFilter.setRadius(500);
-				placeFilter.setSensor(true);
-				if(!typesFilter.isEmpty()) {
-					placeFilter.setType(typesFilter);
-				}
-				executePlaceSearch(placeFilter);
-			}
-			return true;
 		case R.id.road:
 			final String satellite = getString(R.string.satellite);
 			if (item.getTitle().equals(satellite)) {
 				placesView.setSatellite(true);
 				item.setTitle(getString(R.string.road));
-				item.setChecked(true);
 			} else {
 				placesView.setSatellite(false);
 				item.setTitle(satellite);
@@ -436,4 +459,10 @@ public class PlacesViewActivity extends MapActivity implements OnSingleTapListen
 			return super.onOptionsItemSelected(item);
 		}
 	}
+
+	public void onProgressChanged(final SeekBar seekBar, final int progress, final boolean fromUser) {
+		rangeProgressText.setText(Integer.toString(progress));
+	}
+	public void onStartTrackingTouch(final SeekBar seekBar) {}
+	public void onStopTrackingTouch(final SeekBar seekBar) {}
 }

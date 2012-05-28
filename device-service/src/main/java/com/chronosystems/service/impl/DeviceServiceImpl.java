@@ -16,6 +16,7 @@ import com.chronosystems.service.DeviceService;
 import com.chronosystems.service.LocationService;
 
 @Service
+@Transactional
 public class DeviceServiceImpl implements DeviceService {
 
 	@Autowired
@@ -25,43 +26,42 @@ public class DeviceServiceImpl implements DeviceService {
 	private LocationService locationService;
 
 	@Override
-	@Transactional
 	public void save(final Device device) {
 		deviceDAO.save(device);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Device find(final Long id) {
 		return deviceDAO.find(id);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Device find(final String email) {
 		return deviceDAO.find(email);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Device find(final String email, final String password) {
 		return deviceDAO.find(email, password);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Long rowCount(final String email) {
 		return deviceDAO.rowCount(email);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Entity search(final Entity entity) {
 		return deviceDAO.search(entity);
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Entity findFollowing(final Entity entity) {
 		final Entity entityResult = deviceDAO.findFollowing(entity);
 		loadLastLocations(entityResult);
@@ -69,7 +69,7 @@ public class DeviceServiceImpl implements DeviceService {
 	}
 
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public Entity findFollowers(final Entity entity) {
 		return deviceDAO.findFollowers(entity);
 	}

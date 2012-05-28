@@ -1,5 +1,7 @@
 package com.chronosystems.library.list;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -36,13 +38,29 @@ public class LazyAdapter extends BaseAdapter {
 		return null;
 	}
 
-	public Entity getEntity() {
-		return entity;
+	public Device findById(final Long id) {
+		final List<Device> devices = entity.getDevices();
+		for (final Device device : devices) {
+			if (device.getId().equals(id)) {
+				return device;
+			}
+		}
+		return null;
 	}
+	public void removeDevice(final Device device) {
+		if(getCount() >= 1) {
+			entity.getDevices().remove(device);
+		}
+	}
+
 	public void removeDevice(final int position) {
 		if(getCount() >= position) {
 			entity.getDevices().remove(position);
 		}
+	}
+
+	public Entity getEntity() {
+		return entity;
 	}
 
 	public long getItemId(final int position) {
@@ -55,6 +73,7 @@ public class LazyAdapter extends BaseAdapter {
 			vi = inflater.inflate(R.layout.list_devices_row, null);
 		}
 
+		final TextView device_id = (TextView)vi.findViewById(R.id.device_id); // ID
 		final TextView title = (TextView)vi.findViewById(R.id.title); // title
 		final TextView description = (TextView)vi.findViewById(R.id.description); // description
 		//final TextView address = (TextView)vi.findViewById(R.id.address); // address
@@ -63,6 +82,7 @@ public class LazyAdapter extends BaseAdapter {
 
 		// device and last location
 		final Device device = (Device) getItem(position);
+		device_id.setText(String.valueOf(device.getId()));
 
 		// Setting all values in listview
 		title.setText(device.getName());

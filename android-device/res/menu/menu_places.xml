@@ -8,11 +8,6 @@
         android:title="@string/home"/>
 
     <item
-        android:id="@+id/search_places"
-        android:icon="@drawable/search"
-        android:title="@string/search_places"/>
-
-    <item
         android:id="@+id/road"
         android:icon="@drawable/global_map"
         android:title="@string/satellite"/>

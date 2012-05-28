@@ -26,7 +26,7 @@ public class WebServiceManager {
 	static Entity result = null;
 	static HttpEntity httpEntity = null;
 
-	public static Entity executeRequest(final String url, final Object T) {
+	public static synchronized Entity executeRequest(final String url, final Object T) {
 
 		result = new Entity();
 		// Making HTTP request

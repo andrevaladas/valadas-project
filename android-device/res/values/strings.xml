@@ -20,6 +20,9 @@
     <string name="search">Search</string>
     
     <string name="search_places">Search Places</string>
+    <string name="choose_place_type">Choose your place type</string>
+    <string name="range_label">Range:</string>
+    <string name="meters">meters</string>
     
     <string name="road">Road</string>
     <string name="satellite">Satellite</string>

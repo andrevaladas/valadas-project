@@ -12,6 +12,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.chronosystems.R;
 import com.chronosystems.entity.Device;
@@ -48,7 +51,10 @@ public class ListViewActivity extends Activity implements OnItemClickListener, O
 		protected Entity doInBackground(final String... args) {
 			// Find devices on server
 			final Entity filter = new Entity();
-			filter.addDevice(UserFunctions.getCurrentUser(getApplicationContext()));
+			final Device currentUser = UserFunctions.getCurrentUser(getApplicationContext());
+			final Device device = new Device();
+			device.setId(currentUser.getId());
+			filter.addDevice(device);
 			return DeviceService.search(filter);
 		};
 		@Override
@@ -89,42 +95,50 @@ public class ListViewActivity extends Activity implements OnItemClickListener, O
 
 	public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
 		if(parent.getAdapter() instanceof HeaderViewListAdapter) {
-			new AsyncService<Entity>(ListViewActivity.this, "Following... please wait") {
-				@Override
-				protected Entity doInBackground(final String... args) {
-					final HeaderViewListAdapter listAdapter = (HeaderViewListAdapter) parent.getAdapter();
-					final LazyAdapter adapter = (LazyAdapter)listAdapter.getWrappedAdapter();
-					final Device rowDevice = (Device) adapter.getItem(position-1);
-
-					// register on server
-					final Relationship follow = new Relationship();
-					final Device currentUser = UserFunctions.getCurrentUser(getApplicationContext());
-					final Device follower = new Device();
-					follower.setId(currentUser.getId());
-					follow.setFollower(follower);
-
-					final Device following = new Device();
-					following.setId(rowDevice.getId());
-					follow.setFollowing(following);
-					return RelationshipService.follow(follow);
-				};
-
-				@Override
-				protected void onPostExecute(final Entity result) {
-					super.onPostExecute(result);
-					if (result != null && !result.hasErrors()) {
-						// updating UI from Background Thread
-						runOnUiThread(new Runnable() {
-							public void run() {
-								// remove row from list
-								adapter.removeDevice(position-1);
-								adapter.notifyDataSetInvalidated();
-							}
-						});
-					}
-				}
-			}.execute();
+			Toast.makeText(getApplicationContext(), "Função indisponível", Toast.LENGTH_LONG).show();
 		}
+	}
+
+	public void onFollowClick(final View v) {
+		final String id = ((TextView)((RelativeLayout)v.getParent()).findViewById(R.id.device_id)).getText().toString();
+		new AsyncService<Entity>(ListViewActivity.this, "Sending follow request...") {
+			@Override
+			protected Entity doInBackground(final String... args) {
+				final Device rowDevice = adapter.findById(Long.valueOf(id));
+
+				// register on server
+				final Relationship follow = new Relationship();
+				final Device currentUser = UserFunctions.getCurrentUser(getApplicationContext());
+				final Device follower = new Device();
+				follower.setId(currentUser.getId());
+				follow.setFollower(follower);
+
+				final Device following = new Device();
+				following.setId(rowDevice.getId());
+				follow.setFollowing(following);
+
+				final Entity entityResult = RelationshipService.follow(follow);
+				entityResult.addDevice(rowDevice);
+				return entityResult;
+			};
+
+			@Override
+			protected void onPostExecute(final Entity result) {
+				super.onPostExecute(result);
+				if (result != null && !result.hasErrors()) {
+					// updating UI from Background Thread
+					runOnUiThread(new Runnable() {
+						public void run() {
+							// remove row from list
+							adapter.removeDevice(result.getDevices().get(0));
+							adapter.notifyDataSetInvalidated();
+						}
+					});
+					Toast.makeText(getApplicationContext(), "Follow request sent successfully!", Toast.LENGTH_LONG).show();
+				}
+			}
+		}.execute();
+
 	}
 
 	@Override
