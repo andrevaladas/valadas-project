@@ -53,7 +53,6 @@ public class CheckinService {
 							// get current user and set current location
 							final Device currentUser = UserFunctions.getCurrentUser(parent.getApplicationContext());
 							currentUser.setLocations(localDevice.getLocations());
-
 							// send data to server
 							return LocationService.checkinLocation(currentUser);
 						}
@@ -61,6 +60,7 @@ public class CheckinService {
 						protected void onPostExecute(final Entity result) {
 							super.onPostExecute(result);
 							if(result != null && !result.hasErrors()) {
+								LocationFunctions.addLastLocation(localDevice.getLocations().get(0), parent);
 								SuccessMessage.show(parent.getString(R.string.checkinSuccess), parent);
 							} else {
 								ErrorMessage.show(parent.getString(R.string.checkinError), parent);

@@ -1,36 +1,29 @@
 package com.chronosystems.service.tracker;
 
-import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.os.SystemClock;
 
+import com.chronosystems.library.utils.QuickPrefsUtils;
 import com.chronosystems.wakeful.WakefulIntentService;
 
 public class TrackListener implements WakefulIntentService.AlarmListener {
 
-	public static Activity mainActivity;
 	public static TrackUpdateListener updateListener;
-	public static final float minimumDistance = 200f; //meters
-	private static final int timerTrack = 3 * 60 * 1000; //minutes
 
 	public TrackListener() {
 		super();
 	}
 
-	public TrackListener(final Activity activity) {
+	public TrackListener(final TrackUpdateListener trackUpdateListener) {
 		super();
-		mainActivity = activity;
-	}
-	public TrackListener(final Activity activity, final TrackUpdateListener trackUpdateListener) {
-		super();
-		mainActivity = activity;
 		updateListener = trackUpdateListener;
 	}
 
 	public void scheduleAlarms(final AlarmManager mgr, final PendingIntent pi, final Context ctxt) {
-		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, timerTrack, pi);
+		final int updateInterval = QuickPrefsUtils.getUpdateInterval(ctxt); //minutes
+		mgr.setInexactRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP, SystemClock.elapsedRealtime() + 60000, updateInterval * 60 * 1000, pi);
 	}
 
 	public void sendWakefulWork(final Context ctxt) {

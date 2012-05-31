@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="updateInterval">
+        <item name="3">Every 3 minutes</item>
+        <item name="5">Every 5 minutes</item>
+        <item name="10">Every 10 minutes</item>
+        <item name="15">Every 15 minutes</item>
+        <item name="30">Every 30 minutes</item>
+        <item name="60">Every 1 hour</item>
+        <item name="300">Every 5 hours</item>
+    </string-array>
+    <string-array name="updateIntervalValues">
+        <item name="3">3</item>
+        <item name="5">5</item>
+        <item name="10">10</item>
+        <item name="15">15</item>
+        <item name="30">30</item>
+        <item name="60">60</item>
+        <item name="300">300</item>
+    </string-array>
+
+    <string-array name="minimumDistance">
+        <item name="50">50 meters</item>
+        <item name="100">100 meters</item>
+        <item name="200">200 meters</item>
+        <item name="300">300 meters</item>
+        <item name="500">500 meters</item>
+        <item name="1000">1 kilometer</item>
+        <item name="2000">+2 kilometers</item>
+    </string-array>
+    <string-array name="minimumDistanceValues">
+        <item name="50">50</item>
+        <item name="100">100</item>
+        <item name="200">200</item>
+        <item name="300">300</item>
+        <item name="500">500</item>
+        <item name="1000">1000</item>
+        <item name="2000">2000</item>
+    </string-array>
+    
+</resources>

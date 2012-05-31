@@ -11,15 +11,19 @@ import android.widget.TextView;
 
 import com.chronosystems.R;
 import com.chronosystems.entity.Device;
+import com.chronosystems.library.utils.QuickPrefsUtils;
 import com.chronosystems.service.local.UserFunctions;
 
 public class HomeActivity extends Activity {
+
+	private TextView welcomeText;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.home);
 
+		welcomeText = (TextView) findViewById(R.id.welcomeText);
 		final TextView displayName = (TextView) findViewById(R.id.displayName);
 		final Device device = UserFunctions.getCurrentUser(this);
 		displayName.setText(device.getName());
@@ -41,5 +45,11 @@ public class HomeActivity extends Activity {
 				finish();
 			}
 		});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		welcomeText.setText(QuickPrefsUtils.getWelcome(this));
 	}
 }

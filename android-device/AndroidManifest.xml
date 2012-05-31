@@ -78,6 +78,12 @@
             android:label="Map Location" 
             android:name=".view.MapViewActivity"
             android:theme="@android:style/Theme.NoTitleBar"></activity>
+        
+        <!-- QuickPreferences Activity -->
+        <activity
+            android:label="QuickPreferences" 
+            android:name=".view.QuickPrefsActivity"
+            android:theme="@android:style/Theme.NoTitleBar"></activity>
      
         <uses-library android:name="com.google.android.maps" android:required="true"/>
     </application>

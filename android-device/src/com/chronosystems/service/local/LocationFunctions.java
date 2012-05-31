@@ -22,5 +22,10 @@ public class LocationFunctions {
 		final Device currentUser = db.getCurrentUser();
 		db.addLastLocation(currentUser.getId(), location.getLatitude(), location.getLongitude());
 	}
+	public static void addLastLocation(final com.chronosystems.entity.Location location, final Context context){
+		final DatabaseHandler db = new DatabaseHandler(context);
+		final Device currentUser = db.getCurrentUser();
+		db.addLastLocation(currentUser.getId(), location.getLatitude(), location.getLongitude());
+	}
 
 }
