@@ -7,8 +7,12 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TabHost;
 import android.widget.TabHost.OnTabChangeListener;
 import android.widget.TabHost.TabSpec;
@@ -17,6 +21,7 @@ import android.widget.Toast;
 
 import com.chronosystems.R;
 import com.chronosystems.library.utils.GpsUtils;
+import com.chronosystems.library.utils.QuickPrefsUtils;
 import com.chronosystems.service.local.CheckinService;
 import com.chronosystems.service.local.UserFunctions;
 import com.chronosystems.service.tracker.TrackListener;
@@ -27,9 +32,11 @@ import com.chronosystems.wakeful.WakefulIntentService;
 public class TabDashboardActivity extends TabActivity {
 	// Checkin Service
 	private final CheckinService checkinService = new CheckinService();
+	private ImageView locationUpdateIndicator;
+
+	private static final AtomicInteger count = new AtomicInteger();
+	private static final AtomicInteger updates = new AtomicInteger();
 	private TextView trackCount;
-	private static final AtomicInteger count = new AtomicInteger(1);
-	private static final AtomicInteger updates = new AtomicInteger(1);
 
 	/** Called when the activity is first created. */
 	@Override
@@ -42,10 +49,15 @@ public class TabDashboardActivity extends TabActivity {
 		// Check login status in database
 		if(UserFunctions.isUserLoggedIn(getApplicationContext())){
 			setContentView(R.layout.tab_dashboard);
+			locationUpdateIndicator = (ImageView) findViewById(R.id.location_update_indicator);
+
+			// log updates
+			trackCount = (TextView)findViewById(R.id.trackCount);
+			if (QuickPrefsUtils.locationUpdateEnabled(this) && QuickPrefsUtils.showLogUpdates(this)) {
+				trackCount.setText(String.valueOf(count.get()+" #"+updates.get()));
+			}
 
 			/** START THE UPDATE LOCATION SERVICE*/
-			trackCount = (TextView)findViewById(R.id.trackCount);
-			trackCount.setText(String.valueOf(count.get()+" #"+updates.get()));
 			if (GpsUtils.checkConfiguration(this)) {
 				startTrackLocationService();
 			}
@@ -69,12 +81,6 @@ public class TabDashboardActivity extends TabActivity {
 			placesTab.setIndicator(getString(R.string.places), getResources().getDrawable(R.drawable.icon_places_tab));
 			final Intent placesIntent = new Intent(this, PlacesViewActivity.class);
 			placesTab.setContent(placesIntent);
-
-			// Tab for Profile
-			//			final TabSpec profileTab = tabHost.newTabSpec(getString(R.string.profile));
-			//			profileTab.setIndicator(getString(R.string.profile), getResources().getDrawable(R.drawable.icon_profile_tab));
-			//			final Intent profileIntent = new Intent(this, HomeActivity.class);
-			//			profileTab.setContent(profileIntent);
 
 			final TabSpec searchTab = tabHost.newTabSpec(getString(R.string.search));
 			searchTab.setIndicator(getString(R.string.search), getResources().getDrawable(R.drawable.icon_search_tab));
@@ -116,12 +122,16 @@ public class TabDashboardActivity extends TabActivity {
 	}
 
 	private void startTrackLocationService() {
-		final TrackListener listener = new TrackListener(this, new TrackUpdateListener() {
+		final TrackListener listener = new TrackListener(new TrackUpdateListener() {
 			public void update(final Location location, final float distance, final boolean update) {
 				runOnUiThread(
 						new Runnable() {
 							public void run() {
-								trackCount.setText(String.valueOf(count.getAndIncrement()+" #"+(update ? updates.getAndIncrement() : updates.get())));
+								count.getAndIncrement();
+								if (update) {
+									updates.getAndIncrement();
+								}
+								trackCount.setText(String.valueOf(count.get()+" #"+updates.get()));
 								if (location != null) {
 									Toast.makeText(getApplicationContext(), "#Location UPDATE ["+update+"]" +
 											"\ndistance: "+distance+
@@ -131,7 +141,7 @@ public class TabDashboardActivity extends TabActivity {
 											"\nspeed.: "+location.getSpeed()+
 											"\ntime.: "+new Date(location.getTime()), Toast.LENGTH_LONG).show();
 								} else {
-									Toast.makeText(getApplicationContext(), "LastLocation not found!", Toast.LENGTH_SHORT).show();
+									Toast.makeText(getApplicationContext(), "LastLocation not found!", Toast.LENGTH_LONG).show();
 								}
 							}
 						});
@@ -142,10 +152,45 @@ public class TabDashboardActivity extends TabActivity {
 
 	@Override
 	protected void onResume() {
+		refreshLocationUpdateIndicator();
+		if (!QuickPrefsUtils.showLogUpdates(this)) {
+			trackCount.setText(null);
+		}
 		if (GpsUtils.isEnabled(this)) {
 			startTrackLocationService();
 		}
 		super.onResume();
+	}
+
+	private void refreshLocationUpdateIndicator() {
+		if (QuickPrefsUtils.locationUpdateEnabled(this)) {
+			locationUpdateIndicator.setBackgroundDrawable(getResources().getDrawable(R.drawable.location_update_on));
+		} else {
+			locationUpdateIndicator.setBackgroundDrawable(getResources().getDrawable(R.drawable.location_update_off));
+		}
+	}
+
+	public void onLocationUpdateIndicatorClick(final View v) {
+		QuickPrefsUtils.changeLocationUpdate(this);
+		refreshLocationUpdateIndicator();
+		Toast.makeText(this, "Update location "+(QuickPrefsUtils.locationUpdateEnabled(this) ? "on" : "off"), Toast.LENGTH_LONG).show();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(final Menu menu) {
+		final MenuInflater menuInflater = getMenuInflater();
+		menuInflater.inflate(R.menu.menu_home, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_preferences:
+			startActivity(new Intent(getApplicationContext(), QuickPrefsActivity.class));
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

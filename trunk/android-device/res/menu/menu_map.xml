@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    	android:scrollbarAlwaysDrawVerticalTrack="true">
+    android:scrollbarAlwaysDrawVerticalTrack="true" >
 
-    <item android:id="@+id/menu_home"
-          android:icon="@drawable/home_white"
-          android:title="@string/home"/>
+    <item
+        android:id="@+id/menu_home"
+        android:icon="@drawable/home_white"
+        android:title="@string/home"/>
+    <item
+        android:id="@+id/menu_me"
+        android:icon="@drawable/black_pin"
+        android:title="@string/find_me"/>
+    <item
+        android:id="@+id/road"
+        android:icon="@drawable/global_map"
+        android:title="@string/satellite"/>
+    <item
+        android:id="@+id/menu_chance_account"
+        android:icon="@drawable/refresh"
+        android:title="@string/change_account"/>
 
-    <item android:id="@+id/menu_me"
-          android:icon="@drawable/black_pin"
-          android:title="@string/find_me"/>
-    
-    <item android:id="@+id/road"
-          android:icon="@drawable/global_map"
-          android:title="@string/satellite"/>
-
-    <item android:id="@+id/menu_chance_account"
-          android:icon="@drawable/refresh"
-          android:title="@string/change_account"/>
 </menu>

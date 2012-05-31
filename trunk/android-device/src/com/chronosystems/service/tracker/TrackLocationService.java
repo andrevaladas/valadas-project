@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.chronosystems.entity.Device;
 import com.chronosystems.gps.GpsLocationService;
+import com.chronosystems.library.utils.QuickPrefsUtils;
 import com.chronosystems.service.local.LocationFunctions;
 import com.chronosystems.service.local.UserFunctions;
 import com.chronosystems.service.remote.LocationService;
@@ -30,15 +31,14 @@ public class TrackLocationService extends WakefulIntentService {
 
 	@Override
 	protected void doWakefulWork(final Intent intent) {
-		if (TrackListener.mainActivity == null) {
+		if (!QuickPrefsUtils.locationUpdateEnabled(this)) {
 			return;
 		}
-
 		Log.i(getClass().getSimpleName(), "background task - start");
 
 		Location currentLocation = null;
 		if (locationService == null) {
-			locationService = new GpsLocationService((LocationManager) TrackListener.mainActivity.getSystemService(Context.LOCATION_SERVICE));
+			locationService = new GpsLocationService((LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE));
 		}
 
 		try {
@@ -58,7 +58,7 @@ public class TrackLocationService extends WakefulIntentService {
 				// validate the minimum distance in meters
 				if (verifyMinimumDistance(currentLocation)) {
 					// get current user and set current location
-					final Device currentUser = UserFunctions.getCurrentUser(TrackListener.mainActivity);
+					final Device currentUser = UserFunctions.getCurrentUser(getApplicationContext());
 					// remote location
 					final com.chronosystems.entity.Location location = new com.chronosystems.entity.Location(
 							currentLocation.getLatitude(),
@@ -80,20 +80,22 @@ public class TrackLocationService extends WakefulIntentService {
 
 		Log.i(getClass().getSimpleName(), "background task - end");
 		if (TrackListener.updateListener != null) {
-			TrackListener.updateListener.update(currentLocation, distance, updateLocation);
+			if (QuickPrefsUtils.showLogUpdates(this)) {
+				TrackListener.updateListener.update(currentLocation, distance, updateLocation);
+			}
 		}
 	}
 
 	private boolean verifyMinimumDistance(final Location currentLocation) {
 		updateLocation = false;
 		if (lastLocation == null) {
-			lastLocation = LocationFunctions.getLastLocation(TrackListener.mainActivity);//from local DB
+			lastLocation = LocationFunctions.getLastLocation(getApplicationContext());//from local DB
 		}
 
 		// validate the approximate distance in meters
 		if (lastLocation != null) {
 			distance = lastLocation.distanceTo(currentLocation);
-			updateLocation = distance >= TrackListener.minimumDistance;
+			updateLocation = distance >= QuickPrefsUtils.getMinimumDistance(this);
 		} else {
 			// is first location
 			updateLocation = true;
@@ -101,7 +103,7 @@ public class TrackLocationService extends WakefulIntentService {
 
 		//store in local db
 		if (updateLocation) {
-			LocationFunctions.addLastLocation(currentLocation, TrackListener.mainActivity);
+			LocationFunctions.addLastLocation(currentLocation, getApplicationContext());
 			lastLocation = currentLocation; //update location
 		}
 		return updateLocation;

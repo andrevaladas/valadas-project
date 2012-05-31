@@ -9,6 +9,17 @@
     android:paddingTop="5dip" >
 
     <!-- Logo Start -->
+
+    <ImageView
+        android:id="@+id/location_update_indicator"
+        android:layout_gravity="center"
+        android:layout_marginLeft="5dp"
+        android:layout_width="31dp"
+        android:layout_height="31dp"
+        android:clickable="true"
+        android:onClick="onLocationUpdateIndicatorClick"
+        android:background="@drawable/location_update_off" />
+
     <ImageView
         android:layout_width="105dp"
         android:layout_height="31dp"

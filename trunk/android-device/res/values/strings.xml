@@ -19,6 +19,8 @@
     <string name="find_me">Find Me</string>
     <string name="search">Search</string>
     
+    <string name="preferences">Preferences</string>
+    
     <string name="search_places">Search Places</string>
     <string name="choose_place_type">Choose your place type</string>
     <string name="range_label">Range:</string>
