@@ -1,0 +1,769 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<!-- Includes -->
+	<script>
+		var dpVeiculo=""; // Datapath com o veiculo escolhido na lista ( disponivel em todo o programa com xPathQuery('@campo')
+		var enter=13;	  // Utilizado para o onselect da lista
+		var lang="P";
+
+      	var tif104Class=null;
+	</script>
+
+   	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/configuraChassis.lzx" />
+	<include href="../include/fileupload.lzx"/> 
+
+	<!-- Figuras -->
+	<resource name="imgVeic">				 <!--dm_Tipo_Chassis-->
+ 		<frame  src="../images/PNEUCA04_S.PNG" /> <!-- 1 ok-->
+ 		<frame  src="../images/PNEUCA08_S.PNG" /> <!-- 2 ok-->
+ 		<frame  src="../images/PNEUCA12_S.PNG" /> <!-- 3 ok-->
+ 		<frame  src="../images/PNEUCA16_S.PNG" /> <!-- 4 ok-->
+ 		<frame  src="../images/PNEUCA32_S.PNG" /> <!-- 5 ok-->
+ 		<frame  src="../images/PNEUCAS4_S.PNG" /> <!-- 6 ok-->
+ 		<frame  src="../images/PNEUCAS6_S.PNG" /> <!-- 7 ok-->
+ 		<frame  src="../images/PNEUCO04_S.PNG" /> <!-- 8 ok-->
+ 		<frame  src="../images/PNEUCO06_S.PNG" /> <!-- 9 ok-->
+ 		<frame  src="../images/PNEUCO10_S.PNG" /> <!--10 ok-->
+ 		<frame  src="../images/PNEUDO08_S.PNG" /> <!--11 ok-->
+ 		<frame  src="../images/PNEUON06_S.PNG" /> <!--12 ok-->
+ 		<frame  src="../images/PNEUON08_S.PNG" /> <!--13 ok-->
+ 		<frame  src="../images/PNEUON09_S.PNG" /> <!--14 ok-->
+ 		<frame  src="../images/PNEUON10_S.PNG" /> <!--15 ok-->
+ 		<frame  src="../images/PNEUON12_S.PNG" /> <!--16 ok-->
+ 		<frame  src="../images/PNEUON14_S.PNG" /> <!--17 ok-->
+ 		<frame  src="../images/PNEURE02_S.PNG" /> <!--18 ok-->
+ 		<frame  src="../images/PNEURE08_S.PNG" /> <!--19 ok-->
+ 		<frame  src="../images/PNEURE12_S.PNG" /> <!--20 ok-->
+ 		<frame  src="../images/PNEUEM06_S.PNG" /> <!--21 ok-->
+	</resource>
+	<resource name="pneuesqfig" src="../images/pneuesq.png"/>
+	<resource name="pneudirfig" src="../images/pneudir.png"/>
+	<resource name="pneustpfig" src="../images/pneustep.png"/>
+	<resource name="flybox" src="../images/flybox.png"/>
+
+	<!-- Classes para uso na tela -->
+	<!-- Classe basica do pneu para ser extendida em esquerdo e direto -->
+  	<class name="pneu" visible="true" clickable="true" fontstyle="bold" fontsize="10" width="71" height="24"> 
+  		<handler name="onmousedown">
+  			flyBox.setVisible(false);
+  		</handler>
+  		<handler name="ondblclick">
+  			<![CDATA[
+  			if (telaInspecaoPosicao.parent.vButtons.validate()) {
+  				/** Verifica se os dados validados já foram salvos */
+  				if (Number(dpVeiculo.getNodeAttribute('nr_Odometro')) > 0) {
+  					var dmPosicao = this.getAttribute('name').toUpperCase();
+  					var nrEixo = this.getAttribute('nrEixo');
+  					telaInspecaoPosicao.open(dmPosicao,nrEixo);
+  				} else {
+  					telaInspecaoPosicao.parent.janelaErro.mostra('Salve os dados antes de prosseguir!');
+  				}
+  			}
+  			]]>
+  		</handler>	
+  		<handler name="onmouseover">
+  			<![CDATA[
+  			/** pre-destroi a classe caso já exista evitando travamento da tela */
+			if (tif104Class) {
+				tif104Class.destroy();
+			}
+
+			/** Verifica se pneu foi configurado */
+			var pneuInspecao = dpVeiculo.getNodeAttribute(this.name.toUpperCase());
+			if (pneuInspecao) {
+  				// Calcula onde abrir a janela flybox quando não cabe mais na tela a direita
+  				var x=this.x+this.width+2+ flyBox.width;
+  				wx=carro.width;
+  				if (x>wx) {x=this.x-flyBox.width-2;} 
+  				else {x=this.x+this.width+2;}
+
+  				// Abre a janela ao lado do pneu
+	  			flyBox.setAttribute("x",x);
+	  			flyBox.setAttribute("y",this.y);
+	  			flyBox.tit.tit.setAttribute("text","Posição Pneu");
+	  			flyBox.dat.dat.setAttribute("text","Nr Fogo: " + dpVeiculo.getNodeAttribute(this.name.toUpperCase()+"_Nr_Fogo"));
+	  			flyBox.odo.odo.setAttribute("text","Vida: " + dpVeiculo.getNodeAttribute(this.name.toUpperCase()+"_Dm_Vida_Pneu"));
+	  			flyBox.bringToFront();
+	  			flyBox.setVisible(true);
+  			}
+  			]]>
+  		</handler>
+  		<handler name="onmouseout">
+  			flyBox.setVisible(false);
+  		</handler>
+  		<attribute name="nrEixo" type="text" />
+     	<animator name="anmx" attribute="x" to="1" duration="500" motion="easeout" start="false"/>
+     	<animator name="anmy" attribute="y" to="1" duration="500" motion="easeout" start="false"/>
+  	</class>
+	<!-- Classe pneu esquerdo -->
+  	<class name="pneuesq" extends="pneu" resource="pneuesqfig" >
+ 		<text name="pos" fgcolor="white" resize="true" align="center" y="6" /> 
+  	</class>
+	<!-- Classe pneu direito -->
+  	<class name="pneudir" extends="pneu" resource="pneudirfig" >
+     	<text name="pos" fgcolor="white" resize="true" align="center" y="1" /> 
+  	</class>
+	<!-- Classe pneu step -->
+  	<class name="pneustep" extends="pneu" resource="pneustpfig" width="71" height="71" >
+     	<text name="pos" fgcolor="white" resize="true" align="center"  /> 
+  	</class>
+
+    <!-- Classe para as combos de Pressao Pneu -->
+    <class name="PressaoPadrao" extends="view">
+	  	<attribute name="xPosition" type="text" value="0"/>
+	  	<handler name="oninit">
+      		this.setAttribute('x',this.xPosition+7);
+      	</handler>
+      	<method name="getValue">
+      		return comboProperty.getValue();
+      	</method>
+      	<method name="setValue" args="value">
+      		return comboProperty.setValue(value);
+      	</method>
+    	<datacombobox name="comboProperty" width="70" height="21" shownitems="5" itemdatapath="dsPressaoPadrao:/cad/item" defaulttext="-------" />
+	</class>
+	<!-- Datasets para o combo Pressao Pneu -->
+	<dataset id="dsPressaoPadrao" name="dsPressaoPadrao" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ComboServlet?combo=Stif_Perda_Percentual" />
+
+	<!-- Classe da Tela -->
+	<class name="tif103" extends="view" >
+
+	<!-- Popula lista de veículos inspecionados -->
+	<method name="selfPopulate" args="oidInspecao" >
+		dsVeiculoInspecao.setAttribute("src","../../ControlerServlet?");
+		dsVeiculoInspecao.setQueryString({
+				   tela : "tif103",
+					 ed : "Stif_Veiculo_InspecaoED",
+		  			 rn : "Stif_Veiculo_InspecaoRN",
+		  		   acao : "L",
+		   oid_Inspecao : oidInspecao
+		});
+		dsVeiculoInspecao.doRequest();
+	</method>
+
+	<!-- Datasets -->
+	<!-- Dataset para alterar inspeção -->
+	<dataset name="dsInspecao" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+      	ondata="var resultado = parent.dsInspecaodp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	} else {
+              		if (resultado=='AOK'){
+              			parent.janela.janelaAviso.mostra('Registro alterado com sucesso!');
+              		} else
+              		if (resultado=='IMGOK'){
+              			parent.janela.janelaAviso.mostra('Imagem registrada com sucesso!');
+              			parent.janela.image103w.close();
+              		} else {
+              			parent.janela.janelaAviso.mostra(resultado);
+              		}
+	         	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsInspecaodp" xpath="local:dsInspecao:/" />
+	<datapointer name="dsInspecaodp1" xpath="local:dsInspecao:/ret/item" />
+	
+	<!-- Lista de Veículos -->
+	<dataset id="dsVeiculoInspecao" name="veics" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+   		src="../../ControlerServlet"
+   		oninit="parent.janela.carregando.startAni();"
+   		ondata="parent.janela.carregando.stopAni();"
+  		onerror="parent.janela.carregando.stopAni();" 
+	    ontimeout="parent.janela.carregando.stopAni();
+      		   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"	
+	    />
+	<datapointer name="veicsdp" xpath="local:veics:/" />
+	<!-- Constatacoes -->
+	<dataset name="dsConstatacoes" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+   		src="../../ControlerServlet"
+      	ondata="parent.janela.vConstatacoes.updateItens(this.getPointer());
+      			parent.janela.carregando.stopAni();"
+  		onerror="parent.janela.carregando.stopAni();" 
+	    ontimeout="parent.janela.carregando.stopAni();
+      		   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+	    />
+	<datapointer name="dsConstatacoesdp" xpath="local:dsConstatacoes:/" />
+
+	<!-- Window -->
+	<view name="janela">
+	    <!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.bringToFront();
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+		
+		<!-- Imagem Veículo -->
+	    <modaldialog name="image103w" title="Adicionar foto" bgcolor="#FAFAFA" height="${158+80}" width="${550+20}" closeable="true" visible="false" >
+			<view name="vCampos" width="70" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="70" align="right" layout="axis:none">
+					<text height="21" align="right">Observação:</text>
+				</view>
+				<cpoEditsXY name="edits" >
+					<edittext name="tx_Observacao_Imagem" width="300" height="150" multiline="true"
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');"/>
+
+					<button x="330" width="115">Carregar foto
+						<handler name="onclick">
+							parent.parent.parent.parent.uploadImagem.open();
+						</handler>
+					</button>
+					<view y="26" x="307" height="122" width="152" bgcolor="black" />
+					<view y="27" x="308" height="120" width="150" bgcolor="#FAFAFA" />
+					<view y="27" x="308" name="myimage" height="120" width="150" stretches="both">
+						<handler name="onclick">
+							var imagemEspandida = parent.parent.parent.parent.imagemEspandida;
+							if (imagemEspandida.vQuadro.myimage.width > 600) {
+								imagemEspandida.vQuadro.setWidth(600);
+							} else imagemEspandida.vQuadro.setWidth(imagemEspandida.vQuadro.myimage.width);
+							if (imagemEspandida.vQuadro.myimage.height > 400) {
+								imagemEspandida.vQuadro.setHeight(400);
+							} else imagemEspandida.vQuadro.setHeight(imagemEspandida.vQuadro.myimage.height);
+						  	imagemEspandida.open();
+						</handler>
+					</view>
+				</cpoEditsXY>
+			</view>
+			<view name="vButtons" y="${parent.vCampos.height + 5}" layout="axis:x; spacing:2">
+				<button width="70">Fechar
+					<handler name="onclick">
+						parent.parent.close();
+					</handler>
+				</button>
+				<button width="70">Salvar
+					<handler name="onclick">
+						var txObservacaoImagem = parent.parent.vCampos.edits.tx_Observacao_Imagem.getValue();
+	              		dpVeiculo.setNodeAttribute('tx_Observacao_Imagem', txObservacaoImagem);
+
+	          			parent.parent.parent.parent.dsInspecao.setAttribute("src","../../ControlerServlet?");
+	  					parent.parent.parent.parent.dsInspecao.setQueryString({
+											 tela : "tif103",
+											   ed : "Stif_Veiculo_InspecaoED",
+				  							   rn : "Stif_Veiculo_InspecaoRN",
+							   			  	 acao : "IMG",
+							 oid_Veiculo_Inspecao : dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao"),
+					  	     tx_Observacao_Imagem : txObservacaoImagem
+	  					});
+						parent.parent.parent.parent.dsInspecao.doRequest();
+						parent.parent.parent.carregando.startAni();
+					</handler>
+				</button>
+			</view>
+			<method name="mostra">
+				vCampos.edits.tx_Observacao_Imagem.setText(dpVeiculo.getNodeAttribute("tx_Observacao_Imagem"));
+
+				var imagemService = 'http://127.0.0.1:8080/sgtt/ImageServlet?oid_Veiculo_Inspecao='+dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao");
+				vCampos.edits.myimage.setAttribute('source', imagemService);
+				parent.imagemEspandida.vQuadro.myimage.setAttribute('source', imagemService);
+				this.open();
+			</method>
+	    </modaldialog>
+		<!-- Janela para upload de arquivo -->
+		<modaldialog name="uploadImagem" title="Carga de foto" layout="axis:y; spacing:5">
+			<view>
+			<fileUpload name="myFileUpload">
+				<method name="onComplete" args="fr">
+					<![CDATA[
+					var arq = 'http://127.0.0.1:8080/sgtt/Imagens/bandas/'+dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao")+'.jpg';
+					parent.progressBar.setValue(100);
+					parent.upload.setAttribute('enabled', false);
+					parent.parent.parent.image103w.vCampos.edits.myimage.setAttribute('source', arq);
+					parent.parent.parent.imagemEspandida.vQuadro.myimage.setAttribute('source', arq);
+					parent.parent.close();
+					parent.txtFile.setText("");
+					parent.progressBar.setValue(0);
+					]]>
+				</method>
+				<method name="onProgress" args="fr, bytesLoaded, bytesTotal">
+					<![CDATA[
+					parent.progressBar.setValue(bytesLoaded * 100 / bytesTotal);
+					]]>
+				</method>
+				<method name="onSelect" args="fr">
+					<![CDATA[
+					parent.txtFile.setText(getName());
+					parent.upload.setAttribute('enabled', true);
+					]]>
+				</method>
+			</fileUpload>
+			<edittext x="10" y="10" width="200" name="txtFile" enabled="false"/>
+			<button x="210" y="11" text="Browse...">
+				<handler name="onclick">
+					<![CDATA[
+					parent.progressBar.percent.setText('0  %');
+					parent.progressBar.status.setAttribute('bgcolor',white);
+					parent.myFileUpload.browse();
+					]]>
+				</handler>
+			</button>
+			<button name="upload" x="290" y="11" text="Upload" enabled="false">
+				<handler name="onclick">
+					<![CDATA[
+					parent.myFileUpload.upload('../../MyServlet?usuario='+dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao")); // This should be the complete URL where we want to upload the file
+					]]>
+				</handler>
+			</button>
+			<view name="progressBar" x="356" y="11" width="50" height="24" bgcolor="#666666">
+				<view x="1" y="1" width="48" height="22" bgcolor="#FFFFFF"/>
+				<view name="status" x="1" y="1" height="22" bgcolor="#BBBBFF"/>
+				<text name="percent" x="5" y="3" fontstyle="bold" fgcolor="#6666FF"/>
+				<method name="setValue" args="value">
+					<![CDATA[
+					status.setAttribute('width', value * 48 / 100);
+					percent.setText(Math.round(value) + '%');
+					]]>
+				</method>
+			</view>
+			</view>
+			<button>Fechar
+           		<method event="onclick">
+           			this.close()
+           		</method>
+        	</button>
+      	</modaldialog>
+
+      	<modaldialog name="imagemEspandida" title="Visualização" width="${vQuadro.width+60}" height="${vQuadro.height+60}" bgcolor="#EAEAEA" closeable="true">
+      		<view y="0" x="5" name="vQuadro" clip="true">
+      			<view name="myimage" clip="true" />
+      		</view>
+      	</modaldialog>
+
+		<!-- View com destinos falsos para o inicio da tela ( opacity 0.5)-->
+		<view id="background" width="520" height="200" bgcolor="#C0C0C0" y="103" x="5" visible="true"/>
+		<!-- Título da tela -->
+		<titulo x="5" text="Veículos em Inspeção" widthLine="$once{parent.width - 29}" corFrente="#FF9900" />
+		<!-- View da tela -->
+		<view name="tela" y="25" layout="axis:x; spacing:3" options="lazyreplication;" >
+			<view name="A" layout="axis:y; spacing:3" y="5" >
+				<!-- Caracteristicas do veiculo escolhido -->
+				<view name="dadosVeiculo"  bgcolor="black" width="520" height="70" x="5" >
+					<view name="dadosVeiculo" bgcolor="#EAEAEA" x="1" y="1" width="$once{parent.width - 2}" height="$once{parent.height - 2}">
+				    	<simplelayout spacing="3"/>
+				        <baseEdits name="edits" width="100" >
+							<!-- Labels -->
+							<view name="lbl1" width="110" x="5" y="10" layout="axis:y; spacing:1">
+								<text height="21" align="right" text="Veículo:" />
+								<text height="21" align="right" text="Hodômetro:" />
+							</view>
+							<!-- Labels -->
+							<view name="lbl2" id="lbl2" x="115" width="110" y="10" layout="axis:y; spacing:1" >
+								<datapath/>
+								<text height="21" width="110" datapath="@nr_Frota" fgcolor="#228B22"/>
+								<edittext height="21" name="nr_Odometro" width="80" maxlength="10" datapath="@nr_Odometro"
+									oninit="parent.parent.pattern(this,'int')" onblur="parent.parent.format(this,'int');"/>
+							</view>
+							<!-- Labels -->
+							<view name="lbl3" width="110" x="140" y="10" layout="axis:y; spacing:1">
+								<text height="21" align="right" text="Marca:" />
+								<text height="21" align="right" text="Modelo:" />
+							</view>
+							<view name="lbl4" id="lbl4" x="250" width="110" y="10" layout="axis:y; spacing:1" fgcolor="#228B22">
+								<datapath/>
+								<text height="21" width="110" datapath="@nm_Marca_Veiculo"/>
+								<text height="21" width="110" datapath="@nm_Modelo_Veiculo"/>
+							</view>
+							<view name="lbl5" id="lbl5" x="370" width="70" y="10" layout="axis:y; spacing:1" >
+								<datapath/>
+								<placa x="10" y="10">
+									<handler name="oninit">
+										this.placa.cidade.setText("Tipler");
+									</handler>
+								</placa>	
+							</view>
+						</baseEdits>
+					</view>
+				</view>
+				<!-- Monta a view do veiculo e pneus -->
+			  	<view id="carro" resource="imgVeic" width="520" x="5" visible="false">	
+					<!--Pneus esquerdos-->
+					<pneuesq name="l8ee" visible="false" />
+					<pneuesq name="l8ei" visible="false" />
+					<pneuesq name="l7ee" visible="false" />
+					<pneuesq name="l7ei" visible="false" />
+					<pneuesq name="l6ee" visible="false" />
+					<pneuesq name="l6ei" visible="false" />
+					<pneuesq name="l5ee" visible="false" />
+					<pneuesq name="l5ei" visible="false" />
+					<pneuesq name="l4ee" visible="false" />
+					<pneuesq name="l4ei" visible="false" />
+					<pneuesq name="l3ee" visible="false" />
+					<pneuesq name="l3ei" visible="false" />
+					<pneuesq name="l2ee" visible="false" />
+					<pneuesq name="l2ei" visible="false" />
+					<pneuesq name="l1ee" visible="false" />
+					<pneuesq name="l1ei" visible="false" />
+					<pneuesq name="tkee" visible="false" />
+					<pneuesq name="tkei" visible="false" />
+					<pneuesq name="tee"  visible="false" />
+					<pneuesq name="tei"  visible="false" />
+					<pneuesq name="d2e"  visible="false" />
+					<pneuesq name="de"   visible="false" />
+					<!--Pneus direitos-->		
+					<pneudir name="l8de" visible="false" />
+					<pneudir name="l8di" visible="false" />
+					<pneudir name="l7de" visible="false" />
+					<pneudir name="l7di" visible="false" />
+					<pneudir name="l6de" visible="false" />
+					<pneudir name="l6di" visible="false" />
+					<pneudir name="l5de" visible="false" />
+					<pneudir name="l5di" visible="false" />
+					<pneudir name="l4de" visible="false" />
+					<pneudir name="l4di" visible="false" />
+					<pneudir name="l3de" visible="false" />
+					<pneudir name="l3di" visible="false" />
+					<pneudir name="l2de" visible="false" />
+					<pneudir name="l2di" visible="false" />
+					<pneudir name="l1de" visible="false" />
+					<pneudir name="l1di" visible="false" />
+					<pneudir name="tkde" visible="false" />
+					<pneudir name="tkdi" visible="false" />
+					<pneudir name="tde"  visible="false" />
+					<pneudir name="tdi"  visible="false" />
+					<pneudir name="d2d"  visible="false" />
+					<pneudir name="dd"   visible="false" />
+					<!--Pneus step-->
+					<pneustep name="stp1" visible="false" />
+					<pneustep name="stp2" visible="false" />
+					<!-- View para mostrar dados do pneu no mouseover do pneu -->					
+					<view id="flyBox" opacity="0.75" visible="false" resource="flybox" fontsize="8" >
+						<view name="tit" y="2" align="left"> <text x="5" name="tit"></text> </view>	
+						<view name="dat" y="11" align="left"> <text x="5" name="dat"></text> </view>
+						<view name="odo" y="20" align="left"> <text x="20" name="odo"></text></view>
+					</view>		
+			  	</view>	
+			</view>
+			<!-- View da lista dos veiculos -->
+			<view width="125" height="394" y="5" bgcolor="black">
+				<view bgcolor="#EAEAEA" x="1" y="1" width="$once{parent.width - 2}" height="$once{parent.height - 2}" layout="axis:y; spacing:3">
+					<cpoEdits layout="axis:y; spacing:3">
+						<text text="Veículo:" height="21" x="10"/>
+						<edittext id="nr_Frota" maxlength="10" width="100" height="21" x="10"
+							oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" >
+							<handler name="onkeyup" args="k">
+								enter=k;
+								var n = this.getText();
+					            var l = n.length;
+								var i = 0;
+								var dp=classroot.veics.getPointer();
+					            var lNext=dp.selectChild(2);
+					            while (lNext) {
+					                var s = dp.getNodeAttribute('nr_Frota');
+					                s=s.substr(0,l);
+					                if (s==n) {
+										listaVeiculo.selectItemAt(i);
+										break;
+					                }    
+					                lNext=dp.selectNext();
+					                i++;
+					             }
+							</handler>
+						</edittext>	
+					    <list id="listaVeiculo" width="100" shownitems="15" x="10">
+        					<textlistitem datapath="local:classroot.veics:/cad/item" text="$path{'@nr_Frota'}" value="$path{'@oid_Veiculo'}" onclick="enter=13;"/>
+						  	<handler name="onselect" args="row">
+			  		      		if (enter==13) {
+			  		      			nr_Frota.setText(row.datapath.xpathQuery("@nr_Frota"));
+			  		      			vObservacao.tx_Observacao.setText(row.datapath.xpathQuery("@tx_Observacao"));
+
+	        						dpVeiculo=row.datapath; // Guarda o datpath do veiculo para disponibilizar a todo o programa globalmente
+	        						lbl2.datapath.setPointer(row.datapath.p);
+	        						lbl4.datapath.setPointer(row.datapath.p);
+	        						lbl5.datapath.setPointer(row.datapath.p);
+	        						parent.parent.parent.parent.parent.vButtons.datapath.setPointer(row.datapath.p);
+
+	        						//configura chassis
+	        						mostraPneus.mostra();
+			  		      		}
+        					</handler>
+    					</list>
+					</cpoEdits>		
+				</view>	
+			</view>
+		</view>
+
+		<!-- View para pressões pneus -->
+		<frame3d x="10" y="315" name="frameConstatacoes" width="513" height="40" bgcolor="white" caption=""/>
+		<text id="vConstatacoesLabel" text="Constatações: Pressão Padrão por Eixo" y="${parent.frameConstatacoes.y-8}" x="${parent.frameConstatacoes.x+10}" width="${parent.frameConstatacoes.width}" fgcolor="#BBBBBB"/>		
+		<view y="${parent.frameConstatacoes.y + 10}" id="vConstatacoes" name="vConstatacoes">
+			<method name="montaCombos">
+				<![CDATA[
+				//Excluir combos de constatações
+				this.removeCombos();
+
+				//Adicona novas combos
+				var positionsRef = [];
+				var x = carro.subviews.length;
+				var y = carro.subviews[0];
+				var i = 0;
+				for (i=0;i<x;i++){
+					var pneuCorrente = carro.subviews[i];
+					var visible = pneuCorrente.getAttribute('visible');
+					if (visible && (pneuCorrente instanceof pneudir || pneuCorrente instanceof pneuesq || pneuCorrente instanceof pneustep))  {
+						var xPosition = pneuCorrente.getAttribute("x");
+						//Verifica se já existe combo naquela posição
+						if (!this.contains(positionsRef, xPosition)) {
+							positionsRef.push(xPosition);
+							new PressaoPadrao(this, {xPosition: xPosition});
+						}
+						pneuCorrente.setAttribute('nrEixo', this.findNrEixo(positionsRef, xPosition));
+					}
+				}
+
+				//Busca valores das combos
+				parent.parent.dsConstatacoes.setAttribute("src","../../ControlerServlet?");
+				parent.parent.dsConstatacoes.setQueryString({
+									 tela : "tif103",
+									   ed : "Stif_ConstatacaoED",
+		  							   rn : "Stif_ConstatacaoRN",
+					   			  	 acao : "L",
+					 oid_Veiculo_Inspecao : dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao")
+				});
+
+				parent.parent.dsConstatacoes.doRequest();
+				parent.parent.janela.carregando.startAni();
+				]]>
+			</method>
+			<method name="removeCombos">
+				<![CDATA[
+				if (!this.subnodes) {
+					return;
+				}
+				while (this.subnodes.length > 0) {
+					this.subnodes[0].destroy();
+	  			}
+				]]>
+			</method>
+			<method name="contains" args="positions,value">
+				<![CDATA[
+			    for (var key in positions) {
+			        if (positions[key] == value) return true;
+				}
+			    return false;
+				]]>
+			</method>
+			<method name="findNrEixo" args="positions,value">
+				<![CDATA[
+			    for (var key in positions) {
+			        if (positions[key] == value) return Number(key)+1;
+				}
+			    return 0;
+				]]>
+			</method>
+			<method name="buildItensFormBean">
+				<![CDATA[
+				if (!this.subnodes) {
+					return null;
+				}
+
+				var array = "Stif_ConstatacaoED##";
+			    /** Alimenta Array */
+				for (var i=0;i<this.subnodes.length;i++){
+					var $pressaoPadrao = this.subnodes[i];
+		   			array +="oid_Veiculo_Inspecao=" + dpVeiculo.getNodeAttribute('oid_Veiculo_Inspecao') + "#";
+					array +="oid_Perda_Percentual=" + $pressaoPadrao.getValue() + "#";
+					array +="nr_Eixo=" + Number(i+1) + "#";
+					array +="#"
+	     	 	}
+ 	 	  		return array;
+				]]>
+			</method>
+			<method name="updateItens" args="dp">
+				<![CDATA[
+				if (!this.subnodes) {
+					return null;
+				}
+
+				/** atualiza todas as combos */
+				var hasChild = dp.selectChild(2);
+				while (hasChild) {
+					var $pressaoPadrao = this.subnodes[Number(dp.getNodeAttribute("nr_Eixo")-1)];
+					if ($pressaoPadrao != null) {
+						$pressaoPadrao.setValue(dp.getNodeAttribute("oid_Perda_Percentual"));
+					}
+			      	hasChild = dp.selectNext();
+			   	}
+				]]>
+			</method>
+			<method name="validate">
+				<![CDATA[
+				if (!this.subnodes) {
+					return false;
+				}
+				/** valida todas as combos */
+				for (var i=0;i<this.subnodes.length;i++){
+					var $pressaoPadrao = this.subnodes[i];
+					if (!$pressaoPadrao.getValue()) {
+						return false;
+					}
+	     	 	}
+ 	 	  		return true;
+				]]>
+			</method>
+		</view>
+
+		<!-- Rodapé observação -->
+        <baseEdits id="vObservacao" name="vObservacao" x="10" y="${vConstatacoes.y + 30}" height="55">
+    		<text name="label" y="3" height="18" fgcolor="#BBBBBB">Observações</text>
+    		<edittext y="20" name="tx_Observacao" maxlength="80" width="513" height="50" multiline="true" enabled="false"
+				oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+        </baseEdits>
+
+		<!-- View para botões -->
+		<view name="vButtons" x="10" y="${parent.vObservacao.y + 75}" layout="axis:x; spacing:2">
+			<datapath/>
+       		<button name="btnFechar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+          		<handler name="onclick" >
+             		classroot.destroy();
+          			parent.parent.parent.parent.close();
+          		</handler>
+       		</button>
+       		<button name="btnAlterar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Alterar' : 'Alterar') );" enabled="false">
+          		<handler name="onclick">
+          			if (parent.validate()) {
+	          			var nrOdometro = parent.parent.tela.A.dadosVeiculo.dadosVeiculo.edits.lbl2.nr_Odometro.getValue();
+	          			var txObservacao = vObservacao.tx_Observacao.getValue();
+	              		dpVeiculo.setNodeAttribute('nr_Odometro', nrOdometro);
+	              		dpVeiculo.setNodeAttribute('tx_Observacao', txObservacao);
+
+	          			parent.parent.parent.dsInspecao.setAttribute("src","../../ControlerServlet?");
+	  					parent.parent.parent.dsInspecao.setQueryString({
+											 tela : "tif103",
+											   ed : "Stif_Veiculo_InspecaoED",
+				  							   rn : "Stif_Veiculo_InspecaoRN",
+							   			  	 acao : "A",
+							 oid_Veiculo_Inspecao : dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao"),
+					  	              nr_Odometro : nrOdometro,
+					  	            tx_Observacao : txObservacao,
+					  	            		array : vConstatacoes.buildItensFormBean() 
+	  					});
+						parent.parent.parent.dsInspecao.doRequest();
+						parent.parent.carregando.startAni();
+	          		}
+              	</handler>
+       		</button>
+       		<button name="btnAdicionarFoto" width="115" enabled="false">Adicionar foto
+				<handler name="onclick">
+					parent.parent.image103w.mostra();
+				</handler>
+			</button>
+       		<!-- Valida dados da tela -->
+          	<method name="validate">
+          		<![CDATA[
+          		var nrOdometro = parent.tela.A.dadosVeiculo.dadosVeiculo.edits.lbl2.nr_Odometro.getValue();
+          		if (Number(nrOdometro != '' ? nrOdometro : '0') < 1) { 
+        			parent.janelaErro.mostra('Preencha o campo Hodômetro!');
+        			return false;
+     			} else 
+          		if (!vConstatacoes.validate()) {
+          			parent.janelaErro.mostra('Informe a Pressão Padrão de cada Eixo!');
+          			return false;
+          		}
+          		return true;
+          		]]>
+          	</method>
+       		<text y="5" name="msg_Stamp" width="370" height="21" datapath="@msg_Stamp" />
+    	</view>
+
+		<!-- View para abrigar metodos que posicionam e mostram os pneus -->
+		<montaCarro id="mostraPneus" clickable="false" >
+	 		<!-- Chama a tela de montagem do pneu -->
+			<method name="mostra" args="titulo">
+				// Esconde todos pneus da view
+				escondePneus.esconde();
+
+				//Posiciona os pneus na tela conforme o chassis e escolhe a imagem do veiculo
+				confChassis(carro,dpVeiculo.xpathQuery("@dm_Tipo_Chassis")*1,dpVeiculo.xpathQuery("@dm_Qtd_Estepes")*1);
+				carro.setResourceNumber(dpVeiculo.xpathQuery("@dm_Tipo_Chassis")*1);
+
+				//Mostra na tela
+				carro.setAttribute('visible',true);
+
+				//Adiona combos de constatações
+				vConstatacoes.montaCombos();
+
+				//Habilita campos/botões/etc
+				vConstatacoesLabel.setAttribute('fgcolor','black');
+				vObservacao.label.setAttribute('fgcolor','black');
+				vObservacao.tx_Observacao.setAttribute('enabled',true);
+				parent.vButtons.btnAlterar.setAttribute('enabled',true);
+				parent.vButtons.btnAdicionarFoto.setAttribute('enabled',true);
+			</method>
+		</montaCarro>
+		<!-- View para limpar a tela -->
+		<view id="escondePneus" clickable="false" >
+			<method name="esconde" >
+				<![CDATA[
+				var x = carro.subviews.length;
+				var y = carro.subviews[0];
+				var i = 0;
+				for (i=0;i<x;i++){
+					if ( carro.subviews[i] instanceof pneudir || carro.subviews[i] instanceof pneuesq || carro.subviews[i] instanceof pneustep)  {
+						carro.subviews[i].setVisible(false);
+						carro.subviews[i].setAttribute("x",-100);
+						carro.subviews[i].setAttribute("y",-100);
+					}
+				}
+				carro.setAttribute('visible',false);
+				]]>
+			</method>
+		</view>
+
+		<!-- Chama janela de Inspeção da Posição do Pneu -->
+	  	<view id="telaInspecaoPosicao" clickable="false" >	
+			<method name="open" args="dmPosicao,nrEixo">
+				parent.carregando.startAni();
+
+				/** destroi a classe caso já exista */
+				if (tif104Class) {
+					tif104Class.destroy();
+				}
+				var wTif104 = canvas.wTif104;
+  				tif104Class = new tif104(wTif104, {
+  					name:'tif104'
+  				});
+  				tif104Class.janela.setAttribute('xoffset', 10);
+  				tif104Class.janela.setAttribute('yoffset', 10);
+      			tif104Class.selfPopulate(
+      				dpVeiculo.getNodeAttribute("oid_Veiculo_Inspecao"),
+      				dpVeiculo.xpathQuery("@dm_Tipo_Chassis"),
+      				dpVeiculo.xpathQuery("@nr_Frota"),
+      				dmPosicao,
+      				nrEixo,
+      				this
+      			);
+      			wTif104.open();
+
+      			parent.carregando.stopAni();
+	 		</method>
+	 		<method name="updateVeiculoInspecao" args="oidPneuInspecao,dmPosicao,nrFogo,dmVidaPneu">
+	 			dpVeiculo.setNodeAttribute(dmPosicao,oidPneuInspecao);
+	 			dpVeiculo.setNodeAttribute(dmPosicao+"_Nr_Fogo",nrFogo);
+	 			dpVeiculo.setNodeAttribute(dmPosicao+"_Dm_Vida_Pneu",dmVidaPneu);
+	 		</method>
+	  	</view>
+
+		<!-- Reloginho -->
+      	<loadingAni name="carregando" />
+	</view>
+	</class>
+
+</library>

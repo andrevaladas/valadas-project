@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+	</script>
+
+   	<!-- Classe da Tela -->
+	<class name="tib102" extends="view" width="${parent.width}" height="${parent.height}" >
+
+	<!-- Dataset Busca os itens da inspeção -->
+	<dataset name="cadItens" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.cadItensdp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="cadItensdp" xpath="local:cadItens:/" />
+	<datapointer name="cadItensdp1" xpath="local:cadItens:/ret/item" />
+	
+	<dataset name="cadAtu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.cadItensdp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+              		parent.tela.janelaAviso.mostra(('E'==lang ? 'Grabado con éxito!' : 'Alualizado com sucesso!'));
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="cadAtudp" xpath="local:cadAtu:/" />
+	<datapointer name="cadAtudp1" xpath="local:cadAtu:/ret/item" />
+	
+	<method name="selfPopulate" args="p" >
+		cadItens.setAttribute("src","../../ControlerServlet?");
+		cadItens.setQueryString({tela : "tib101",
+							ed : "Stib_Inspecao_ItemED",
+						  	rn : "Stib_Inspecao_ItemRN",
+						  	acao : "L",
+						  	oid_Inspecao : p
+							});	
+		cadItens.doRequest();
+	</method>
+	
+	<!-- Título da tela -->
+	<titulo x="5" text="Inspeção de borracharia" widthLine="${parent.width-30}" corFrente="#FF9900" oninit="this.setAttribute('text', ('E'==lang ? 'Inspeción de gomeria' : 'Inspeção de borracharia') );"/>
+
+	<!-- View da tela -->
+	<view name="tela" y="30" width="${parent.width}" height="${parent.height-30}">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg"> 
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+	
+        <simplelayout spacing="1" />
+        
+   		<view name="vCabecalho" width="110" height="50" align="left" layout="axis:x; spacing:5">
+			<!-- Labels -->
+			<view name="lbl_1" width="110" align="right" layout="axis:y; spacing:3">
+				<text height="23" align="right" text="Cliente:" oninit="this.setAttribute('text', ('E'==lang ? 'Cliente:' : 'Cliente:') );"/>
+				<text height="23" align="right" text="Fecha:" oninit="this.setAttribute('text', ('E'==lang ? 'Fecha:' : '  Data:') );"/>								
+			</view>
+			<!-- Campos -->
+			<view name="edits" align="left" layout="axis:y; spacing:3">
+				<edittext name="nm_Razao_Social" 	width="400" height="23" enabled="false" />
+				<edittext name="dt_Inicio" 			width="80" 	height="23" enabled="false" />	
+			</view>
+		</view>
+
+		<view name="vGrid" x="10" height="${parent.height-160}" width="${parent.width-20}" >
+       		<grid name="lst" datapath="local:classroot.cadItens:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+       			<gridtext sortable="false" editable="false" datapath="@oid_Inspecao_Item" width="1" text="oid_Inspecao_Item" />
+       			<gridtext editable="false" resizable="false" datapath="@nm_Item_Inspecionado" text="Ítem a inspecionar" 
+       					  oninit="this.setAttribute('text', ('E'==lang ? 'Lista de la inspeción' : 'Ítens a inspecionar') ); this.setAttribute('width',530);"/>
+	           	<gridcolumn sortable="false" oninit="this.setAttribute('text', ('E'==lang ? 'De acuerdo' : 'Conformidade') ); this.setAttribute('width',131);" >
+					<checkbox datapath="@dm_Situacao" xoffset="${10-parent.width/2}" >
+						<handler name="onclick">
+	 						this.datapath.updateData()
+	 					</handler>	
+					</checkbox>
+				</gridcolumn>				  
+       		</grid>
+		</view>	
+		
+   		<view name="vCampos" width="110" height="30" align="left" layout="axis:x; spacing:5">
+			<!-- Labels -->
+			<view name="lbl_1" width="110" align="right" layout="axis:y; spacing:3">
+				<text height="21" align="right" text="Fecha final:" />	
+			</view>
+			<!-- Campos -->
+			<cpoEdits name="edits" align="left" layout="axis:x; spacing:3">
+				<edittext name="dt_Fim" maxlength="8" width="80" height="21"
+					oninit="parent.pattern(this,'dat')" onblur="parent.format(this,'dat',4);" onfocus="parent.deformat(this,'dat');" />	
+				<edittext name="oid_Inspecao" 		width="30"  height="21" visible="false" />
+				<view width="20"/>
+				<radiogroup name="marcador" y="5" layout="axis:x; spacing:5">
+				    <radiobutton text="Marcar como conforme" oninit="this.setAttribute('text', ('E'==lang ? 'Marcar como de acuerdo' : 'Marcar como conforme'));"  onclick="parent.marcar(true)"/>
+			    	<radiobutton text="Marcar como não conforme" oninit="this.setAttribute('text', ('E'==lang ? 'Marcar como no de acuerdo' : 'Marcar como não conforme'));" selected="true" onclick="parent.marcar(false)"/>
+			    	<method name="marcar" args="p">
+			    		var dp=classroot.cadItens.getPointer();
+						var lNext=dp.selectChild(2);
+					   	while (lNext) {
+					    	dp.setNodeAttribute("dm_Situacao",p);
+					        lNext=dp.selectNext();
+			     	 	}
+			    	</method>
+			  	</radiogroup>
+			</cpoEdits>
+		</view>
+		<method name="valida">
+			<![CDATA[
+				var retorno = true;
+				if (!vCampos.edits.requerido(vCampos.edits.dt_Fim.getText()) ) {
+					if (vCampos.edits.dt_Fim.getText()!="//" ) {
+		 				if ( !vCampos.edits.util.validaData(vCampos.edits.dt_Fim.getText())) {
+		            		janelaAviso.mostra('E'==lang ? 'Fecha inválida!' : 'Data inválida!');
+		            		retorno = false; 
+		     			} else 
+		     			if (vCampos.edits.util.comparaDatas(vCampos.edits.dt_Fim.getText(),"<",vCabecalho.edits.dt_Inicio.getText())) {
+		            		janelaAviso.mostra('E'==lang ? 'Fecha inválida!' : 'Data inválida!');
+		            		retorno = false; 
+		     			}
+					} else {
+						// Limpa o campo de data
+						vCampos.edits.dt_Fim.setAttribute("text","");
+					}
+				}
+	  			return retorno;
+  			]]>
+		</method>
+    	<view name="barBtn" x="10" layout="axis:x; spacing:2">
+       		<button name="btnFechar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+          		<handler name="onclick" >
+             		parent.parent.parent.parent.close();
+          		</handler>
+       		</button>
+       		<button name="btnGravar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Grabar' : 'Gravar') );">
+          		<handler name="onclick">
+          			if (parent.parent.valida()) { this.processa(); }
+              	</handler>
+              	<method name="processa">
+	              	var dp=classroot.cadItens.getPointer();
+					var lNext=dp.selectChild(2);
+					var src = "Stib_Inspecao_ItemED##";
+				    //Acerta as opções abaixo desta.
+				   	while (lNext) {
+			    		var x = dp.getNodeAttribute("oid_Inspecao_Item");
+				    	src +="oid_Inspecao_Item=" + x + "#";
+				    	var z =	dp.getNodeAttribute("dm_Situacao");
+				    	src +="dm_Situacao="+ z + "#";
+				    	src +="#"
+				        lNext=dp.selectNext();
+		     	 	}
+		     	 	var cad = classroot.cadAtu;
+		     	 	var cpo = parent.parent.vCampos.edits;
+          			cad.setAttribute("src","../../ControlerServlet?");
+          			cad.setQueryString({tela : "tib101",
+										ed : "Stib_InspecaoED",
+									  	rn : "Stib_InspecaoRN",
+									  	acao : "A",
+									  	oid_Inspecao : cpo.oid_Inspecao.getAttribute("text"),
+									  	dt_Fim   : cpo.dt_Fim.getAttribute("text"),
+									  	array 		 : src
+          								});	
+          			cad.doRequest();
+              	</method>
+       		</button>
+    	</view>
+ 	</view>
+    <!-- Reloginho -->
+    <loadingAni name="carregando" />
+
+	</class>   
+   
+</library>

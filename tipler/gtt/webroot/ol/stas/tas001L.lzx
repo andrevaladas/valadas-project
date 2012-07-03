@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Tela de cadastro de modelos de pneus
+	Tabela = Bandas
+-->		
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/fileupload.lzx"/> 
+	<include href="../include/domain.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+  		var usuario = oidUsuario;
+  	</script>
+  	
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpoCads003" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+   		<form name="fCampos">
+			<view name="vCampos" width="140" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="140" align="right" layout="axis:none">
+					<text height="21" align="right">Código:</text>
+					<text height="21" y="24" align="right">Descrição:</text>
+					<text height="21" y="49" align="right">Causa:</text>
+					<text height="21" y="112" align="right">Recomendação:</text>
+					<text height="21" y="176" align="right">Descrição espanhol:</text>
+					<text height="21" y="200" align="right">Causa espanhol:</text>
+					<text height="21" y="263" align="right">Recomendação espanhol:</text>
+				</view>
+				<cpoEditsXY name="edits" >
+					<edittext name="tela" visible="false" text="tas001" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="Stas_Motivo_SucataED" />
+					<edittext name="rn" visible="false" text="Stas_Motivo_SucataRN" />
+					<edittext name="oid_Usuario" visible="false"  />
+					<edittext name="dm_Grava_Imagem" visible="false"  />
+					<edittext name="oid_Motivo_Sucata" visible="false" datapath="@oid_Motivo_Sucata" />
+					
+					<edittext name="cd_Motivo_Sucata" maxlength="10" width="50" height="21" datapath="@cd_Motivo_Sucata" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+
+					<edittext y="24" name="nm_Motivo_Sucata" maxlength="100" width="440" height="21" datapath="@nm_Motivo_Sucata" 
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+ 					<edittext y="49" name="tx_Motivo_Sucata" width="440" height="60" datapath="@tx_Motivo_Sucata" multiline="true"
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');"/>
+					<edittext y="112" name="tx_Recomendacao" width="440" height="60" datapath="@tx_Recomendacao" multiline="true"
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');"/>	 
+						 
+					<edittext y="176" name="nm_Motivo_Sucata_E" maxlength="100" width="440" height="21" datapath="@nm_Motivo_Sucata_E" 
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+ 					<edittext y="200" name="tx_Motivo_Sucata_E" width="440" height="60" datapath="@tx_Motivo_Sucata_E" multiline="true"
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');"/>
+					<edittext y="263" name="tx_Recomendacao_E" width="440" height="60" datapath="@tx_Recomendacao_E" multiline="true"
+						 oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');"/>
+						 
+					<text y="322" name="msg_Stamp" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />	
+					
+					<button x="466" height="22" width="115" >Carregar foto
+						<handler name="onclick"> classroot.classroot.tela.uploadImagem.mostra(); </handler>
+					</button>
+					
+					<view y="25" x="447" height="122" width="152" bgcolor="black" />
+					<view y="26" x="448" height="120" width="150" bgcolor="#FAFAFA" />
+					<view y="26" x="448" name="myimage" height="120" width="150" stretches="both" 
+					  onclick="
+					  	var este = parent.oid_Motivo_Sucata.getText();
+		      			if ( este != '' ) {
+			  	   			classroot.classroot.tela.imagemEspandida.myimage.setSource('http://127.0.0.1:8080/sgtt/ImageServlet?oid_Motivo_Sucata='+este);
+					  	}
+					  	classroot.classroot.tela.imagemEspandida.open();
+					  	" 
+					  	/>		
+				</cpoEditsXY>
+			</view>
+      		<!-- Validação -->
+      		<method name="valida" >
+         		var retorno = true; 
+         		var jErro = parent.parent.parent.parent.parent.parent.janelaErro;
+         		if ( vCampos.edits.cd_Motivo_Sucata.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Código!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.nm_Motivo_Sucata.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Descrição!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.tx_Motivo_Sucata.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Motivo!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.tx_Recomendacao.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Recomendação!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.nm_Motivo_Sucata_E.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Descrição espanhol!');
+            		retorno = false; 
+         		}  else 
+         		if ( vCampos.edits.tx_Motivo_Sucata_E.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Motivo espanhol!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.tx_Recomendacao_E.getText() == '' ) { 
+            		jErro.mostra('Informe o campo Recomendação espanhol!');
+            		retorno = false; 
+         		}
+         		return retorno;
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			vCampos.edits.dm_Grava_Imagem.setAttribute('text','N');
+      			var este = vCampos.edits.oid_Motivo_Sucata.getText();
+      			if ( este != '' ) {
+					//vCampos.edits.myimage.setSource('http://127.0.0.1:8080/stcb/ImageServlet?oid_Motivo_Sucata='+este);
+					vCampos.edits.myimage.setSource('http://127.0.0.1:8080/sgtt/ImageServlet?oid_Motivo_Sucata='+este);
+					//
+				}
+      		</method>
+      		<method name="preInclui">
+      			vCampos.edits.oid_Usuario.setAttribute('text',usuario);
+      			vCampos.edits.dm_Grava_Imagem.setAttribute('text','N');
+      		</method>
+      		<method name="posInclui">
+      			// Aqui coloque ações que necessitam ser feitas depois do modo de inclusão
+      		</method>
+      		<method name="preAltera">
+      			vCampos.edits.oid_Usuario.setAttribute('text',usuario);
+      		</method>
+      		<method name="preGravar">
+      			// Aqui coloque ações que necessitam ser feitas antes de gravar a inclusão
+      		</method>
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="tas001" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+      			parent.tela.tab.tabCad.barCad.btnNovoCad.setAttribute('enabled',true);
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = classroot.caddp.xpathQuery('*/item/last()');
+          			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	              	} else {
+	      				parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+	      				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	              	}	
+	         		}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'AOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+    			} else
+      			if (resultado == 'DOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode(); 
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+         			var regs = classroot.caddp.xpathQuery('*/item/last()');
+         			if ( regs == null ) parent.tela.tab.tabCad.barCad.btnNovoCad.click(); 
+         			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs );
+               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+    			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.newdp.xpathQuery('@oknok');
+      			var oid = classroot.newdp.xpathQuery('@oid');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'IOK') {
+      				parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Item_A_Inspecionar.setAttribute('text',oid);
+      				parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();  
+    	  			var end = classroot.caddp.xpathQuery('*/item/last()');	    			
+					parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+					classroot.caddp.selectChild();
+					classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+					classroot.caddp.setAttribute('xpath','local:cad:/');
+					parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+					parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+      			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Motivos de Sucateamento" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+		<!-- Janela para upload de arquivo -->
+		<modaldialog name="uploadImagem" title="Carga de foto" layout="axis:y; spacing:5">
+			<view>
+			<fileUpload name="myFileUpload">
+				<method name="onComplete" args="fr">
+					<![CDATA[
+					//var arq = 'http://127.0.0.1:8080/stcb/Imagens/bandas/'+usuario+'.jpg';
+					var arq = 'http://127.0.0.1:8080/sgtt/Imagens/bandas/'+usuario+'.jpg';
+					parent.progressBar.setValue(100);
+					parent.upload.setAttribute('enabled', false);
+					if (parent.parent.parent.tab.tabCad.barCad.btnAlterarCad.getAttribute('visible')==true) {
+						parent.parent.parent.tab.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.myimage.setAttribute('source', arq);
+						parent.parent.parent.tab.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.dm_Grava_Imagem.setAttribute('text','S');
+					} else {
+						parent.parent.parent.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.myimage.setAttribute('source', arq);
+						parent.parent.parent.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.dm_Grava_Imagem.setAttribute('text','S');
+					}
+					parent.parent.close();
+					parent.txtFile.setText("");
+					parent.progressBar.setValue(0);
+					]]>
+				</method>
+			
+				<method name="onProgress" args="fr, bytesLoaded, bytesTotal">
+					<![CDATA[
+					parent.progressBar.setValue(bytesLoaded * 100 / bytesTotal);
+					]]>
+				</method>
+			
+				<method name="onSelect" args="fr">
+					<![CDATA[
+					parent.txtFile.setText(getName());
+					parent.upload.setAttribute('enabled', true);
+					]]>
+				</method>
+			</fileUpload>
+	
+			<edittext x="10" y="10" width="200" name="txtFile" enabled="false"/>
+					
+			<button x="210" y="11" text="Browse...">
+				<handler name="onclick">
+					<![CDATA[
+					parent.progressBar.percent.setText('0  %');
+					parent.progressBar.status.setAttribute('bgcolor',white);
+					parent.myFileUpload.browse();
+					]]>
+				</handler>
+			</button>
+		
+			<button name="upload" x="290" y="11" text="Upload" enabled="false">
+				<handler name="onclick">
+					<![CDATA[
+					parent.myFileUpload.upload('../../MyServlet?usuario='+usuario); // This should be the complete URL where we want to upload the file
+					]]>
+				</handler>
+			</button>
+		
+			<view name="progressBar" x="356" y="11" width="50" height="24" bgcolor="#666666">
+				<view x="1" y="1" width="48" height="22" bgcolor="#FFFFFF"/>
+				<view name="status" x="1" y="1" height="22" bgcolor="#BBBBFF"/>
+				<text name="percent" x="5" y="3" fontstyle="bold" fgcolor="#6666FF"/>
+				<method name="setValue" args="value">
+					<![CDATA[
+					status.setAttribute('width', value * 48 / 100);
+					percent.setText(Math.round(value) + '%');
+					]]>
+				</method>
+			</view>
+			</view>
+			<button>Fechar
+           		<method event="onclick">
+           			parent.close();
+           		</method>
+        	</button>
+
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+			
+      	</modaldialog>
+      	
+      	<modaldialog name="imagemEspandida" title="Foto ilustrativa do motivo do sucateamento" width="${myimage.width+60}" height="${myimage.height+60}" bgcolor="#EAEAEA" closeable="true">
+      		<view y="0" x="5" name="myimage" />
+      	</modaldialog>	
+      	
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel" >
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel" >
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Código:" />
+								<text height="21" align="right" text="Descrição:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="tas001" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="Stas_Motivo_SucataED" />
+								<edittext name="rn" visible="false" text="Stas_Motivo_SucataRN" />
+								<edittext name="cd_Motivo_Sucata" maxlength="10" width="50" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="nm_Motivo_Sucata" maxlength="100" width="440" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  		</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad" >
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpoCads003 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</cpoCads003>
+                  		<!-- View campos para inclusão -->
+                  		<cpoCads003 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpoCads003>
+               		</view>
+            	</view>
+            	<botoesCad name="barCad" tela="tas001" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-10}" multiselect="false" rowheight="16">
+               			<gridtext editable="false" resizable="false" datapath="@cd_Motivo_Sucata" text="Código" width="60"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Motivo_Sucata" text="Descrição" width="644"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+               			Relatório
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+		      				var x=parent.parent.parent.tabSel.corSel.formSel.vSel.edits;
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=tas001";
+							chamada += "&amp;"+"ed=Stas_Motivo_SucataED";
+							chamada += "&amp;"+"rn=Stas_Motivo_SucataRN";
+							chamada += "&amp;"+"rel=1"; 
+							chamada += "&amp;"+"cd_Motivo_Sucata="+ x.cd_Motivo_Sucata.getText();
+							chamada += "&amp;"+"nm_Motivo_Sucata="+ x.nm_Motivo_Sucata.getText(); 
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

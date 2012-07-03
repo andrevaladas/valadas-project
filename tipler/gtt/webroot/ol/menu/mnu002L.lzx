@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	Tela de cadastro de Perfil de Usuarios
+-->		
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->
+  	<script>
+    	var gInicioMnu002 ='N'; //Variável para controlar a msg de nada selecionado 
+  	</script>
+	<!-- Datasets para os combos -->
+	<dataset name="sisMnu002" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ComboServlet?combo=Sistema" />
+  	<datapointer name="sisdpMnu002" xpath="local:sisMnu002:/" />
+	<!-- Datasets interno para filhos do registro principa -->
+ 	<dataset name="cadInnerMnu002" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=mnu001&amp;acao=L&amp;ed=Menu_Perfil_SistemaED&amp;rn=Menu_Perfil_SistemaRN"
+	/>
+  	
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="campos" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+		<!-- Campo escondido para colocar o nome do sistema oriundo do combo no dataset da lista quando da inclusão -->
+		<edittext name="nm_Sistema" visible="false" datapath="@nm_Sistema" /> 
+   		<form name="fCampos">
+			<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="110" align="right" layout="axis:y; spacing:3">
+					<text height="21" align="right">Sistema</text>
+					<text height="21" align="right">Nome do perfil</text>
+				</view>
+				<cpoEdits name="edits" >
+					<edittext name="tela" visible="false" text="mnu002" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="Menu_PerfilED" />
+					<edittext name="rn" visible="false" text="Menu_PerfilRN" />
+					<edittext name="array" visible="false"  width="400" text="array" />
+					<edittext name="oid_Menu_Perfil" visible="false" datapath="@oid_Menu_Perfil" />
+					<datacombobox name="oid_Sistema" width="300" height="21" datapath="@oid_Sistema" itemdatapath="sisMnu002:/cad/item" />
+					<edittext name="nm_Menu_Perfil" maxlength="80" width="480" height="21" datapath="@nm_Menu_Perfil" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+				</cpoEdits>
+			</view>
+      		<!-- Validação -->
+      		<method name="valida" >
+         		var retorno = true; 
+				if ( vCampos.edits.requerido(vCampos.edits.oid_Sistema.value) ) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Escolha o Sistema!');
+            		retorno = false; 
+         		} else         		
+         		if ( vCampos.edits.requerido(vCampos.edits.nm_Menu_Perfil.getText()) ) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Preencha o campo Nome do perfil!');
+            		retorno = false; 
+         		} 
+         		return retorno;
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			// Aqui coloque ações que necessitam ser feitas após a reposição do registro principal
+      			var este = vCampos.edits.oid_Menu_Perfil.getText();
+      			if ( este != '' ) {
+      				cadInnerMnu002.setSrc("../../ControlerServlet?tela=mnu002&amp;acao=L&amp;ed=Menu_Perfil_SistemaED&amp;rn=Menu_Perfil_SistemaRN&amp;identado=true&amp;oid_Menu_Perfil=" + este);
+					cadInnerMnu002.doRequest();
+      			}	
+      		</method>
+      		<method name="preInclui">
+      			// Aqui coloque ações que necessitam ser feitas antes do modo de inclusão
+      			parent.parent.parent.parent.parent.parent.tab.tabCad.complemento.lstInner.setVisible(false);
+      		</method>
+      		<method name="posInclui">
+      			// Aqui coloque ações que necessitam ser feitas depois do modo de inclusão
+      			this.reposiciona();
+      			parent.parent.parent.parent.parent.parent.tab.tabCad.complemento.lstInner.setVisible(true);
+      		</method>
+      		<method name="preAltera">
+      			// Aqui coloque ações que necessitam ser feitas antes da alteração
+      			// Monta o campo array do form antes do submit
+				var dp=cadInnerMnu002.getPointer();
+				var lNext=dp.selectChild(2);
+				var src = "Menu_Perfil_SistemaED##";
+			    //Acerta as opções abaixo desta.
+			   	while (lNext) {
+		    		var x = dp.getNodeAttribute("oid_Menu_Perfil_Sistema");
+			    	src +="oid_Menu_Perfil_Sistema=" + x + "#";
+			    	var z =	dp.getNodeAttribute("dm_Acesso");
+			    	src +="dm_Acesso="+ z + "#";
+			    	src +="#"
+			        lNext=dp.selectNext();
+	     	 	}
+	     	 	vCampos.edits.array.setText(src);
+      		</method>
+      		<method name="preGravar">
+      			// Aqui coloque ações que necessitam ser feitas antes de gravar a inclusão
+      		</method>
+      		<submit name="xMit"  />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="mnu002" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+      				var regs = classroot.caddp.xpathQuery('*/item/last()'); 
+	              	parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	parent.tela.carregando.stopAni();
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	              	} else {
+	       				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	         		}
+         		}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+		/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+	
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{      			
+	      			if (resultado == 'AOK') {
+	      				parent.tela.tab.tabCad.corCad.campos.updCad.nm_Sistema.setAttribute('text',parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.oid_Sistema.text);
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+	               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	    			} else
+	      			if (resultado == 'DOK') {
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode(); 
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+	         			var regs = classroot.caddp.xpathQuery('*/item/last()');
+	         			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs );
+	               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	    			} else {
+	      				parent.tela.janelaAviso.mostra(resultado); 
+	    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"       	
+  		/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.newdp.xpathQuery('@oknok');
+      			var oid = classroot.newdp.xpathQuery('@oid');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+	      			if (resultado == 'IOK') {
+	      				parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Menu_Perfil.setAttribute('text',oid);
+	      				parent.tela.tab.tabCad.corCad.campos.newCad.nm_Sistema.setAttribute('text',parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Sistema.text);
+	    	  			parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();  
+	    	  			var end = classroot.caddp.xpathQuery('*/item/last()');	    			
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+						classroot.caddp.selectChild();
+						classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+						classroot.caddp.setAttribute('xpath','local:cad:/');
+						parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+						parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+						parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.reposiciona();
+	      			} else {
+	      				parent.tela.janelaAviso.mostra(resultado); 
+	    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"       	
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+   
+   	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Perfis de Usuários" widthLine="695" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" height="395" width="695">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="695" height="325">
+            		<form name="formSel">
+	               		<view width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Sistema" />
+								<text height="21" align="right" text="Nome do perfil" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="mnu002" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="Menu_PerfilED" />
+								<edittext name="rn" visible="false" text="Menu_PerfilRN" />
+								<datacombobox name="oid_Sistema" width="300" height="21"  itemdatapath="sisMnu002:/cad/item" />
+								<edittext name="nm_Menu_Perfil" maxlength="60" width="480" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  		</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="695" height="60">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<campos name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</campos>
+                  		<!-- View campos para inclusão -->
+                  		<campos name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</campos>
+               		</view>
+            	</view>
+				<view name="complemento" width="695" height="254" >
+			        <grid name="lstInner" datapath="cadInnerMnu002:/" x="4" y="1" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+			        	height="${parent.height-10}" width="${parent.width-30}" rowheight="16">
+			           <gridtext sortable="false" editable="false" datapath="@oid_Menu_Perfil_Sistema" width="1" >oid_Menu_Perfil_Sistema</gridtext>	
+			           <gridtext sortable="false" editable="false" datapath="@oid_Menu_Sistema" width="1" >oid_Menu_Sistema</gridtext>
+			           <gridtext sortable="false" editable="false" datapath="@cd_Opcao" width="1">Código</gridtext>
+			           <gridtext sortable="false" editable="false" resizable="false" datapath="@nm_Opcao" width="300">Opção de menu</gridtext>
+			           <gridcolumn sortable="false" >
+							<checkbox datapath="@dm_Acesso" xoffset="${10-parent.width/2}">
+								<handler name="onclick">
+			 						this.datapath.updateData()
+									var cta = 0;
+									var este = this.datapath.getNodeAttribute("cd_Opcao");
+									var estePai = this.datapath.getNodeAttribute("cd_Opcao_Pai");
+									var chk  = this.datapath.getNodeAttribute("dm_Acesso");
+									var dp=cadInnerMnu002.getPointer();
+									var lNext=dp.selectChild(2);
+								    //Acerta as opções abaixo desta.
+								    while (lNext) {
+								    	var x = dp.getNodeAttribute("cd_Opcao");
+								     	var k = x.substring(0,este.length);
+								     	if (k==este){
+							     			dp.setNodeAttribute("dm_Acesso",chk);
+							     			cta++;
+								     	}
+								        lNext=dp.selectNext();
+							     	}
+								    //Busca os pais para marcar
+							 		lNext=true;
+							 		while (lNext) {
+							    		var cd = dp.getNodeAttribute("cd_Opcao");
+							    		var cdPai = dp.getNodeAttribute("cd_Opcao_Pai");
+							    		if (cd==estePai){
+							    			estePai=cdPai;
+							    			dp.setNodeAttribute("dm_Acesso",true);
+							    		}
+							       		lNext=dp.selectPrev();
+								    }
+								</handler>
+							</checkbox>
+			           </gridcolumn>
+			           <gridtext sortable="false" editable="false" resizable="false" datapath="@nm_Tela" width="80">Tela</gridtext>
+			        </grid>
+				</view>
+            	<botoesCad name="barCad" tela="mnu002" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="695" height="325">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Sistema" text="Sistema" width="180"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Menu_Perfil" text="Nome perfil" width="${parent.width-195}"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        		</handler>
+		        	<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70">Relatório</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

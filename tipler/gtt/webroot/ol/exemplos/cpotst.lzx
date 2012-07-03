@@ -1,0 +1,70 @@
+
+<canvas debug="true">
+	<script>
+		var cta=1;
+	</script>
+	<include href="../include/botoesCadastro.lzx" /> 
+	<simplelayout spacing="1"/>
+
+ 	<dataset name="cadInner" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=mnu001&amp;acao=L&amp;ed=Menu_Perfil_SistemaED&amp;rn=Menu_Perfil_SistemaRN&amp;oid_Menu_Perfil=1"
+	/>
+ 		
+	<view name="corCad" width="695" height="70">
+   		<view name="campos" width="110" align="left" layout="axis:x; spacing:5" />
+	</view>
+	
+	<view name="complemento" width="695" height="254" >
+        <grid name="lstInner" datapath="cadInner:/" x="5" y="5" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+        	height="${parent.height-10}" width="${parent.width-10}" rowheight="16">
+           <gridtext sortable="false" editable="false" datapath="@oid_Menu_Sistema" width="1" >oid_Menu_Sistema</gridtext>
+           <gridtext sortable="false" editable="false" datapath="@cd_Opcao" width="1">Código</gridtext>
+           <gridtext sortable="false" editable="false" datapath="@nm_Opcao" width="300">Opção de menu</gridtext>
+           <gridcolumn sortable="false">
+				<checkbox datapath="@dm_Acesso" xoffset="${10-parent.width/2}">
+					<handler name="onclick">
+ 						this.datapath.updateData()
+						var cta = 0;
+						var este = this.datapath.getNodeAttribute("cd_Opcao");
+						var estePai = this.datapath.getNodeAttribute("cd_Opcao_Pai");
+						var chk  = this.datapath.getNodeAttribute("dm_Acesso");
+						var dp=cadInner.getPointer();
+						var lNext=dp.selectChild(2);
+					    //Acerta as opções abaixo desta.
+					    while (lNext) {
+					    	var x = dp.getNodeAttribute("cd_Opcao");
+					     	var k = x.substring(0,este.length);
+					     	if (k==este){
+				     			dp.setNodeAttribute("dm_Acesso",chk);
+				     			cta++;
+					     	}
+					        lNext=dp.selectNext();
+				     	}
+					    //Busca os pais para marcar
+				 		lNext=true;
+				 		while (lNext) {
+				    		var cd = dp.getNodeAttribute("cd_Opcao");
+				    		var cdPai = dp.getNodeAttribute("cd_Opcao_Pai");
+				    		if (cd==estePai){
+				    			estePai=cdPai;
+				    			dp.setNodeAttribute("dm_Acesso",true);
+				    		}
+				       		lNext=dp.selectPrev();
+					    }
+					</handler>
+				</checkbox>
+           </gridcolumn>
+        </grid>
+	</view>
+	<botoesCad name="barCad" tela="mnu002" oninit="this.atuTxtDataControl(0);" />
+	<view>
+		<button>
+			<handler name="onclick">
+				cta++;
+				cadInner.setSrc("../../ControlerServlet?tela=mnu001&amp;acao=L&amp;ed=Menu_Perfil_SistemaED&amp;rn=Menu_Perfil_SistemaRN&amp;oid_Menu_Perfil=" + cta);
+				cadInner.doRequest();
+				if (cta==3) cta=0;
+			</handler>
+		</button>
+	</view>
+</canvas>

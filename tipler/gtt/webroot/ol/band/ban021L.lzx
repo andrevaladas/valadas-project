@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Tela de cadastro de modelos de pneus
+	Tabela = Bandas
+-->		
+<library>
+   	<script>
+   		var usuario = oidUsuario;
+   		var sisBan021Banda;
+   		var sisBan021Dimensao;
+   	</script>
+    <resource name="ban021Altera" src="../images/note_edit.png" />
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" />
+	<include href="../include/fileupload.lzx"/> 
+	<include href="../include/domain.lzx"/>
+	<!-- Variáveis globais -->	
+  	<script>
+  	</script>
+  	<!-- Data set para combo de eixo -->
+    
+	<!-- Datasets para o combo Fabricante de Pneus-->
+	<dataset name="sisPns021FabBnd" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Banda" />
+  	<datapointer name="sisdpPns021FabBnd" xpath="local:sisPns021FabBnd:/" />
+  	
+  	<dataset name="sisPns021FabBndC" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Banda&amp;consulta=sim" />
+  	<datapointer name="sisdpPns021FabBndC" xpath="local:sisPns021FabBndC:/" />
+  	
+  	<!-- Datasets interno para filhos do registro principal -->
+ 	<dataset name="cadInnerBan021" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+   		ondata="ban021w.ban021.tela.carregando.stopAni(); " 
+   		/>
+  	
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpoBan021" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+		<edittext name="nm_Fabricante_Banda" visible="false" datapath="@nm_Fabricante_Banda" />
+   		<form name="fCampos">
+			<view name="vCampos" width="120" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="120" align="right" >
+					<text y="0" height="21" align="right">Código:</text>
+					<text y="24" height="21" align="right">Modelo:</text>
+					<text y="48" height="21" align="right">Marca:</text>
+					<text y="72" height="21" align="right">Descrição:</text>
+					<text y="125" height="21" align="right">Aplicação:</text>
+					<text y="149" height="21" align="right">Eixo recomendado:</text>
+					<text y="173" x="400" height="21" align="right">Tipo Pneu:</text>
+				</view>
+				<cpoEditsXY name="edits" >
+					<edittext name="tela" visible="false" text="pns003" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="BandaED" />
+					<edittext name="rn" visible="false" text="BandaRN" />
+					<edittext name="oid_Usuario" visible="false"  />
+					<edittext name="dm_Grava_Imagem" visible="false"  />
+					<edittext name="oid_Banda" visible="false" datapath="@oid_Banda" />
+					
+					<!-- Para compatibilizar com a versao SGTT -->
+					<edittext name="nr_Largura" visible="false"  datapath="@nr_Largura" />	
+					<edittext name="nr_Profundidade" visible="false"  height="21" datapath="@nr_Profundidade" />
+					<!-- Para compatibilizar com a versao SGTT -->
+
+					<checkbox y="0" x="230" name="dm_Substituir" datapath="@dm_Substituir">Substitur essa banda por esta abaixo:</checkbox>
+					
+					<lookup   y="24" x="230" name="oid_Banda_Substituta" idProperty="oid_Banda" cdProperty="cd_Banda" dsProperty="nm_Banda" 
+						widthCdProperty="70" widthDsProperty="150" callService="Banda" isDataPath="true"	>
+						<propertyMapping modelProperty="dm_Escapa_Substituida" criteriaProperty="S"/>
+					</lookup>	
+							
+					<!-- retirar isso apos acerto nas bandas da tipler -->
+					
+					<edittext y="0" name="cd_Banda" maxlength="10" width="80" height="21" datapath="@cd_Banda" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="24" name="nm_Banda" maxlength="30" width="200" height="21" datapath="@nm_Banda" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<datacombobox y="48" name="oid_Fabricante_Banda" width="200" height="21" datapath="@oid_Fabricante_Banda" itemdatapath="sisPns021FabBnd:/cad/item"  defaulttext="Escolha o Fabricante..."/>		
+					<edittext y="72" name="tx_Descricao" maxlength="1024" multiline="true" width ="470" height ="50" datapath="@tx_Descricao" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+						
+					<datacombobox y="125" name="dm_Aplicacao" shownitems="5" width="220" height="21" datapath="@dm_Aplicacao" itemdatapath="dmAplicacao:/item" 	defaulttext="Escolha Aplicação"/>
+					<checkbox y="125" x="230" name="dm_Fora_Uso" datapath="@dm_Fora_Uso">Banda fora de uso:</checkbox>
+					<datacombobox y="149" name="dm_Eixo" shownitems="5" width="220" height="21" datapath="@dm_Eixo" itemdatapath="dmEixo:/item" 	defaulttext="Escolha o Eixo"/>
+					<datacombobox y="173" name="dm_Tipo_Pneu" shownitems="5" width="220" height="21" datapath="@dm_Tipo_Pneu" itemdatapath="dmTipoPneuQualquer:/item" 	defaulttext="Escolha o Tipo"/>
+					
+					<text y="195" name="msg_Stamp" width="370" height="21" datapath="@msg_Stamp" />
+					
+					<button y="220" x="340" height="22" width="115" >Carregar imagem
+						<handler name="onclick"> classroot.classroot.tela.uploadImagem.mostra(); </handler>
+					</button>
+					<view y="248" x="322" height="152" width="152" bgcolor="black" />
+					<view y="249" x="323" height="150" width="150" bgcolor="#FAFAFA" />
+					<view y="249" x="323" name="myimage" height="150" width="150" stretches="both" />								              
+
+					<button y="220"  name="btnNovaDimensao" text="Nova dimensao" visible="true" height="22">
+						<handler name="onclick">
+							sisBan021Banda=parent.parent.parent.parent.datapath;
+							parent.parent.parent.parent.parent.parent.parent.parent.parent.dimensao.limpaTelaDimensao();
+						</handler>
+					</button>	
+					
+				</cpoEditsXY>
+			</view>
+      		<!-- Validação -->
+      		<method name="valida" >
+         		var retorno = true; 
+         		if ( vCampos.edits.cd_Banda.getText() == '' ) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Preencha o Código da Banda!');
+            		retorno = false; 
+         		} else
+         		if ( vCampos.edits.oid_Fabricante_Banda.value == 0 || vCampos.edits.oid_Fabricante_Banda.value == null) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Escolha o Fabricante!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.nm_Banda.getText() == '' ) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Preencha o Modelo da Banda!');
+            		retorno = false; 
+         		} else
+        		if ( vCampos.edits.dm_Aplicacao.value == null) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Escolha a Aplicação!');
+            		retorno = false; 
+         		} else 
+        		if ( vCampos.edits.dm_Eixo.value == null) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Escolha o Eixo!');
+            		retorno = false; 
+         		} else 
+        		if ( vCampos.edits.dm_Tipo_Pneu.value == null) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Escolha o Tipo de pneu!');
+            		retorno = false; 
+         		} else 
+
+         		return retorno;
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			classroot.classroot.tela.tab.tabCad.dimensaoGrid.lstInner.setAttribute('visible',true);
+      			vCampos.edits.btnNovaDimensao.setAttribute('visible',true);
+      			vCampos.edits.dm_Grava_Imagem.setAttribute('text','N');
+      			var este = vCampos.edits.oid_Banda.getText();
+      			if ( este != '' ) {
+      				parent.parent.parent.parent.parent.parent.carregando.startAni();
+					//vCampos.edits.myimage.setSource('http://127.0.0.1:8080/stcb/ImageServlet?oid_Banda='+este);
+					vCampos.edits.myimage.setSource('http://127.0.0.1:8080/sgtt/ImageServlet?oid_Banda='+este);
+					//
+					cadInnerBan021.setAttribute("src","../../ControlerServlet?");
+					cadInnerBan021.setQueryString({tela : "Ban021",
+										  ed : "Banda_DimensaoED",
+										  rn : "Banda_DimensaoRN",
+										  acao : "L",
+										  oid_Banda : este
+										  });
+					cadInnerBan021.doRequest();
+				} 
+      		</method>
+      		<method name="preInclui">
+      			vCampos.edits.oid_Usuario.setAttribute('text',usuario);
+      			vCampos.edits.dm_Grava_Imagem.setAttribute('text','N');
+      			classroot.classroot.tela.tab.tabCad.dimensaoGrid.lstInner.setAttribute('visible',false);
+      			vCampos.edits.btnNovaDimensao.setAttribute('visible',false);
+      		</method>
+      		<method name="posInclui">
+      			// Aqui coloque ações que necessitam ser feitas depois do modo de inclusão
+      		</method>
+      		<method name="preAltera">
+				vCampos.edits.oid_Usuario.setAttribute('text',usuario);
+			</method>
+      		<method name="preGravar">
+      			// Aqui coloque ações que necessitam ser feitas antes de gravar a inclusão
+      		</method>
+      		<method name="preExclui">
+      			// Aqui coloque ações que necessitam ser feitas antes de excluir 
+      		</method>
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="ban021" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+      			parent.tela.tab.tabCad.barCad.btnNovoCad.setAttribute('enabled',true);
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = classroot.caddp.xpathQuery('*/item/last()');
+          			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	              	} else {
+	      				parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+	      				parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.myimage.setAttribute('source', null);
+	      				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	              	}	
+	         		}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'AOK') {
+               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+    			} else
+      			if (resultado == 'DOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode(); 
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+         			var regs = classroot.caddp.xpathQuery('*/item/last()');
+         			if ( regs == null ) parent.tela.tab.tabCad.barCad.btnNovoCad.click(); 
+         			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs );
+               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+    			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.newdp.xpathQuery('@oknok');
+      			var oid = classroot.newdp.xpathQuery('@oid');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'IOK') {
+      				parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Banda.setAttribute('text',oid);
+      				parent.tela.tab.tabCad.corCad.campos.newCad.nm_Fabricante_Banda.setAttribute('text',parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Fabricante_Banda.text);
+    	  			parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();
+    	  			parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.myimage.setAttribute('source', null);  
+    	  			var end = classroot.caddp.xpathQuery('*/item/last()');	    			
+					parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+					classroot.caddp.selectChild();
+					classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+					classroot.caddp.setAttribute('xpath','local:cad:/');
+					parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+					parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.dm_Aplicacao.selectItemAt(-1);
+					parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.dm_Eixo.selectItemAt(-1);
+					parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.dm_Tipo_Pneu.selectItemAt(-1);
+					parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Fabricante_Banda.selectItemAt(-1);
+					parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+					
+      			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+		
+	<!-- DS para tratar diensao -->
+	<dataset name="dsDimen" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.dsTardp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+	      			if (resultado == 'IOK') {
+	      				parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	      				parent.tela.janelaAviso.mostra('Dimensão incluida com sucesso !');
+	      				parent.tela.dimensao.close();
+	      			} else
+	      			if (resultado == 'AOK') {
+	      				parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	      				parent.tela.janelaAviso.mostra('Dimensão alterada com sucesso !');
+	      				parent.tela.dimensao.close();
+	      			} else
+	      			if (resultado == 'DOK') {
+	      				parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	      				parent.tela.janelaAviso.mostra('Dimensão excluida com sucesso !');
+	      				parent.tela.dimensao.close();
+	      			} else {
+	      				parent.tela.janelaAviso.mostra(resultado); 
+	    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni(); 
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsTardp" xpath="local:dsDimen:/ret/item" />
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/stcb.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+		//LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Bandas" widthLine="635" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+		<!-- Janela para upload de arquivo -->
+		<modaldialog name="uploadImagem" title="A v i s o !" layout="axis:y; spacing:5">
+			<view>
+			<fileUpload name="myFileUpload">
+				<method name="onComplete" args="fr">
+					<![CDATA[
+					//var arq = 'http://127.0.0.1:8080/stcb/Imagens/bandas/'+usuario+'.jpg';
+					var arq = 'http://127.0.0.1:8080/sgtt/Imagens/bandas/'+usuario+'.jpg';
+					parent.progressBar.setValue(100);
+					parent.upload.setAttribute('enabled', false);
+					if (parent.parent.parent.tab.tabCad.barCad.btnAlterarCad.getAttribute('visible')==true) {
+						parent.parent.parent.tab.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.myimage.setAttribute('source', arq);
+						parent.parent.parent.tab.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.dm_Grava_Imagem.setAttribute('text','S');
+					} else {
+						parent.parent.parent.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.myimage.setAttribute('source', arq);
+						parent.parent.parent.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.dm_Grava_Imagem.setAttribute('text','S');
+					}
+					parent.parent.close();
+					parent.txtFile.setText("");
+					parent.progressBar.setValue(0);
+					]]>
+				</method>
+			
+				<method name="onProgress" args="fr, bytesLoaded, bytesTotal">
+					<![CDATA[
+					parent.progressBar.setValue(bytesLoaded * 100 / bytesTotal);
+					]]>
+				</method>
+			
+				<method name="onSelect" args="fr">
+					<![CDATA[
+					parent.txtFile.setText(getName());
+					parent.upload.setAttribute('enabled', true);
+					]]>
+				</method>
+			</fileUpload>
+	
+			<edittext x="10" y="10" width="200" name="txtFile" enabled="false"/>
+					
+			<button x="210" y="11" text="Browse...">
+				<handler name="onclick">
+					<![CDATA[
+					parent.progressBar.percent.setText('0  %');
+					parent.progressBar.status.setAttribute('bgcolor',white);
+					parent.myFileUpload.browse();
+					]]>
+				</handler>
+			</button>
+		
+			<button name="upload" x="290" y="11" text="Upload" enabled="false">
+				<handler name="onclick">
+					<![CDATA[
+					parent.myFileUpload.upload('../../MyServlet?usuario='+usuario); // This should be the complete URL where we want to upload the file
+					]]>
+				</handler>
+			</button>
+		
+			<view name="progressBar" x="356" y="11" width="50" height="24" bgcolor="#666666">
+				<view x="1" y="1" width="48" height="22" bgcolor="#FFFFFF"/>
+				<view name="status" x="1" y="1" height="22" bgcolor="#BBBBFF"/>
+				<text name="percent" x="5" y="3" fontstyle="bold" fgcolor="#6666FF"/>
+				<method name="setValue" args="value">
+					<![CDATA[
+					status.setAttribute('width', value * 48 / 100);
+					percent.setText(Math.round(value) + '%');
+					]]>
+				</method>
+			</view>
+			</view>
+			<button>Fechar
+           		<method event="onclick">
+           			parent.close();
+           		</method>
+        	</button>
+
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+			
+      	</modaldialog>
+
+		<!-- Janela de aviso de exclusão - Complemeto -->
+		<modaldialog name="alertaExclusaoDimensao" title="A v i s o !" width="300">
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão da dimensão?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<handler name="onclick">
+               			parent.parent.parent.dimensao.C.botaoOkDeleta.processa();
+               			parent.parent.parent.dimensao.close();
+               			parent.parent.close();
+               		</handler>
+            	</button>
+         	</view>
+      	</modaldialog>
+
+		<!-- Tela para dimensoes -->
+	  	<modaldialog name="dimensao" title="Dimensões" width="300" bgcolor="#EAEAEA">
+	  		<simplelayout spacing="7"/>
+        	<view name="A" fgcolor="#228B22">
+        		<text name="lblBanda" height="18" />
+        	</view>
+        	<separador widthLine="${parent.width-50}"/>
+        	<view name="B" >
+	        	<simplelayout spacing="3"/>
+		        <view name="vCampos" width="350" align="left" layout="axis:x; spacing:2">
+					<view name="lbl" width="100" align="right" layout="axis:y; spacing:3">
+						<text height="21" align="right" >Largura</text>
+						<text height="21" align="right" >Profundidade</text>
+						<text height="21" align="right" >Peso total</text>
+						<text height="21" align="right" >Peso metro</text>
+					</view>
+					<cpoEdits name="cpo" align="left" layout="axis:y; spacing:3">
+						<edittext name="acao" visible="false" />
+						<edittext name="nr_Largura"  maxlength="5" width="50" height="21" 
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />
+						<edittext name="nr_Profundidade"  maxlength="5" width="50" height="21" 
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />
+						<edittext name="nr_Peso"  maxlength="9" width="70" height="21"
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',3);" onfocus="parent.deformat(this,'dec');" />
+						<edittext name="nr_Peso_Metro"  maxlength="9" width="70" height="21"
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',3);" onfocus="parent.deformat(this,'dec');" />
+					</cpoEdits>
+
+				</view>
+      			<!-- Validação de dados da tela --> 
+      			<method name="valida" >
+      				<![CDATA[
+         			var retorno = true; 
+         			var jErro=parent.parent.janelaErro;
+         			if ( vCampos.cpo.util.comparaFracionario(vCampos.cpo.nr_Largura.getText(),"<","0,1") ) { 
+        		  		jErro.mostra('Informe o campo largura!');
+            		  	retorno = false;
+         			} else 
+         			if ( vCampos.cpo.util.comparaFracionario(vCampos.cpo.nr_Profundidade.getText(),"<","0,1") ) { 
+        		  		jErro.mostra('Informe o campo profundidade!');
+            		  	retorno = false;
+         			} 
+         			return retorno;
+         			]]>
+         		</method>	
+			</view>
+	        <view name="C" x="5" y="500" layout="axis:x; spacing:3">
+	            <button name="botaoCancela" onclick="parent.parent.close()">Cancela</button>
+	            <button name="botaoOkNovo" isdefault="true">OK
+	            	<handler name="onclick">
+	            		if (parent.parent.B.valida()) { this.processa(); }
+	            	</handler>
+	            	<method name="processa">
+						var ds = parent.parent.parent.parent.dsDimen;
+						ds.setAttribute("src","../../ControlerServlet?");
+						ds.setQueryString({tela : "ban025",  
+										   ed : "Banda_DimensaoED", 
+										   rn : "Banda_DimensaoRN", 
+										   acao : "I",
+										   oid_Banda : sisBan021Banda.xpathQuery('@oid_Banda'), 
+										   nr_Largura : parent.parent.B.vCampos.cpo.nr_Largura.getText(),
+										   nr_Profundidade : parent.parent.B.vCampos.cpo.nr_Profundidade.getText(),
+										   nr_Peso : parent.parent.B.vCampos.cpo.nr_Peso.getText(),
+										   nr_Peso_Metro : parent.parent.B.vCampos.cpo.nr_Peso_Metro.getText()
+										});
+						ds.doRequest();
+	            	</method>
+	            </button>
+	            <button name="botaoOkAltera" isdefault="true">Alterar
+	            	<handler name="onclick">
+	            		if (parent.parent.B.valida()) { this.processa(); }
+	            	</handler>
+	            	<method name="processa">
+						var ds = parent.parent.parent.parent.dsDimen;
+						ds.setAttribute("src","../../ControlerServlet?");
+						ds.setQueryString({tela : "ban025",
+										   ed : "Banda_DimensaoED",
+										   rn : "Banda_DimensaoRN",
+										   acao : "A",
+										   oid_Banda_Dimensao : sisBan021Dimensao.xpathQuery('@oid_Banda_Dimensao'),
+										   oid_Banda : sisBan021Banda.xpathQuery('@oid_Banda'), 
+										   nr_Largura : parent.parent.B.vCampos.cpo.nr_Largura.getText(),
+										   nr_Profundidade : parent.parent.B.vCampos.cpo.nr_Profundidade.getText(),
+										   nr_Peso : parent.parent.B.vCampos.cpo.nr_Peso.getText(),
+										   nr_Peso_Metro : parent.parent.B.vCampos.cpo.nr_Peso_Metro.getText()
+										   });
+						ds.doRequest();
+	            	</method>
+	            </button>
+	            <button name="botaoOkDeleta" isdefault="true">Excluir
+	            	<handler name="onclick">
+	            		parent.parent.parent.alertaExclusaoDimensao.open();
+	            	</handler>
+	            	<method name="processa">
+						parent.parent.parent.carregando.startAni();
+						var ds = parent.parent.parent.parent.dsDimen;
+						ds.setAttribute("src","../../ControlerServlet?");
+						ds.setQueryString({tela : "ban025",
+										   ed : "Banda_DimensaoED",
+										   rn : "Banda_DimensaoRN",
+										   acao : "D",
+										   oid_Banda_Dimensao : sisBan021Dimensao.xpathQuery('@oid_Banda_Dimensao')
+										   });
+						ds.doRequest();
+	            	</method>
+	            </button>
+	        </view>
+			<!-- Limpa campos da tela -->
+			<method name="limpaTelaDimensao" >
+				this.C.botaoOkAltera.setAttribute('visible',false);
+				this.C.botaoOkDeleta.setAttribute('visible',false);
+				this.C.botaoOkNovo.setAttribute('visible',true);
+				this.open();
+				var txt = "Banda : " + sisBan021Banda.xpathQuery('@nm_Banda');
+				this.A.lblBanda.setAttribute('text',txt);
+				B.vCampos.cpo.nr_Largura.clearText();
+				B.vCampos.cpo.nr_Profundidade.clearText();
+				B.vCampos.cpo.nr_Peso.clearText();
+				B.vCampos.cpo.nr_Peso_Metro.clearText();
+			</method>
+			<method name="montaTelaDimensao" >
+				this.C.botaoOkAltera.setAttribute('visible',true);
+				this.C.botaoOkDeleta.setAttribute('visible',true);
+				this.C.botaoOkNovo.setAttribute('visible',false);
+				this.open();
+				var txt = "Banda : " + sisBan021Banda.xpathQuery('@nm_Banda');
+				this.A.lblBanda.setAttribute('text',txt);
+				B.vCampos.cpo.nr_Largura.setAttribute('text',sisBan021Dimensao.xpathQuery('@nr_Largura'));
+				B.vCampos.cpo.nr_Profundidade.setAttribute('text',sisBan021Dimensao.xpathQuery('@nr_Profundidade'));
+				B.vCampos.cpo.nr_Peso.setAttribute('text',sisBan021Dimensao.xpathQuery('@nr_Peso'));
+				B.vCampos.cpo.nr_Peso_Metro.setAttribute('text',sisBan021Dimensao.xpathQuery('@nr_Peso_Metro'));
+			</method>
+		</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" height="490" width="635">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="540" height="419">
+            		<form name="formSel">
+	               		<view name="vSel" width="120" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Fabricante:" />
+								<text height="21" align="right" text="Modelo:" />
+								<text height="21" align="right" text="Código:" />
+								<text height="21" align="right" text="Aplicacao:" />
+								<text height="21" align="right" text="Eixo:" />
+								<text height="21" align="right" text="Tipo pneu:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="pns003" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="BandaED" />
+								<edittext name="rn" visible="false" text="BandaRN" />
+								<datacombobox name="oid_Fabricante_Banda" width="200" height="21"  itemdatapath="sisPns021FabBndC:/cad/item"  defaulttext="TODOS"/>
+								<edittext name="nm_Banda" maxlength="30" width="200" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="cd_Banda" maxlength="10" width="80" height="21"  
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+									
+								<datacombobox name="dm_Aplicacao" 	shownitems="5" width="220" height="21" itemdatapath="dmAplicacaoC:/item" 		defaulttext="Escolha Aplicação"/>
+								<datacombobox name="dm_Eixo" 		shownitems="5" width="220" height="21" itemdatapath="dmEixoC:/item" 				defaulttext="Escolha o Eixo"/>
+								<datacombobox name="dm_Tipo_Pneu" 	shownitems="5" width="220" height="21" itemdatapath="dmTipoPneuQualquerC:/item" 	defaulttext="Escolha o Tipo"/>
+									
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  		</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="540" height="240">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpoBan021 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</cpoBan021>
+                  		<!-- View campos para inclusão -->
+                  		<cpoBan021 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpoBan021>
+               		</view>
+            	</view>
+            	<text>Dimensões</text>
+				<view name="dimensaoGrid" width="450" height="160" >
+			        <grid name="lstInner" datapath="cadInnerBan021:/" x="3" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+			        	height="${parent.height-10}" width="${parent.width-10}" rowheight="16">
+			        	<gridtext sortable="false" editable="false" datapath="@oid_Banda" width="1" />
+			        	<gridcolumn width="30" resizable="false" sortable="false" > 
+	      					<view resource="ban021Altera" height="16" yoffset="-1" xoffset="-2" datapath="@oid_Banda_Dimensao">
+	  							<handler name="onclick">
+	  								sisBan021Dimensao=this.datapath;
+	  								sisBan021Banda=parent.parent.parent.parent.corCad.campos.updCad.datapath;
+				          			parent.parent.parent.parent.parent.parent.dimensao.montaTelaDimensao();
+	  							</handler>
+	      					</view>		
+    					</gridcolumn>
+          				<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Largura" 		text="Largura" 		width="100" />
+          				<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Profundidade" 	text="Profundidade" width="100"/>
+          				<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Peso" 			text="Peso total" 	width="100"/>
+          				<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Peso_Metro" 	text="Peso metro" 	width="100"/>
+			        </grid>
+				</view>  
+            	<botoesCad name="barCad" tela="pns003" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="638" height="419">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+               			<gridtext editable="false" resizable="false" datapath="@cd_Banda" text="Cód." width="61"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Banda" text="Modelo" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Fabricante_Banda" text="Fabricante" width="108"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Aplicacao" text="Aplicação" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Eixo" text="Eixo" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Tipo_Pneu" text="Tipo" width="110"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+               			Relatório
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+		      				var x=parent.parent.parent.tabSel.corSel.formSel.vSel.edits;
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=ban021";
+							chamada += "&amp;"+"ed=BandaED";
+							chamada += "&amp;"+"rn=BandaRN"; 
+							chamada += "&amp;"+"rel=2"; 
+							chamada += "&amp;"+"oid_Fabricante_Banda="+ x.oid_Fabricante_Banda.value;
+							chamada += "&amp;"+"nm_Fabricante_Banda="+ x.oid_Fabricante_Banda.text;
+							chamada += "&amp;"+"nm_Banda="+ x.nm_Banda.getText(); 
+							chamada += "&amp;"+"cd_Banda="+ x.cd_Banda.getText();
+							chamada += "&amp;"+"dm_Aplicacao="+ x.dm_Aplicacao.value;
+							chamada += "&amp;"+"nm_Aplicacao="+ x.dm_Aplicacao.text;
+							chamada += "&amp;"+"dm_Eixo="+ x.dm_Eixo.value;
+							chamada += "&amp;"+"nm_Eixo="+ x.dm_Eixo.text;
+							chamada += "&amp;"+"dm_Tipo_Pneu="+ x.dm_Tipo_Pneu.value;
+							chamada += "&amp;"+"nm_Tipo_Pneu="+ x.dm_Tipo_Pneu.text;
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

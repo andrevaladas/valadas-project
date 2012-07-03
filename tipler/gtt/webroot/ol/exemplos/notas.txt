@@ -1,0 +1,22 @@
+Problemas
+	Problemas com acentuação ao retornar os dados. Ver no PJ. OK incluir UTF-8 na request.
+	Tratar o retorno para o laszlo de eventuais erros nos metodos chamados. On RN e ondata
+	
+Implementação Automática ( para qualquer chamada do laszlo ao servidor )
+	Na tela do laszlo passar no requet o seguinte:
+	tela,
+	classeED,
+	claseRN,
+	metodoRN,
+	mais os campos
+	
+	tela=pns002&ED=Marca_PneuED&RN=Marca_PneuRN&metodo=inclui&oid_Marca_Pneu=&nm_Marca_Pneu=Firestone
+	
+	1 Popula o bean (request->ED) retornando Object
+	2 Invoca o metodo RN.metodo passando o Object recebido no passo anterior
+	
+	Então uma tela de cadastro que tenha combos vai fucnionar assim:
+	1 - Chama a tela..
+	2 - Ao iniciar a tela chama o request para cada combo....
+	3 - Chama o requesta para cada função da tela
+		incluir, consultar, alterar, excluir, listar

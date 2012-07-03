@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	Tela MODAL: STIF - Inspeções
+-->
+<library>
+	<!-- Includes -->
+	<include href="../include/domain.lzx" />
+	<include href="../include/objetosDeTela.lzx" />
+	<include href="../include/dragdropgrid.lzx" />
+
+   	<!-- Classe da Tela -->
+	<class name="tif101" extends="view" >
+	<simplelayout spacing="1" />
+
+	<!-- Datasets -->
+	<dataset name="dsVeiculosCliente" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=tif101&amp;acao=L&amp;ed=VeiculoED&amp;rn=VeiculoRN"
+   		ondata="parent.tela.carregando.stopAni();
+	 			var count = parent.dsVeiculosClientedp.xpathQuery('*/last()');
+	 			if (count == null) {
+	 				parent.tela.janelaAviso.mostra('Cliente não possui veículos!');
+	 			}
+	 			"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"/>
+	<datapointer name="dsVeiculosClientedp" xpath="local:dsVeiculosCliente:/cad" />
+
+	<dataset name="dsVeiculosSelecionados"/>
+
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.caddp.xpathQuery('@oknok');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+					if (resultado == 'IOK') {
+						parent.tela.janelaAviso.mostra('Inspeção cadastrada com sucesso!');
+						parent.tela.form.vCampos.edits.oid_Cliente.resetLookupValues();
+						parent.tela.form.vCampos.edits.dt_Inspecao.clearText();
+						parent.tela.form.vGrids.resetGridDatapaths();
+						parent.tela.form.vGrids.resetOrigens();
+						parent.tela.form.vGrids.resetDestinos();
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/ret/item" />
+	<datapointer name="caddp1" xpath="local:cad:/cad/item" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Nova Inspeção" widthLine="${parent.parent.width-30}"  corFrente="#FF9900" />
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro);
+				this.open();
+			</method>
+		</alert>
+		
+		<view name="form" x="10">
+        	<simplelayout spacing="1" />
+        	<view name="vCampos" width="120" align="left" layout="axis:x; spacing:5" >
+        		<view y="10" align="right" width="110" layout="axis:y; spacing:3">
+	        		<text text="Cliente:" align="right" height="21" />
+	        		<text text="Data de inspeção:" align="right" height="21" />
+        		</view>
+        		<cpoEditsXY y="10" name="edits" stretches="width" >
+        			<lookup y="0" height="21" 
+						name="oid_Cliente" 
+						cdProperty="nr_Cnpj" 
+						dsProperty="nm_Razao_Social" 
+						widthCdProperty="110" 
+						widthDsProperty="250"
+						callService="Empresa"
+						exactActionService="CU" >
+						<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="U"/>
+
+						<method name="ondataLookup">
+				    		parent.parent.parent.vGrids.resetDestinos();
+				    		parent.parent.parent.vGrids.callCurrentService();
+						</method>
+						<method name="onresetLookup">
+							parent.parent.parent.vGrids.resetOrigens();
+				    		parent.parent.parent.vGrids.resetDestinos();
+						</method>
+					</lookup>
+
+					<edittext y="24" 
+						name="dt_Inspecao" maxlength="8" width="80" height="21"
+						oninit="parent.pattern(this,'dat')" onblur="parent.format(this,'dat',4);" onfocus="parent.deformat(this,'dat');" />
+				</cpoEditsXY>
+        	</view>
+
+           	<view name="vGrids" x="10">
+           		<!-- Butões da Grid -->
+	        	<button y="65" x="145" width="70" height="15" name="btnAddAll" fontsize="9">Todos>>
+	        		<handler name="onclick">
+	        			var currentGrid = this.parent.getCurrentGrid();
+
+	         			var dpOrigem = currentGrid.vLeftGrid.datapath;
+	         			var dpDestino = currentGrid.vRightGrid.datapath;
+	         			parent.transferDatapath(dpOrigem, dpDestino);
+	            	</handler>
+	        	</button>
+	            <button y="82" x="145" width="70" height="15" name="btnCleanAll" fontsize="9"><![CDATA[<<Limpar]]>
+	            	<handler name="onclick">
+	            		var currentGrid = this.parent.getCurrentGrid();
+
+	         			var dpDestino = currentGrid.vRightGrid.datapath;
+	         			var dpOrigem = currentGrid.vLeftGrid.datapath;
+	         			parent.transferDatapath(dpDestino, dpOrigem);
+	            	</handler>
+	            </button>
+	            <method name="getCurrentGrid">
+	            	<![CDATA[
+            		return parent.vGrids.vGridVeiculo;
+				   	]]>
+            	</method>
+            	<method name="transferDatapath" args="dpOrigem, dpDestino">
+					if(!dpOrigem.selectChild()) {
+						return;
+					}
+					var dpClone = dpOrigem.dupePointer();
+					while(dpClone.xpathQuery('last()') > 0) {
+						dpDestino.addNodeFromPointer(dpClone);
+						dpClone.deleteNode();
+				   	}
+				   	//UPDATE
+				   	dpOrigem.updateData();
+				   	dpDestino.updateData();
+            	</method>
+            	<method name="resetOrigens">
+            		var dpOrigem = getCurrentGrid().vLeftGrid.datapath;
+	         		if(!dpOrigem.selectChild()) {
+						return;
+					}
+					var dpClone = dpOrigem.dupePointer();
+					while(dpClone.xpathQuery('last()') > 0) {
+						dpClone.deleteNode();
+				   	}
+				   	dpOrigem.updateData();
+            	</method>
+            	<method name="resetDestinos">
+            		var dpDestino = getCurrentGrid().vRightGrid.datapath;
+	         		if(!dpDestino.selectChild()) {
+						return;
+					}
+					var dpClone = dpDestino.dupePointer();
+					while(dpClone.xpathQuery('last()') > 0) {
+						dpClone.deleteNode();
+				   	}
+				   	dpDestino.updateData();
+            	</method>
+            	<method name="callCurrentService">
+            		if(parent.vCampos.edits.oid_Cliente.getValue() != '') {
+						this.resetGridDatapaths();
+
+            			var src = "../../ControlerServlet?";
+		        			src += "tela=tif101&amp;";
+		        			src += "acao=L&amp;";
+		        			src += "ed=VeiculoED&amp;";
+		        			src += "rn=VeiculoRN&amp;";
+		        			/** Filtro */
+							src += "oid_Cliente="+parent.vCampos.edits.oid_Cliente.getValue()+"&amp;";
+
+			        		classroot.tela.carregando.startAni();
+							local:classroot.dsVeiculosCliente.setSrc(src);
+							local:classroot.dsVeiculosCliente.doRequest();
+            		}
+            	</method>
+            	<method name="resetGridDatapaths">
+            		var currentGrid = this.getCurrentGrid();
+         			currentGrid.vLeftGrid.setDatapath('local:classroot.dsVeiculosCliente:/cad');
+         			currentGrid.vRightGrid.setDatapath('local:classroot.dsVeiculosSelecionados:/');
+            	</method>
+
+	        	<!-- GRID Veículo-->
+	        	<frame3d name="frame" y="10" width="${parent.parent.width-10}" height="190" caption="Veículos da inspeção"/>
+	        	<view y="25" height="21" width="139" bgcolor="silver">
+	        		<text fontsize="9" bgcolor="silver" text="      Veículos do cliente"/>
+	        	</view>
+	        	<view y="25" x="220" height="21" width="274" bgcolor="silver">
+	        		<text align="center" fontsize="9" text="Veículos da inspeção"/>
+	        	</view>
+	        	
+	        	<view name="vGridVeiculo" y="40" height="165" visible="true">
+	        		<dragdropgrid name="vLeftGridHidden" width="140" height="${parent.height-12}" dragable="false" >
+                  			<gridtext editable="false" text="Frota" width="60"/>
+                  			<gridtext editable="false" text="Placa" width="${parent.width - this.x}"/>
+                  			<gridtext editable="false" datatype="number" width="0"/>
+                    </dragdropgrid>
+	        		<dragdropgrid name="vLeftGrid" width="140" height="${parent.height-12}" 
+	        			dblclicktargetGrid="${parent.vRightGrid}" copymode="false" fontsize="9" rowheight="12" bgcolor0="#FEEEAA">
+                  			<gridtext editable="false" datapath="@nr_Frota" text="Frota" width="60"/>
+                  			<gridtext editable="false" datapath="@nr_Placa" text="Placa" width="${parent.width - this.x}"/>
+                  			<gridtext editable="false" datapath="@oid_Veiculo" datatype="number" width="0"/>
+                    </dragdropgrid>
+
+                    <dragdropgrid name="vRightGridHidden" x="220" width="275" height="${parent.height-12}"
+	        			dblclicktargetGrid="${parent.vLeftGrid}" copymode="false" fontsize="9" rowheight="12" bgcolor0="#FEEEAA">
+                    		<gridtext editable="false" text="Frota" width="60"/>
+                  			<gridtext editable="false" text="Placa" width="80"/>
+                  			<gridtext editable="false" text="Marca" width="${parent.width - this.x}"/>
+                  			<gridtext editable="false" datatype="number" width="0"/>
+                    </dragdropgrid>
+                    <dragdropgrid name="vRightGrid" x="220" width="275" height="${parent.height-12}"
+	        			dblclicktargetGrid="${parent.vLeftGrid}" copymode="false" fontsize="9" rowheight="12" bgcolor0="#FEEEAA">
+                    		<gridtext editable="false" datapath="@nr_Frota" text="Frota" width="60"/>
+                  			<gridtext editable="false" datapath="@nr_Placa" text="Placa" width="80"/>
+                  			<gridtext editable="false" datapath="@nm_Marca_Veiculo" text="Marca" width="${parent.width - this.x}"/>
+                  			<gridtext editable="false" datapath="@oid_Veiculo" datatype="number" width="0"/>
+                    </dragdropgrid>
+            	</view>
+            </view>
+
+        	<!-- Barra de Botões -->
+	        <view name="vButtons" y="630" layout="axis:x; spacing:3">
+	            <!-- ATENÇÃO: Método Close chamado em modo POPUP somente!!! -->
+				<button name="btnCancelar" onclick="classroot.parent.close()">Cancela</button>
+	            <button name="btnSalvar" isdefault="true">Gravar
+	            	<handler name="onclick">
+	            		if(parent.validate()) {
+	            			var src = "../../ControlerServlet?";
+		        			src += "tela=tif101&amp;";
+		        			src += "acao=I&amp;";
+		        			src += "ed=Stif_InspecaoED&amp;";
+		        			src += "rn=Stif_InspecaoRN&amp;";
+	
+		        			/** Header */
+		        			src += "oid_Cliente="+this.parent.parent.vCampos.edits.oid_Cliente.getValue()+"&amp;";
+		        			src += "dt_Inspecao="+this.parent.parent.vCampos.edits.dt_Inspecao.getValue()+"&amp;";
+
+		        			/** GridItens */
+		        			src += "array="+parent.buildItensFormBean();
+
+			        		classroot.tela.carregando.startAni();
+							local:classroot.cad.setSrc(src);
+							local:classroot.cad.doRequest();
+	            		}
+	            	</handler>
+	            </button>
+      			<method name="validate">
+      				<![CDATA[
+      				var form = parent.vCampos.edits;
+      				var objJanelaErro = classroot.tela.janelaErro;
+					if (form.requerido(form.oid_Cliente.getValue())) {
+	        			objJanelaErro.mostra('Informe o Cliente!');
+	        			return false;
+					} else if (!form.validaData(form.dt_Inspecao)) {
+		         		objJanelaErro.mostra('Informe a data de inspeção!');
+	            		return false; 
+	            	} else if (form.util.comparaDtHoje(form.dt_Inspecao.getValue())) {
+		         		objJanelaErro.mostra('A data de inspeção não pode ser superior a data atual!');
+	            		return false;
+	        		} else if(parent.vGrids.getCurrentGrid().vRightGrid.datapath.xpathQuery('*/last()') == null) {
+            			objJanelaErro.mostra('Informe algum Veículo para Inspeção!');
+	            		return false;
+            		}
+	     			return true;
+         			]]>
+         		</method>
+       			<method name="buildItensFormBean">
+     				<![CDATA[
+     					var idProperty = 'oid_Veiculo';
+           				var dp = parent.vGrids.getCurrentGrid().vRightGrid.datapath;
+           				var hasChild = (dp.getNodeAttribute(idProperty) != null);
+						if(!hasChild) {
+							hasChild = dp.selectChild();
+						}
+
+						var array = "Stif_Veiculo_InspecaoED##";
+					    /** Alimenta Array */
+				   		while (hasChild) {
+				   			array +="oid_Veiculo=" + dp.getNodeAttribute(idProperty) + "##";
+					       	hasChild=dp.selectNext();
+			     	 	}
+	     	 	  		return array;
+      				]]>
+       			</method>
+	        </view>
+      	</view>
+
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando"/>
+   	</view>
+
+	</class>
+</library>

@@ -1,0 +1,392 @@
+<canvas bgcolor="#EAEAEA" debug="false">
+	<script>
+		<![CDATA[
+		var oidInspecao=0;
+		var controlPan=1;
+		var oid_IN=0;
+		var oid_RG=0;
+		var nr_MM=0;
+		var txInicialDefault= "		Com a intenção de auxiliar na melhoria constante do setor de borracharia, transcrevemos abaixo a avaliação das condições atuais e no quadro que segue um comparativo com as anteriores. ";
+		var txInicialDefaultE= "		Con la intención de ayudar en la mejora de sector neumáticos, transcribimos abajo una evaluacción de las condiciones atuales y en el quadro que sigue un comparativo con las anteriores. ";
+		var br="\r";
+		]]>
+	</script>
+	
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+	<include href="../include/dateUtils.lzx" /> 
+	<!--
+	<utils name="util"/>
+	-->
+	<dateUtils name="dtUtl" />
+	<!-- Dataset para acessar a inspecao escolhida -->
+	<dataset name="cadInspecao" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet?"
+	    ondata="parent.wTib201.fake.carregando.stopAni();
+	  			resultado = parent.dpInsp.xpathQuery('@oknok');
+	          	if (resultado=='LOGON'){
+	          		parent.logon();
+	          	}else{
+	          		var d = parent.dpInsp1;	
+	          		var p3 = parent.wTib201.fake.tela.pan3.cpos.edts.quadro1;
+	          		var p4 = parent.wTib201.fake.tela.pan4.cpos.edts;
+	          		if (d.xpathQuery('@tx_Inicial')!=''){
+	          			p3.tx_Inicial.setAttribute('text',d.xpathQuery('@tx_Inicial'));
+	          			p3.nm_Razao_Social.setAttribute('text',d.xpathQuery('@nm_Razao_Social'));
+	          			p3.nm_Signatario.setAttribute('text',d.xpathQuery('@nm_Signatario'));
+	          			p3.nm_Tecnico.setAttribute('text',d.xpathQuery('@nm_Tecnico'));
+	          			p4.quadro1.tx_Final.setAttribute('text',d.xpathQuery('@tx_Final'));
+	          			p4.quadro2.tx_Assinatura1.setAttribute('text',d.xpathQuery('@tx_Assinatura1'));
+	          			p4.quadro2.tx_Assinatura2.setAttribute('text',d.xpathQuery('@tx_Assinatura2'));
+	          		} else {
+	          			p3.tx_Inicial.setAttribute('text',lang='E'?txInicialDefaultE:txInicialDefault);
+      					p3.nm_Razao_Social.setAttribute('text',parent.wTib201.fake.tela.pan1.cpos.edts.quadro1.oid_Cliente.lookup_dsProperty.getAttribute('text'));
+	          			p3.nm_Signatario.setAttribute('text','');
+	          			p3.nm_Tecnico.setAttribute('text',d.xpathQuery('@nm_Usuario'));
+	          			p4.quadro1.tx_Final.setAttribute('text','');
+	          			p4.quadro2.tx_Assinatura1.setAttribute('text',d.xpathQuery('@nm_Usuario')+br+'TECNICO');
+	          			p4.quadro2.tx_Assinatura2.setAttribute('text','');
+	          		}
+	          	}
+	          	"
+      	onerror="parent.wTib201.fake.carregando.stopAni();" 
+      	ontimeout="parent.wTib201.fake.carregando.stopAni();
+  			   	   parent.wTib201.fake.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  	/>
+	<datapointer name="dpInsp" xpath="local:cadInspecao:/ret/item" />
+	<datapointer name="dpInsp1" xpath="local:cadInspecao:/cad/item" />
+	<!-- Data set para buscar a lista das inspeções  do cliente -->
+	<dataset name="cadInspecoes" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet?"
+	    ondata="parent.wTib201.fake.carregando.stopAni();
+	  			resultado = parent.dpInspe.xpathQuery('@oknok');
+	          	if (resultado=='LOGON'){ parent.logon();}
+	          	"
+      	onerror="parent.wTib201.fake.carregando.stopAni();" 
+      	ontimeout="parent.wTib201.fake.carregando.stopAni();
+  			   	   parent.wTib201.fake.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  	/>
+	<datapointer name="dpInspe" xpath="local:cadInspecoes:/ret/item" />
+	<!-- Dataset para atualizar os dados do relatório na inspecao -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet?"
+	    ondata="resultado = parent.dpAtu.xpathQuery('@oknok');
+	          	if (resultado=='LOGON'){ 
+	          		parent.logon(); 
+	          	} else {
+	          		if (resultado=='AROK'){
+	          			parent.wTib201.fake.impRelatorio();
+	          		}
+	          	}
+	          	"
+      	onerror="parent.wTib201.fake.carregando.stopAni();" 
+      	ontimeout="parent.wTib201.fake.carregando.stopAni();
+  			   	   parent.wTib201.fake.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  	/>
+	<datapointer name="dpAtu" xpath="local:atu:/ret/item" />
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+	
+	<window title="tib201" name="wTib201" bgcolor="#FAFAFA" width="750" height="450"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+	  <view name="fake">		
+		<simplelayout spacing="1" />
+		<titulo x="5" text="Relatório de Inspeção de Borracharia" widthLine="${parent.parent.width-30}" corFrente="#FF9900" oninit="this.setAttribute('text', ('E'==lang ? 'Listado del Inspeción dela Gomaria ' : 'Relatório de Inspeção de Borracharia') );"/>
+		<view name="tela" width="${parent.parent.width}" height="350" visible="true" layout="axis:x; spacing:0" >
+			<animator name="animaMenos" attribute="x" to="${-parent.width}" duration="300" start="false" relative="true"/>
+	    	<animator name="animaMais" 	attribute="x" to="${+parent.width}" duration="300" start="false" relative="true"/>
+	    	<!-- Painel para solicitação do cliente -->
+			<view x="5" name="pan1" width="${parent.width}" height="${parent.height}" visible="true">
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="180" layout="axis:nome">
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="180">
+							<text y="10" 	height="21"	align="right"  	text="Cliente:" oninit="this.setAttribute('text', ('E'==lang ? 'Cliente:' : 'Cliente:') );"/>
+						</view>	
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<text height="21" x="80" y="5" text="Escolha o cliente para gerar o relatório"  oninit="this.setAttribute('text', ('E'==lang ? 'Escolha el cliente para gerar el listado ' : 'Escolha o cliente para gerar o relatório') );"/>
+						<separador x="1" y="30" widthLine="530" />
+						<view x="1" y="48" name="quadro1" visible="true">
+							<lookup x="0" y="10" height="21" name="oid_Cliente" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+								widthCdProperty="110" widthDsProperty="300"	callService="Empresa" exactActionService="CU" >
+							<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="U"/>
+							<propertyMapping modelProperty="dm_Modulo" criteriaProperty="STIB"/>
+						</lookup>
+						</view>
+					</cpoEditsXY>
+				</view>
+			</view>		
+			<!-- Painel para escolha do período -->	
+			<view x="5" name="pan2" width="${parent.width}" height="${parent.height}" >
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="160" layout="axis:nome">
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="160" visible="${parent.parent.edts.quadro1.visible}">
+						</view>	
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<text height="21" x="100" y="5" text="Escolha o período para o relatório:" oninit="this.setAttribute('text', ('E'==lang ? 'Informe el período para el listado ' : 'Escolha o período para o relatório') );" />
+						<separador x="1" y="30" widthLine="550" />
+						<view x="1" y="28" name="quadro1" visible="true" >
+			       			<grid x="100" y="20" name="lst" datapath="cadInspecoes:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+								height="300" width="200" multiselect="false" rowheight="16">
+				       			<gridtext sortable="false" editable="false" datapath="@oid_Inspecao" width="1" text="oid_Inspecao" />
+       				           	<gridcolumn sortable="false" text="" width="58" resizable="false">
+									<checkbox datapath="@dm_Escolhido" name="dm_Escolhido" xoffset="${8-parent.width/2}" > 
+										<handler name="onclick"> this.datapath.updateData();</handler>
+									</checkbox>
+								</gridcolumn>	
+				       			<gridtext editable="false" resizable="false" datapath="@dt_Inicio" text="Data" textalign="center"
+				       					  oninit="this.setAttribute('text', ('E'==lang ? 'Fecha' : 'Data') );this.setAttribute('width',130);" />
+				       		</grid>
+						</view>
+					</cpoEditsXY>
+				</view>
+			</view>		
+			<!-- Painel para o texto inicial -->	
+			<view x="5" name="pan3" width="${parent.width}" height="${parent.height}" visible="true">
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="150" layout="axis:nome">
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="${parent.width}">
+							<text y="5"  height="21" align="right" text="Cliente:" oninit="this.setAttribute('text', ('E'==lang ? 'Cliente:' : 'Cliente:') );"  />
+							<text y="29" height="21" align="right" text="Técnico:" oninit="this.setAttribute('text', ('E'==lang ? 'Técnico:' : 'Técnico:') );" />
+							<text y="53" height="21" align="right" text="Prezado:" oninit="this.setAttribute('text', ('E'==lang ? 'Prezado:' : 'Prezado:') );" />
+							<text y="77" height="21" align="right" text="Texto:" oninit="this.setAttribute('text', ('E'==lang ? 'Texto:' : 'Texto:') );" />
+						</view>		
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<text height="21" x="120" y="5" width="500" oninit="this.setAttribute('text', ('E'==lang ? 'Texto inicial para el listado ' : 'Texto inicial para o relatório') );" />
+						<separador x="1" y="30" widthLine="560" />
+						<view x="1" y="48" name="quadro1" >
+							<edittext height="21" x="0" y="5"  name="nm_Razao_Social" width="400" />
+							<edittext height="21" x="0" y="29"  name="nm_Tecnico" width="400" />
+							<edittext height="21" x="0" y="52"  name="nm_Signatario" width="400" />
+							<edittext height="170" x="0" y="77"  name="tx_Inicial" width="550" multiline="true" />
+						</view>
+					</cpoEditsXY>
+				</view>
+			</view>			
+			<!-- Painel para o texto final -->
+			<view x="5" name="pan4" width="${parent.width}" height="${parent.height}" visible="true">
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="150" layout="axis:nome">
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="${parent.width}" >
+							<text y="5" height="21" align="right" text="Texto:" oninit="this.setAttribute('text', ('E'==lang ? 'Texto:' : 'Texto:') );" />
+							<text y="185" height="21" align="right" text="Nombre e cargo:" oninit="this.setAttribute('text', ('E'==lang ? 'Nombre e cargo:' : '   Nome e cargo:') );" />
+						</view>	
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<text height="21" x="80" y="5" width="500" oninit="this.setAttribute('text', ('E'==lang ? 'Texto final para el listado ' : 'Texto final para o relatório') );" />
+						<separador x="1" y="30" widthLine="560" />
+						<view x="1" y="48" name="quadro1" visible="true">
+							<edittext height="170" x="0" y="5" width="550" name="tx_Final"  multiline="true" />
+						</view>
+						<view x="1" y="228" name="quadro2" visible="true">
+							<edittext height="40" x="0"   y="5" width="190" name="tx_Assinatura1"  multiline="true" />
+							<text     height="21" x="210" y="5" text="Nombre e cargo:" oninit="this.setAttribute('text', ('E'==lang ? 'Nombre e cargo:' : '   Nome e cargo:') );" />
+							<edittext height="38" x="320" y="5" width="190" name="tx_Assinatura2"  multiline="true" />
+						</view>
+					</cpoEditsXY>
+				</view>
+			</view>			
+		</view>
+		<!-- botoes -->
+		<view name="botoes" x="10" width="${parent.width}" height="50" visible="true" layout="axis:x; spacing:3">
+			<button name="fec" text="Fechar"  oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') )">
+	     		<handler name="onclick" >
+	     			<![CDATA[
+	 					parent.parent.parent.close();
+	     			]]>
+	      		</handler>
+			</button>
+			<button name="vem" enabled="false" text="Retornar" oninit="this.setAttribute('text', ('E'==lang ? 'Volver' : 'Retornar') )"> 
+	     		<handler name="onclick" >
+	     			<![CDATA[ 
+	     			parent.parent.ajustaTela("+");
+	     			]]>
+	      		</handler>
+			</button>
+			<button name="vai" enabled="true" text="Avançar" oninit="this.setAttribute('text', ('E'==lang ? 'Avanzar' : 'Avançar') )">
+	     		<handler name="onclick" >
+	     			<![CDATA[ 
+	     			if (!parent.parent.valida()) { 
+	     				parent.parent.ajustaTela("-");
+	     			}	
+					]]>
+	      		</handler>
+			</button>
+			<button name="con" enabled="false" text="Concluir">
+	     		<handler name="onclick" >
+	     			<![CDATA[
+	     			var p3 = parent.parent.tela.pan3.cpos.edts.quadro1;
+	     			var p4 = parent.parent.tela.pan4.cpos.edts;
+	  				parent.parent.carregando.startAni();
+					atu.setAttribute("src","../../ControlerServlet?");
+		  			atu.setQueryString({tela : "tib201",
+										  ed : "Stib_InspecaoED",
+						  	  		      rn : "Stib_InspecaoRN",
+									  	acao : "AR",
+								oid_Inspecao : oidInspecao,
+							      tx_Inicial : p3.tx_Inicial.getAttribute('text'),
+							   nm_Signatario : p3.nm_Signatario.getAttribute('text'),
+							      nm_Tecnico : p3.nm_Tecnico.getAttribute('text'),
+							        tx_Final : p4.quadro1.tx_Final.getAttribute('text'),
+							  tx_Assinatura1 : p4.quadro2.tx_Assinatura1.getAttribute('text'),
+				              tx_Assinatura2 : p4.quadro2.tx_Assinatura2.getAttribute('text')
+  										});	
+	  				atu.doRequest();
+	     	 		]]>
+	      		</handler>
+			</button>
+
+		</view>
+		<method name="valida">
+ 			<![CDATA[ 
+ 			var jErro = janelaErro;
+ 			var erro=false;
+ 			// Critica o painel 1
+ 			if (controlPan==1) {
+ 				var p1 = tela.pan1.cpos.edts;
+ 				if ( p1.requerido(p1.quadro1.oid_Cliente.getText()) )  {
+ 					jErro.mostra(('E'==lang ? 'Informe el cliente para gerar el listado ' : 'Informe o cliente para gerar o relatório'));
+ 					erro=true;
+ 				}	
+ 				if (!erro) { buscaInspecoes(p1.quadro1.oid_Cliente.getText()); }
+ 			}
+ 			// Critica o painel 2
+ 			if (controlPan==2) {
+ 				oidInspecao=0;
+              	var dp=cadInspecoes.getPointer();
+				var lNext=dp.selectChild(2);
+				var cta = 0;
+			    //Rola pelos registros do grid para ver quais estão marcados.
+			   	while (lNext) {
+			    	var z =	dp.getNodeAttribute("dm_Escolhido");
+		   			if (z==true) { ++cta; oidInspecao = dp.getNodeAttribute("oid_Inspecao"); }
+			        lNext=dp.selectNext();
+	     	 	}
+	     	 	if (cta==0) {
+	     	 		jErro.mostra(('E'==lang ? 'Escolha una inspeción para gerar el listado.' : 'Escolha uma inspeção para gerar o relatório.'));
+ 					erro=true;
+	     	 	} else
+	     	 	if (cta>1) {
+	     	 		jErro.mostra(('E'==lang ? 'Escolha solamente una inspeción para gerar el listado.' : 'Escolha somente uma inspeção para gerar o relatório.'));
+ 					erro=true;
+	     	 	}
+	     	 	if (!erro) { buscaInspecao(oidInspecao) };
+ 			}
+ 			// Critica o painel 3
+ 			if (controlPan==3) {
+ 			}
+ 			return erro;
+			]]>
+			
+		</method>	
+		<method name="ajustaTela" args="dir">
+			<![CDATA[ 
+				var x=tela;	
+
+				if (dir=="-") x.animaMenos.doStart();
+				if (dir=="+") x.animaMais.doStart();
+
+				if (dir=="-") ++controlPan;
+				if (dir=="+") --controlPan;
+				
+				if (controlPan > 1)
+					botoes.vai.setAttribute("enabled",true);
+
+				if (controlPan == 5) {
+					botoes.vai.setAttribute("enabled",false);
+					botoes.con.setAttribute("enabled",true);
+				} else {
+					botoes.con.setAttribute("enabled",false);
+				}
+				
+				if (controlPan < 5)
+					botoes.vem.setAttribute("enabled",true);
+				
+				if (controlPan==1) {
+					botoes.vem.setAttribute("enabled",false);
+					botoes.con.setAttribute('enabled',false);
+				}
+				if (controlPan==2) { }	
+				if (controlPan==3) { }
+				if (controlPan==4) {
+					botoes.vai.setAttribute("enabled",false);
+					botoes.con.setAttribute("enabled",true);
+				}
+				tela.pan1.cpos.setAttribute("visible",controlPan==1?true:false);
+				tela.pan2.cpos.setAttribute("visible",controlPan==2?true:false);
+				tela.pan3.cpos.setAttribute("visible",controlPan==3?true:false);
+				tela.pan4.cpos.setAttribute("visible",controlPan==4?true:false);
+
+			]]>
+		</method>
+		<!-- Busca a inspeção escolhida -->
+  		<method name="buscaInspecao" args="oid">
+  				carregando.startAni();
+				cadInspecao.setAttribute("src","../../ControlerServlet?");
+	  			cadInspecao.setQueryString({tela : "tib104",
+											  ed : "Stib_InspecaoED",
+							  	  		      rn : "Stib_InspecaoRN",
+										  	acao : "L",
+								  	 oid_Inspecao : oid
+	  										});	
+  				cadInspecao.doRequest();
+		</method>
+		<!-- Busca as inspeções para o grid -->
+  		<method name="buscaInspecoes" args="oid">
+  				carregando.startAni();
+				cadInspecoes.setAttribute("src","../../ControlerServlet?");
+	  			cadInspecoes.setQueryString({tela : "tib104",
+											  ed : "Stib_InspecaoED",
+							  	  		      rn : "Stib_InspecaoRN",
+										  	acao : "L",
+								   dm_Encerradas : "S",
+								      dm_Ordenar : "DTINICIODESC",
+								  	 oid_Cliente : oid
+	  										});	
+  				cadInspecoes.doRequest();
+		</method>
+		<method name="impRelatorio" args="msg">
+			janelaAviso.mostra('Aguarde a emissão do relatório !');
+			var chamada = "../include/relatorio.jsp?" ;
+			chamada += "tela=gtt201";
+			chamada += "&amp;"+"ed=Stib_InspecaoED";
+			chamada += "&amp;"+"rn=Stib_InspecaoRN"; 
+			chamada += "&amp;"+"rel=1"; 
+			chamada += "&amp;"+"oid_Inspecao="+oidInspecao;
+			chamada += "&amp;"+"time="+parent.parent.dtUtl.getSystemTime();
+			LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+			carregando.stopAni();
+		</method>
+	    <!-- Reloginho -->
+  		<loadingAni name="carregando" />
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "400" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+				this.turnOff = new LzDelegate( this, "turnOffAni" ); LzTimer.addTimer( this.turnOff, 5000 );
+			</method>
+			<method name="turnOffAni" args="p">this.close();</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+	  </view>
+
+	</window>
+</canvas>
+            

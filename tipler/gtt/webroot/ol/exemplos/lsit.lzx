@@ -1,0 +1,16 @@
+
+<canvas fontsize="9" proxied="false" debug="true" width="100%" height="100%"> 
+	
+	<window name="janela" height="100" width="600" resizable="true">
+	    
+	    <handler name="oninit">
+	    	LzFocus.setFocus(this.tela.aa);
+    	</handler> 
+    	
+	     <view name="tela">
+		    <edittext name="aa" x="100" y="0"/> 
+		    <button x="400" y="0" text="the button"/>
+	    </view> 
+	</window>
+	
+</canvas>  

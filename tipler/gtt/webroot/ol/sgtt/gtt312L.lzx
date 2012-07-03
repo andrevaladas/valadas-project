@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<!-- Variáveis globais -->
+	<script>
+ 		var wOid_RecGar;
+ 		var dpMov;
+ 		var escapaSegundoAviso=false;
+  	</script>
+  	
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+		
+   	<!-- Classe da Tela -->
+	<class name="gtt312" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok');
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+	              	var regs = classroot.caddp.xpathQuery('*/item/last()');
+	              	var x = parent.tela.tab.tabLis.barLis;
+	              	x.btnEditar.setAttribute('enabled',false);
+	      			if ( !regs==0 ) {
+	              		x.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabLis.setAttribute('selected',true);
+	      			} else {
+	      				x.btnRelatoLis.setAttribute('enabled',false);
+	      				if (escapaSegundoAviso==false)
+	          				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!');
+	          			escapaSegundoAviso=false;	
+	      			}
+      			}
+      			"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />		
+	<datapointer name="caddp2" xpath="local:cad:/cad/media/item" />
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+    
+    <!-- Estorno -->
+	<dataset name="atuAprov" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="var resultado = atuAprovdp.xpathQuery('@oknok');
+				parent.tela.carregando.stopAni();
+				if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+					if (resultado='AOK') {
+						parent.tela.gtt312Aw.tela.formAprov.vCampos.tx_Aprovacao_Motivo.clearText();
+						parent.tela.gtt312Aw.close();
+						parent.tela.janelaAviso.mostra('Aprovação registrada com sucesso!');
+						escapaSegundoAviso=true;
+						parent.tela.carregando.startAni();
+						parent.tela.tab.tabSel.corSel.formSel.filtra.submit();
+					} else
+						parent.tela.janelaAviso.mostra(resultado);
+				}
+				"
+				
+		onerror="parent.tela.carregando.stopAni();"
+		ontimeout="parent.tela.carregando.stopAni(); parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" >
+	</dataset>
+	<datapointer name="atuAprovdp" xpath="local:atuAprov:/ret/item" />
+    <method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<simplelayout spacing="1" />
+	
+	<!-- Título da tela -->
+	<titulo x="5" text="Consulta indenizações não inspecionadas" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela" height="${parent.parent.height}" width="${parent.parent.width}">
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+       	<tabs name="tab" x="5" y="5"  height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel">
+	               		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:1">
+							<!-- Labels -->
+							<view name="label" width="130" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Concessionária:" visible="true" />							
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" x="40" align="left" layout="axis:y; spacing:3">
+								<edittext name="tela" visible="false" text="gtt312" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="IndenizacaoED" />
+								<edittext name="rn" visible="false" text="IndenizacaoRN" />
+								<edittext name="dm_Aprovacao" visible="false" text="I" />
+								<lookup y="216" name="oid_Empresa_Gambiarra" idProperty="oid_Empresa" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+									widthCdProperty="110" widthDsProperty="400"	callService="Empresa" exactActionService="C" visible="true">
+									<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="C"/>
+								</lookup>						
+									
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="360" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="true">
+                  		Selecionar
+                  		<handler name="onclick">       
+                  			if (parent.valida()) parent.click();
+	                  	</handler>
+               		</button>
+               		<method name="click">
+                 			parent.parent.parent.carregando.startAni(); 
+                 			local:classroot.cad.setSrc("../../ControlerServlet"); 
+                 			parent.corSel.formSel.filtra.submit();
+               		</method>
+               		<method name="valida">
+               			<![CDATA[
+               			var retorno = true;
+               			var x = parent.corSel.formSel.vCampos.edits;
+               			if (x.requerido(x.oid_Empresa_Gambiarra.getText()) ) {
+               				parent.parent.parent.janelaErro.mostra('Escolha uma concessionária !');
+               				retorno = false;
+               			} 
+               			return retorno
+               			]]>
+					</method>
+               		
+            	</view>
+     		</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout axis="y" spacing="3" />
+
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-8}" width="${parent.width-10}" multiselect="false" rowheight="16">
+	                	<gridtext editable="false" datapath="@oid_Indenizacao" 		text="oid" 				width="0"  	visible="false" />
+	                	<gridtext editable="false" datapath="@dt_Registro" 			text="Dt Recape" 		width="100" resizable="false"/>
+	                  	<gridtext editable="false" datapath="@nr_Fogo" 				text="Nº Fogo/Série" 	width="100" resizable="false" />
+	                  	<gridtext editable="false" datapath="@nm_Fabricante_Pneu" 	text="Fabricante" 		width="100" resizable="false"/>
+	                	<gridtext editable="false" datapath="@nm_Modelo_Pneu" 		text="Modelo" 			width="100" resizable="false"/>
+	                	<gridtext editable="false" datapath="@dm_Tipo_Pneu" 		text="Tipo" 			width="100" resizable="false"/>
+						<gridtext editable="false" datapath="@nm_Banda" 			text="Banda" 			width="200" resizable="false" />	                	
+	                	<gridtext editable="false" datapath="@nr_Nota_Fiscal" 		text="NF" 				width="85" 	resizable="false" />
+	                	<gridtext editable="false" datapath="@dt_Indenizacao" 		text="Dt Indenização" 	width="100" resizable="false"/>
+	                	
+	               		<method event="onselect" args="row">
+	               			dpMov=row.datapath;
+                  			wOid_RecGar=row.datapath.xpathQuery("@oid_Indenizacao");
+                 			parent.parent.barLis.btnEditar.setAttribute('enabled',wOid_RecGar>0?true:false);
+             			</method>
+               		</grid>               		          
+            	</view>
+            	<view name="barLis" x="1" y="360" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+   					<button name="btnRelatoLis" enabled="false" width="70">Relatório
+                  		<handler name="onclick">
+                  			parent.parent.parent.parent.carregando.startAni();
+                  			var x = parent.parent.parent.tabSel.corSel.formSel.vCampos.edits;
+                  			var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=gtt312";
+							chamada += "&amp;"+"ed=IndenizacaoED";
+							chamada += "&amp;"+"rn=IndenizacaoRN";
+							chamada += "&amp;"+"dm_Aprovacao=I";
+							chamada += "&amp;"+"rel=3"; 
+							chamada += "&amp;"+"oid_Empresa_Gambiarra="+ x.oid_Empresa_Gambiarra.getText();
+							chamada += "&amp;"+"nm_Razao_Social="+ x.oid_Empresa_Gambiarra.lookup_dsProperty.getText();
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+	                  	</handler>
+               		</button>
+               		<button name="btnEditar" enabled="false" width="90" >Aprovação
+                  		<handler name="onclick" >
+                  			classroot.tela.gtt312Aw.tela.formAprov.vCampos.oid_Indenizacao.setAttribute('text',dpMov.xpathQuery("@oid_Indenizacao"));
+                  			classroot.tela.gtt312Aw.tela.corCab.nr_Fogo.setAttribute('text',dpMov.xpathQuery("@nr_Fogo"));
+                  			classroot.tela.gtt312Aw.tela.corCab.nm_Modelo_Pneu.setAttribute('text',dpMov.xpathQuery("@nm_Modelo_Pneu"));
+                  			classroot.tela.gtt312Aw.tela.corCab.nm_Banda.setAttribute('text',dpMov.xpathQuery("@nm_Banda"));
+                  			classroot.tela.gtt312Aw.tela.corCab.tx_Laudo.setAttribute('text',dpMov.xpathQuery("@tx_Laudo"));
+							classroot.tela.gtt312Aw.open();
+                  		</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	
+  		<modaldialog  name="gtt312Aw" bgcolor="#FAFAFA"  visible="false" >
+			<view name="tela" y="-10">
+				<!-- Título da tela -->
+				<titulo x="1" y="1" text="Registro de aprovação" widthLine="${parent.parent.width-50}" corFrente="#FF9900" />
+		
+				<view name="corCab" x="1" y="1" width="400" >
+					<text x="10" 	y="30" 	text="Nº Fogo/Série:" />
+					<text x="100" 	y="30" 	fgcolor="#228B22" 	name="nr_Fogo" />
+					<text x="50" 	y="50"  text="Modelo:" />
+					<text x="100" 	y="50" 	fgcolor="#228B22" 	name="nm_Modelo_Pneu" />
+					<text x="54" 	y="70" 	text="Banda:" />
+					<text x="100" 	y="70" 	fgcolor="#228B22"	name="nm_Banda" />
+					<text x="54" 	y="90" 	text="Laudo:" />
+					<text x="100" 	y="90" 	fgcolor="#228B22"	name="tx_Laudo" width ="355" height ="60" multiline="true"/>
+				</view>
+				<separador x="1" y="148" widthLine="${parent.parent.width-50}"/>
+				
+		  		<form name="formAprov" x="1" y="150" >	
+			  		<cpoEdits name="vCampos"  layout="axis:none" >
+	  					<edittext name="tela" visible="false" text="gtt312A" />
+						<edittext name="acao" visible="false" text="A" />
+						<edittext name="ed" visible="false" text="IndenizacaoED" />
+						<edittext name="rn" visible="false" text="IndenizacaoRN" />
+						<edittext name="oid_Indenizacao" visible="false" />	  			
+			      		<text		 	x="1" 	y="0" 	text="Indenização aprovada:" />
+			  			<datacombobox 	x="140" y="0" 	name="dm_Aprovacao" width="60" height="21" itemdatapath="dmSimNao:/item" />
+			  			<text 			x="19" 	y="24" 	text="Descreva o motivo:" />
+			  			<edittext 		x="140" y="24"  name="tx_Aprovacao_Motivo" multiline="true" width="300" height="60"
+			  				oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" onfocus="parent.deformat(this,'txt');" />
+			      	</cpoEdits>
+			      	<submit name="filtra" datapath="local:classroot.atuAprov:/" />
+		      	</form>
+		      	<separador x="1" y="255" widthLine="${parent.parent.width-50}"/>
+		      	<view name="botoes" y="265" >
+			      	<button x="1" >Fechar
+			      		<handler name="onclick">
+			      			parent.parent.parent.close();
+			      		</handler>
+			      	</button>
+			      	<button x="67" >OK
+			      		<handler name="onclick">
+			      			if (this.valida())
+			      				parent.parent.formAprov.filtra.submit();
+			      		</handler>
+			      		<method name="valida">
+			      			retorna=true;
+			      			var x = parent.parent.formAprov.vCampos;
+			      			if (x.dm_Aprovacao.getValue()=="N") {
+				      			if (x.util.requerido(x.tx_Aprovacao_Motivo.getText())) {
+				      				classroot.tela.janelaAviso.mostra("Informe o motivo!")
+				      				retorna=false;	
+				      			}	
+			      			}
+			      			return retorna;
+			      		</method>
+			      	</button>
+		      	</view>
+	      	</view>
+	   	</modaldialog>
+
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />   	
+   	</view>
+   	
+	</class>   
+
+</library>

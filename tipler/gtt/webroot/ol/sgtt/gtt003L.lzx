@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Tela de cadastro de modelos de pneus
+	Tabela = Bandas
+-->		
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+  	</script>
+  	
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpoCads003" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+   		<form name="fCampos">
+			<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="110" align="right" layout="axis:y; spacing:3">
+					<text height="21" align="right">Código:</text>
+					<text height="21" align="right">Desenho:</text>
+					<text height="21" align="right">Largura mm:</text>
+					<text height="21" align="right">Profundidade mm:</text>
+				</view>
+				<cpoEdits name="edits" >
+					<edittext name="tela" visible="false" text="gtt003" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="BandaED" />
+					<edittext name="rn" visible="false" text="BandaRN" />
+					<edittext name="oid_Fabricante_Banda" visible="false" text="1" />
+					<edittext name="oid_Banda" visible="false" datapath="@oid_Banda" />
+					
+					<!-- Para compatibilizar com a versao BANDA -->
+					<edittext name="tx_Descricao" visible="false" datapath="@tx_Descricao" />
+					<edittext name="dm_Aplicacao" visible="false" datapath="@dm_Aplicacao" />
+					<edittext name="dm_Eixo" visible="false" datapath="@dm_Eixo" />
+					<edittext name="dm_Tipo_Pneu" visible="false" datapath="@dm_Tipo_Pneu" />
+					<!-- Para compatibilizar com a versao BANDA -->
+					
+					<edittext name="cd_Banda" maxlength="10" width="80" height="21" datapath="@cd_Banda" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext name="nm_Banda" maxlength="60" width="200" height="21" datapath="@nm_Banda" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext name="nr_Largura" maxlength="5" width="50" height="21" datapath="@nr_Largura" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+					<edittext name="nr_Profundidade" maxlength="50" width="50" height="21" datapath="@nr_Profundidade" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />
+						<text name="msg_Stamp" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />	
+				</cpoEdits>
+			</view>
+      		<!-- Validação -->
+      		<method name="valida" >
+         		var retorno = true; 
+         		if ( vCampos.edits.cd_Banda.getText() == '' ) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Preencha o campo Código da Banda!');
+            		retorno = false; 
+         		} else 
+         		if ( vCampos.edits.nm_Banda.getText() == '' ) { 
+            		parent.parent.parent.parent.parent.parent.janelaErro.mostra('Preencha o campo Desenha da Banda!');
+            		retorno = false; 
+         		} 
+         		return retorno;
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			// Aqui coloque ações que necessitam ser feitas após a reposição do registro principal
+      		</method>
+      		<method name="preInclui">
+      			// Aqui coloque ações que necessitam ser feitas antes do modo de inclusão
+      		</method>
+      		<method name="posInclui">
+      			// Aqui coloque ações que necessitam ser feitas depois do modo de inclusão
+      		</method>
+      		<method name="preAltera">
+      			// Aqui coloque ações que necessitam ser feitas antes da alteração
+      		</method>
+      		<method name="preGravar">
+      			// Aqui coloque ações que necessitam ser feitas antes de gravar a inclusão
+      		</method>
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="gtt003" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+      			parent.tela.tab.tabCad.barCad.btnNovoCad.setAttribute('enabled',true);
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = classroot.caddp.xpathQuery('*/item/last()');
+          			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              	} else {
+	      				parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+	      				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	              	}	
+	         		}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'AOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+    			} else
+      			if (resultado == 'DOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode(); 
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+         			var regs = classroot.caddp.xpathQuery('*/item/last()');
+         			if ( regs == null ) parent.tela.tab.tabCad.barCad.btnNovoCad.click(); 
+         			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs );
+               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+    			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.newdp.xpathQuery('@oknok');
+      			var oid = classroot.newdp.xpathQuery('@oid');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'IOK') {
+      				parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Banda.setAttribute('text',oid);
+      				parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();  
+    	  			var end = classroot.caddp.xpathQuery('*/item/last()');	    			
+					parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+					classroot.caddp.selectChild();
+					classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+					classroot.caddp.setAttribute('xpath','local:cad:/');
+					parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+					parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+      			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Bandas Tipler" widthLine="535" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" height="265" width="535">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="540" height="195">
+            		<form name="formSel">
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Código:" />
+								<text height="21" align="right" text="Desenho:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="gtt003" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="BandaED" />
+								<edittext name="rn" visible="false" text="BandaRN" />
+								<edittext name="oid_Fabricante_Banda" visible="false" text="1" />
+								<edittext name="cd_Banda" maxlength="10" width="80" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="nm_Banda" maxlength="60" width="200" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  		</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="540" height="195">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpoCads003 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</cpoCads003>
+                  		<!-- View campos para inclusão -->
+                  		<cpoCads003 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpoCads003>
+               		</view>
+            	</view>
+            	<botoesCad name="barCad" tela="gtt003" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="540" height="195">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+               			<gridtext editable="false" resizable="false" datapath="@cd_Banda" text="Código" width="100"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Banda" text="Desenho" width="160"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nr_Largura" text="Largura" textalign="right" width="100"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nr_Profundidade" text="Profundidade" textalign="right" width="100"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+               			Relatório
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+		      				var x=parent.parent.parent.tabSel.corSel.formSel.vSel.edits;
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=gtt003";
+							chamada += "&amp;"+"ed=BandaED";
+							chamada += "&amp;"+"rn=BandaRN";
+							chamada += "&amp;"+"oid_Fabricante_Banda=1"; 
+							chamada += "&amp;"+"rel=1"; 
+							chamada += "&amp;"+"cd_Banda="+ x.cd_Banda.getText();
+							chamada += "&amp;"+"nm_Banda="+ x.nm_Banda.getText(); 
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<dataset name="dmDebCre">
+    	<item value="D">DÉBITO</item>
+    	<item value="C">CRÉDITO</item>
+	</dataset>	
+	
+	<dataset name="dmSimNao">
+    	<item value="S">SIM</item>
+    	<item value="N">NÃO</item>
+	</dataset>
+
+	<dataset name="dmSimNaoC">
+    	<item value="T">TODOS</item>		
+    	<item value="S">SIM</item>
+    	<item value="N">NÃO</item>
+	</dataset> 
+	
+	<dataset name="dmTipoPneu">
+    	<item value="D">DIAGONAL</item>
+      	<item value="R">RADIAL</item>
+	</dataset>
+
+	<dataset name="dmTipoPneuQualquer">
+    	<item value="D">DIAGONAL</item>
+      	<item value="R">RADIAL</item>
+      	<item value="Q">QUALQUER</item>
+	</dataset>
+
+	<dataset name="dmTipoPneuQualquerC">
+		<item value="0">TODOS</item>	
+    	<item value="D">DIAGONAL</item>
+      	<item value="R">RADIAL</item>
+      	<item value="Q">QUALQUER</item>
+	</dataset>
+
+	<dataset name="dmReparo">
+    	<item value="N">NENHUM</item>
+    	<item value="Q">REPARO NÃO-MANCHÃO</item>
+      	<item value="M">REPARO MANCHÃO</item>
+	</dataset>
+
+	<dataset name="dmVida">
+    	<item value="1">1º REFORMA</item>
+    	<item value="2">2º REFORMA</item>
+    	<item value="3">3º REFORMA</item>
+	</dataset>
+
+	<dataset name="dmVidaStas">
+		<item value="0">NOVO</item>
+    	<item value="1">1º REFORMA</item>
+    	<item value="2">2º REFORMA</item>
+    	<item value="3">3º REFORMA</item>
+    	<item value="4">4º REFORMA</item>
+	</dataset>
+	
+	<dataset name="dm_UF" >
+		<item value="AR">ARGENTINA - AR</item>
+		<item value="AC">ACRE</item>
+		<item value="AL">ALAGOAS</item>
+		<item value="AM">AMAZONAS</item>
+		<item value="AP">AMAPÁ</item>
+		<item value="BA">BAHIA</item>
+		<item value="CE">CEARÁ</item>
+		<item value="DF">DISTRITO FEDERAL</item>
+		<item value="ES">ESPÍRITO SANTO</item>
+		<item value="GO">GOIÁS</item>
+		<item value="MA">MARANHÃO</item>
+		<item value="MG">MINAS GERAIS</item>
+		<item value="MS">MATO GROSSO DO SUL</item>
+		<item value="MT">MATO GROSSO</item>
+		<item value="PA">PARÁ</item>
+		<item value="PB">PARAÍBA</item>
+		<item value="PE">PERNAMBUCO</item>
+		<item value="PI">PIAUÍ</item>
+		<item value="PR">PARANÁ</item>
+		<item value="RJ">RIO DE JANEIRO</item>
+		<item value="RO">RONDÔNIA</item>
+		<item value="RN">RIO GRANDE DO NORTE</item>
+		<item value="RR">RORAIMA</item>
+		<item value="RS">RIO GRANDE DO SUL</item>
+		<item value="SE">SERGIPE</item>
+		<item value="SC">SANTA CATARINA</item>
+		<item value="SP">SÃO PAULO</item>
+		<item value="TO">TOCANTINS</item>
+		<item value="UY">URUGUAY - UY</item>
+	</dataset>
+
+	<dataset name="dm_Tipo_Frota" >
+		<item value="A">TEC = Transporte Engenharia Civil</item>
+		<item value="B">TCP = Transporte Carga Própria</item>
+		<item value="C">TTI = Transporte Industrial</item>
+		<item value="D">TRC = Transporte Rodoviário de Carga</item>
+		<item value="E">TRA = Transporte Rodoviário Autônomo</item>
+		<item value="F">TRP = Transporte Rodoviário de Passageiros</item>
+		<item value="G">TUC = Transporte Urbano de Carga</item>
+		<item value="H">TUP = Transporte Urbano de Passageiros</item>
+		<item value="I">TDP = Transporte Distribuição de Produtos</item>
+		<item value="J">TRR = Transporte Recolhimento de Resíduos</item>
+	</dataset>
+
+  	<dataset name="dmEixo">
+	   <item value="1">LIVRE</item> 	
+	   <item value="2">TRAÇÃO</item> 
+	   <item value="3">TRAÇÃO MODERADA</item>
+	   <item value="4">QUALQUER</item> 
+    </dataset>
+
+  	<dataset name="dmAplicacao">
+	   <item value="1">RODOVIÁRIO</item> 	
+	   <item value="2">URBANO</item> 
+	   <item value="3">MISTO</item>
+	   <item value="4">SEVERO</item>
+	   <item value="5">LEVES</item>
+	   <item value="6">QUALQUER</item> 
+    </dataset>
+
+  	<dataset name="dmEixoC">
+  	   <item value="0">TODOS</item>
+	   <item value="1">LIVRE</item> 	
+	   <item value="2">TRAÇÃO</item> 
+	   <item value="3">TRAÇÃO MODERADA</item>
+	   <item value="4">QUALQUER</item> 
+    </dataset>
+
+  	<dataset name="dmAplicacaoC">
+  	   <item value="0">TODOS</item>
+	   <item value="1">RODOVIÁRIO</item> 	
+	   <item value="2">URBANO</item> 
+	   <item value="3">MISTO</item>
+	   <item value="4">SEVERO</item>
+	   <item value="5">LEVES</item>
+	   <item value="6">QUALQUER</item> 
+    </dataset>
+
+	<dataset name="dmTipoItemStib">
+    	<item value="E">EQUIPAMENTOS - INSTALAÇÕES</item>
+    	<item value="P">PESSOAL - MÃO DE OBRA</item>
+	</dataset>
+	
+	<dataset name="dmTipoItemStibC">
+		<item value="T">TODOS</item>
+    	<item value="E">EQUIPAMENTOS - INSTALAÇÕES</item>
+    	<item value="P">PESSOAL - MÃO DE OBRA</item>
+	</dataset>
+	
+	
+</library>

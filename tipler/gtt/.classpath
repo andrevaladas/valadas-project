@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path=".apt_generated">
+		<attributes>
+			<attribute name="optional" value="true"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jst.server.core.container/org.eclipse.jst.server.tomcat.runtimeTarget/Apache Tomcat v6.0"/>
+	<classpathentry kind="lib" path="webroot/WEB-INF/lib/jasperreports-0.5.3.jar"/>
+	<classpathentry kind="lib" path="webroot/WEB-INF/lib/commons-fileupload-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/cpoint/eclipse/plugins/javax.mail_1.4.0.v200905040518.jar"/>
+	<classpathentry kind="lib" path="webroot/WEB-INF/lib/jCharts-0.7.5.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/jasperReports"/>
+	<classpathentry kind="lib" path="webroot/WEB-INF/lib/postgresql-8.1-408.jdbc3.jar"/>
+	<classpathentry kind="output" path="webroot/WEB-INF/classes"/>
+</classpath>

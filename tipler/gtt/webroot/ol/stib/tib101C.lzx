@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="false" >
+	<handler name="oninit"> 
+		wTib101.tela.carregando.stopAni();
+	</handler>
+    
+	<!-- Desabilita o menu de contexto -->
+    <script><![CDATA[ var cntxtmenu = new LzContextMenu(); ]]> </script>
+    <handler name="oninit" > canvas.setDefaultContextMenu(cntxtmenu); </handler>
+   	<include href="tib102L.lzx" />
+   	<!-- Splash -->
+   	<splash persistent="false">
+      	<view center="true" resource="../include/explore_loading.swf" />
+   	</splash>
+   	<window title="tib101" name="wTib101" bgcolor="#FAFAFA" height="240" width="600"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+		<simplelayout spacing="5" />
+		<!-- Título da tela -->
+		<titulo x="5" text="Nova inspeção" widthLine="${parent.width-30}" corFrente="#FF9900" oninit="this.setAttribute('text', ('E'==lang ? 'Nueva Inspección' : 'Nova inspeção') );"	/>
+      	<view name="tela" width="${parent.width}" height="${parent.height}"  >
+			<!-- data sets -->
+			<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		   		src="../../ControlerServlet?"
+			    ondata="parent.carregando.stopAni();
+	      				var resultado = parent.dpCad.xpathQuery('@oknok');
+	      				var oid = parent.dpCad.xpathQuery('@oid');
+		              	if (resultado=='LOGON'){
+		              		parent.logon();
+		              	}else{	      			
+			              	if ( resultado=='IOK' ) {
+			              		parent.chamaTib102();
+			              		parent.parent.close();
+			              	} else {
+			              		parent.parent.janelaErro.mostra(resultado);
+			              	}
+		              	}
+		              	"
+		      	onerror="parent.parent.carregando.stopAni();" 
+		      	ontimeout="parent.parent.carregando.stopAni();
+	      			   	   parent.parent.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+		      	/>
+	   		<datapointer name="dpCad" xpath="local:cad:/ret/item" />
+	   		<datapointer name="dpCad1" xpath="local:cad:/cad/item" />
+	   		
+	   		<method name="chamaTib102" >
+	   			
+	   			var wTib102 = parent.parent.wTib102;
+	   			
+	   			wTib102.tib102.selfPopulate(dpCad.xpathQuery('@oid'));
+
+				var cpo = fCampos.vCampos.campos;
+				wTib102.tib102.tela.vCabecalho.edits.nm_Razao_Social.setAttribute("text",cpo.oid_Cliente.lookup_dsProperty.getText());
+				wTib102.tib102.tela.vCabecalho.edits.dt_Inicio.setAttribute("text",cpo.dt_Inicio.getText());
+				wTib102.tib102.tela.vCampos.edits.oid_Inspecao.setAttribute("text",dpCad.xpathQuery('@oid'));
+	  			wTib102.open();
+	   		</method>
+      		<frame3d name="fCampos" x="5" y="0" width="${parent.width-30}" height="${parent.height-105}" caption="">
+      			<view name="vCampos" layout="axis:x; spacing:5">
+	      			<view name="labels" width="110"  >
+	      				<text y="10" name="lblCliente"  text="Cliente:" 	align="right" oninit="this.setAttribute('text', ('E'==lang ? 'Cliente:' : 'Cliente:') );this.width='100'"/>
+	      				<text y="34" name="lblData"  	text="Fecha:" 		align="right" oninit="this.setAttribute('text', ('E'==lang ? 'Fecha:' : ' Data:') );"/>	
+	      			</view>
+	      			<cpoEditsXY name="campos">
+						<lookup y="10" height="21" name="oid_Cliente" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+							widthCdProperty="110" widthDsProperty="300"	callService="Empresa" exactActionService="CU" >
+							<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="U"/>
+						</lookup>
+						<edittext y="34" name="dt_Inicio" maxlength="8" width="80" height="21"
+							oninit="parent.pattern(this,'dat')" onblur="parent.format(this,'dat',4);" onfocus="parent.deformat(this,'dat');" />
+					</cpoEditsXY>
+				</view>
+      		</frame3d>
+      		<!--Barra de botões-->
+			<view name="barSel" x="5" y="140" layout="axis:x; spacing:4">
+       			<handler name="oninit">
+       				parent.carregando.stopAni();
+       			</handler>
+	       		<button name="btnFecharSel" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+	          		<handler name="onclick" >
+	             		parent.parent.parent.close()
+	          		</handler>
+	       		</button>
+	       		<button name="btnSelectSel" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Grabar' : 'Gravar') );">
+	          		<handler name="onclick">
+	          			if (valida()){
+		          			//parent.parent.carregando.startAni();
+		          			var cpo=parent.parent.fCampos.vCampos.campos;
+		          			var cad = parent.parent.cad;
+		          			cad.setAttribute("src","../../ControlerServlet?");
+		          			cad.setQueryString({tela : "tib101",
+												ed : "Stib_InspecaoED",
+											  	rn : "Stib_InspecaoRN",
+											  	acao : "I",
+											  	oid_Cliente : cpo.oid_Cliente.getText(),
+											  	dt_Inicio : cpo.dt_Inicio.getText()
+		          								});	
+		          			cad.doRequest();
+	          			}
+	          		</handler>
+	          		<method name="valida">
+	          			var cpo=parent.parent.fCampos.vCampos.campos;
+		      			var jErro = parent.parent.parent.janelaErro;
+	         			var retorno = true;
+	         			if (cpo.requerido(cpo.oid_Cliente.getText())) {
+	         				jErro.mostra(('E'==lang ? 'Informe el cliente!' : 'Informe o cliente!'));
+	            			retorno = false; 
+	         			} else 
+	         			if (!cpo.validaData(cpo.dt_Inicio)) {
+	         				jErro.mostra(('E'==lang ? 'Informe la fecha!' : 'Informe a data!'));
+	            			retorno = false; 
+	         			} 
+
+						return retorno;
+	          		</method>
+	          	</button>		
+	       </view>   			
+      	    <!-- Reloginho -->
+      		<loadingAni name="carregando" oninit="this.stopAni();" />
+      	</view>
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "400" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+   	</window>
+
+	<window title="tib102" name="wTib102" bgcolor="#FAFAFA" height="500" width="700"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true" visible="false" >
+		<tib102 name="tib102"/>	
+	</window>	
+</canvas>
+

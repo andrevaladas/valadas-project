@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+   <!-- Classe com botões para a tela de cadastro -->
+   <class name="botoesCad" extends="view" x="1" y="300" layout="axis:x; spacing:2" >
+      <attribute name="tela" type="text" />
+      <!-- Mostra texto de qtde de regs e Desabilita/Habilita botao Alterar/Excluir dependendo se tem registro no dataset  -->
+      <method name="atuTxtDataControl" args="qtRegs">
+         if ( qtRegs == 0 ) {
+            btnApagarCad.setAttribute('enabled',false); btnAlterarCad.setAttribute('enabled',false); 
+         } else{
+            btnApagarCad.setAttribute('enabled',true); btnAlterarCad.setAttribute('enabled',true); 
+            //Seta permissão na tela
+            setaPermissao();
+         }
+         //Seta msg  no texto do data control        
+         barracontrol.datacontrol.msgCor.msg.setAttribute('text',qtRegs + ' registro(s)'); // Mostra o número de registros existentes no data set
+         barracontrol.datacontrol.msgCor.msg.setAttribute('width',128);
+      </method>
+
+      <!-- Botões de controle da tela -->
+      <button name="btnFecharCad" width="70">
+         Fechar
+         <handler name="onclick" >
+            parent.parent.parent.parent.parent.parent.close();
+         </handler>
+      </button>
+      <button name="btnNovoCad" width="70">
+         Novo
+         <handler name="onclick">	
+			this.click()
+         </handler> 
+         <method name="click">
+            this.setVisible(false); // Esconde botão Novo
+            parent.btnAlterarCad.setVisible(false); // Esconde botao de alterar
+            parent.btnCancelarCad.setVisible(true); // Mostra botao cancelar 
+            parent.btnGravarCad.setVisible(true); // Mostra botao gravar
+            parent.parent.corCad.campos.updCad.setVisible(false); // Esconde a view de alteracao
+            parent.parent.corCad.campos.newCad.setVisible(true); // Mostra a view de inclusao 
+            parent.btnApagarCad.setAttribute('enabled',false); // Desabilita botao de deletar
+            parent.btnFecharCad.setAttribute('enabled',false); // Desabilita botao fechar
+            parent.parent.parent.tabSel.tab.tabview.setVisible(false); // Esconde tab Seleção
+            parent.parent.parent.tabLis.tab.tabview.setVisible(false); // Esconde tab Lista
+            parent.barracontrol.datacontrol.setVisible(false); // Esconde o datacontrol
+            parent.barracontrol.textoModoInclusao.setVisible(true); // Mostra texto de modo inclusao
+			parent.parent.corCad.campos.newCad.fCampos.preInclui(); // Faz algo antes de incluir
+         </method>
+      </button>
+      <button name="btnCancelarCad" width="70" visible="false">
+         Cancelar
+         <handler name="onclick">
+            this.setVisible(false); // Esconde botao Cancelar
+            parent.btnGravarCad.setVisible(false); // Esconde botao gravar
+            parent.btnAlterarCad.setVisible(true); // Mostra botao alterar
+            parent.btnNovoCad.setVisible(true); // Mostra botao novo
+            parent.parent.corCad.campos.updCad.setVisible(true);  // Mostra a view de alteracao
+            parent.parent.corCad.campos.newCad.setVisible(false); // Esconde a view de inclusao
+            parent.btnFecharCad.setAttribute('enabled',true); // Habilita botao 
+            parent.parent.parent.tabSel.tab.tabview.setVisible(true); // Mostra tab Seleção
+            parent.parent.parent.tabLis.tab.tabview.setVisible(true); // Mostra tab Lista
+            var regs = parent.parent.corCad.campos.updCad.classroot.caddp.xpathQuery('*/item/last()')
+            parent.parent.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + regs + ']'); // Vai para o último registro
+            parent.parent.corCad.campos.updCad.fCampos.reposiciona();
+            parent.atuTxtDataControl(regs == null ? "0" : regs );
+            parent.barracontrol.datacontrol.setVisible(true);
+            parent.barracontrol.textoModoInclusao.setVisible(false);
+            parent.parent.corCad.campos.newCad.fCampos.posInclui(); // Faz algo após a inclusão
+         </handler>
+      </button>
+      <button name="btnGravarCad" width="70" visible="false">
+         Gravar
+         <handler name="onclick">
+         	parent.parent.corCad.campos.newCad.fCampos.vCampos.edits.acao.setAttribute('text','I');
+            if (parent.parent.corCad.campos.newCad.fCampos.valida()) { 
+    		   parent.parent.parent.parent.carregando.startAni();	
+    		   parent.parent.corCad.campos.newCad.fCampos.preGravar();		// Faz algo coisa antes de gravar
+               parent.parent.corCad.campos.newCad.fCampos.xMit.submit();	
+            }
+         </handler>
+      </button>
+      <button name="btnAlterarCad" width="70">
+         Alterar
+         <handler name="onclick" >
+         	parent.parent.corCad.campos.updCad.fCampos.vCampos.edits.acao.setAttribute('text','A');
+            if (parent.parent.corCad.campos.updCad.fCampos.valida()) { 
+               parent.parent.parent.parent.carregando.startAni();	
+               parent.parent.corCad.campos.updCad.fCampos.preAltera();		// Faz algo coisa antes alterar
+               parent.parent.corCad.campos.updCad.fCampos.xMit.submit();	
+            }
+         </handler>
+      </button>
+      <button name="btnApagarCad" width="70" >
+         Exclui
+         <handler name="onclick">
+            parent.parent.parent.parent.alertaExclusao.open();
+          </handler>
+          <method name="exclui">
+            parent.parent.parent.parent.carregando.startAni();
+            parent.parent.corCad.campos.updCad.fCampos.vCampos.edits.acao.setAttribute('text','D');
+            parent.parent.corCad.campos.updCad.fCampos.preExclui();
+            parent.parent.corCad.campos.updCad.fCampos.xMit.submit();
+          </method>
+      </button>
+      <!-- Definição do datacontrol -->
+      <view name="barracontrol">
+         <view name="datacontrol" layout="axis:x; spacing:-1">
+            <button name="btnIdPrimeiro" width="25">
+               <view resource="../images/first.png" y="6" x="08" />
+               <handler name="onclick">
+                  parent.parent.parent.parent.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); // Vai para o primeiro registro
+                  parent.parent.parent.parent.corCad.campos.updCad.fCampos.reposiciona();
+               </handler>   
+            </button>      
+            <button name="btnIdAnterior" width="25">
+               <view resource="../images/prev.png" y="6" x="07" />
+               <handler name="onclick">
+                   parent.parent.parent.parent.corCad.campos.updCad.datapath.selectPrev(); // Vai para o registro anterior
+                   parent.parent.parent.parent.corCad.campos.updCad.fCampos.reposiciona();
+               </handler>
+            </button>
+            <!-- Área para mostrar número de registros  -->
+             <view name="msgCor" bgcolor="#000000" width="130" height="24"> 
+               <text name="msg" x="1" y="1" width="128" height="22" bgcolor="#FFFFFF" />
+             </view>
+            <button name="btnIdProximo" width="25">
+               <view resource="../images/next.png" y="6" x="09" />
+               <handler name="onclick">
+                  parent.parent.parent.parent.corCad.campos.updCad.datapath.selectNext(); // Vai para o próximo registro
+                  parent.parent.parent.parent.corCad.campos.updCad.fCampos.reposiciona();
+               </handler>   
+            </button>      
+            <button name="btnIdUltimo" width="25">
+               <view resource="../images/last.png" y="6" x="09" />
+               <handler name="onclick">
+                  var end = parent.parent.parent.parent.corCad.campos.updCad.classroot.caddp.xpathQuery('*/item/last()')
+                  parent.parent.parent.parent.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']'); // Vai para o último registro
+                  parent.parent.parent.parent.corCad.campos.updCad.fCampos.reposiciona();
+               </handler>   
+            </button>      
+         </view>
+         <view name="textoModoInclusao" width="222" height="24" fgcolor="#ffffff" bgcolor="#FE0303" visible="false" opacity="0.75">
+            <text x="16" y="3" ><b>Modo de inclusão de registro.</b></text>
+         </view>
+      </view>
+
+      <!-- Permissões - Busca as permissões para o usuário -->
+      <dataset name="permissao" src="${'../../PermissaoServlet?tela=' + parent.tela}"  request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"/>
+      <!-- Datapointer para dataset permissao -->        
+      <datapointer name="dpPermissao" xpath="local:permissao:/per/item" ondata="parent.setaPermissao('dp');" />
+      <!-- Método para setar as permissões -->
+      <method name="setaPermissao" args="origem">
+         var habilitaIncluir = false; if (dpPermissao.xpathQuery('@incluir')=="true") habilitaIncluir=true;
+         var habilitaExcluir = false; if (dpPermissao.xpathQuery('@excluir')=="true") habilitaExcluir=true;
+         var habilitaAlterar = false; if (dpPermissao.xpathQuery('@alterar')=="true") habilitaAlterar=true;
+         if ( btnNovoCad.getAttribute('enabled')==true ) { // Se o botão já estiver desabilitado pelo programa chamador
+         	btnNovoCad.setAttribute('enabled',habilitaIncluir); // Não faz esta parte
+         }
+         if (origem != "dp" ) { 
+            btnAlterarCad.setAttribute('enabled',habilitaAlterar) ;
+            btnApagarCad.setAttribute('enabled',habilitaExcluir) ;
+         }
+      </method>
+      
+   </class>
+
+</library>  

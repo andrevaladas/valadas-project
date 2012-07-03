@@ -1,0 +1,13 @@
+doc
+*.jpx
+*.local
+defaultroot
+*.xdoclet
+Servlet.library
+.classpath
+.tomcatplugin
+work
+config
+.masterweb
+.externalToolBuilders
+.myeclipse

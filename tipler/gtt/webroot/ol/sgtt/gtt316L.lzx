@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<!-- Variáveis globais -->
+	<script>
+		var dpMov;
+		var escapaSegundoAviso=false;
+		var oids;
+  	</script>
+  	
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+  	
+   	<!-- Classe da Tela -->
+	<class name="gtt316" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok');
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+	              	var regs = classroot.caddp.xpathQuery('*/item/last()');
+	              	var x = parent.tela.tab.tabLis.barLis;
+              		x.btnEditar.setAttribute('enabled',false);
+	      			if ( !regs==0 ) {
+	              		x.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabLis.setAttribute('selected',true);
+	      			} else {
+	      				x.btnRelatoLis.setAttribute('enabled',false);          		
+						if (escapaSegundoAviso==false)
+	          				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!');
+	          			escapaSegundoAviso=false;	
+	      			}
+      			}
+      			"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />		
+	<datapointer name="caddp2" xpath="local:cad:/cad/media/item" />
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+    <!-- Desbloqueio -->
+	<dataset name="atuDesblo" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="var resultado = atuDesblodp.xpathQuery('@oknok');
+				parent.tela.carregando.stopAni();
+				if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+					if (resultado='AOK') {
+						parent.tela.gtt316Aw.cl+ose();
+						parent.tela.janelaAviso.mostra('Desconto realizado com sucesso!');
+						escapaSegundoAviso=true;
+						parent.tela.carregando.startAni();
+						parent.tela.tab.tabSel.corSel.formSel.filtra.submit();
+					} else
+						parent.tela.janelaAviso.mostra(resultado);
+				}	
+				"
+				
+		onerror="parent.tela.carregando.stopAni();"
+		ontimeout="parent.tela.carregando.stopAni(); parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" >
+	</dataset>
+	<datapointer name="atuDesblodp" xpath="local:atuDesblo:/ret/item" />
+    
+    <method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<simplelayout spacing="1" />
+	
+	<!-- Título da tela -->
+	<titulo x="5" text="Créditos em Aberto - por concessionária" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela" height="${parent.parent.height}" width="${parent.parent.width}">
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+       	<tabs name="tab" x="5" y="5"  height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel">
+	               		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:1">
+							<!-- Labels -->
+							<view name="label" width="130" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="CNPJ Concessionária:" name="concessionaria" visible="true" />							
+								<!--<text height="21" align="right" text="Período de:" />-->
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" x="40" align="left" layout="axis:y; spacing:3">
+								<edittext name="tela" visible="false" text="gtt316" />
+								<edittext name="acao" visible="false" text="LA" />
+								<edittext name="ed" visible="false" text="Movimento_Conta_CorrenteED" />
+								<edittext name="rn" visible="false" text="Movimento_Conta_CorrenteRN" />
+								<edittext name="dm_Bloqueado" visible="false" text="N" />
+								<edittext name="dm_Descontado" visible="false" text="N" />
+								<edittext name="dm_Debito_Credito" visible="false" text="C" />
+								<edittext name="dm_Tipo_Movimento" visible="false" text="I" />
+								<lookup y="216" name="oid_Concessionaria" idProperty="oid_Empresa" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+									widthCdProperty="110" widthDsProperty="400"	callService="Empresa" exactActionService="C" visible="true">
+									<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="C"/>
+								</lookup>	
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="360" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="true">
+                  		Selecionar
+                  		<handler name="onclick">       
+                  			if (parent.valida()) parent.click();
+	                  	</handler>
+               		</button>
+               		<method name="click">
+                 			parent.parent.parent.carregando.startAni(); 
+                 			local:classroot.cad.setSrc("../../ControlerServlet"); 
+                 			parent.corSel.formSel.filtra.submit();
+               		</method>
+               		<method name="valida">
+               			<![CDATA[
+               			var retorno = true;
+               			var x = parent.corSel.formSel.vCampos.edits;
+               			if ( x.requerido(x.oid_Concessionaria.getText())) { 
+               				parent.parent.parent.janelaErro.mostra('Escolha uma concessionária !');
+               				retorno = false;
+               			}  
+               			return retorno
+               			]]>
+					</method>
+               		
+            	</view>
+     		</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout axis="y" spacing="3" />
+
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-8}" width="${parent.width-10}" multiselect="false" rowheight="16">
+	                	<gridtext sortable="false" editable="false" datapath="@oid_Movimento_Conta_Corrente" text="oid" 	 width="0" 	 visible="false" />
+	                	<gridtext sortable="false" editable="false" datapath="@dt_Movimento_Conta_Corrente" text="Data" 	 width="75"  resizable="false"/>
+	                	<gridtext sortable="false" editable="false" datapath="@tx_Descricao" 				text="Descrição" width="350" resizable="false"/>
+	                	<gridtext sortable="false" editable="false" datapath="@vl_Movimento_Conta_Corrente" text="Valor"	 width="75"  resizable="false" textalign="right"/>
+	                	<gridtext sortable="false" editable="false" datapath="@dm_Aprovacao" 				text="Aprovado"  width="130" resizable="false" textalign="center"/>
+	                	<gridtext sortable="false" editable="false" datapath="@dt_Aprovacao" 				text="Data" 	 width="75"  resizable="false"/>
+	                	<gridtext sortable="false" editable="false" datapath="@nm_Usuario_Tecnico" 			text="Técnico" 	 width="100" resizable="false"/>
+			            <gridcolumn sortable="false" text="Descontar" width="80" resizable="false"> 
+							<checkbox datapath="@dm_Desconta" xoffset="${10-parent.width/2}" visible="true">
+								<handler name="onclick">
+									<![CDATA[
+			 						this.datapath.updateData();
+			 						// Se o checkbox do total for marcado, marca todos.
+			 						if (this.datapath.getNodeAttribute("oid_Movimento_Conta_Corrente")==0){
+			 							var chk  = this.datapath.getNodeAttribute("dm_Desconta");
+			 							var dp=	classroot.cad.getPointer();
+										var lNext=dp.selectChild(2);
+										while (lNext) {
+											dp.setNodeAttribute("dm_Desconta",chk);
+											lNext=dp.selectNext();
+										}
+			 						}
+			 						// Vê se tem algum checkbox marcado ... 
+			 						var dp1=classroot.cad.getPointer();
+			 						var lNext=dp1.selectChild(2);
+			 						var tst=0;
+									while (lNext) {
+										if(dp1.getNodeAttribute("oid_Movimento_Conta_Corrente")>0)
+											if(dp1.getNodeAttribute("dm_Desconta")==true) 
+												tst++;
+										lNext=dp1.selectNext();
+									}
+									// habilita desabilita botão
+									btn=parent.parent.parent.parent.barLis.btnEditar;
+									if (tst>0)+
+										btn.setAttribute('enabled',true);
+									else
+										btn.setAttribute('enabled',false);
+			 						]]>
+			 					</handler>
+							</checkbox>
+			           </gridcolumn>
+                  		<method event="onselect" args="row">
+	               			dpMov=row.datapath;
+                  			var wOid=row.datapath.xpathQuery("@oid_Movimento_Conta_Corrente");
+             			</method>
+               		</grid>               		          
+            	</view>
+            	<view name="barLis" x="1" y="360" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+	        		
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+   					<button name="btnRelatoLis" enabled="false" width="70">Relatório
+                  		<handler name="onclick">
+                  			parent.parent.parent.parent.carregando.startAni();
+                  			var x = parent.parent.parent.tabSel.corSel.formSel.vCampos.edits;
+                  			var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=gtt316";
+							chamada += "&amp;"+"ed=Movimento_Conta_CorrenteED";
+							chamada += "&amp;"+"rn=Movimento_Conta_CorrenteRN";
+							chamada += "&amp;"+"acao=LA";
+							chamada += "&amp;"+"dm_Bloqueado=N";
+							chamada += "&amp;"+"dm_Descontado=N";
+							chamada += "&amp;"+"dm_Debito_Credito=C";
+							chamada += "&amp;"+"dm_Tipo_Movimento=I"
+							chamada += "&amp;"+"rel=3"; 
+							chamada += "&amp;"+"oid_Concessionaria="+ x.oid_Concessionaria.getText();
+							chamada += "&amp;"+"nm_Concessionaria="+ x.oid_Concessionaria.lookup_dsProperty.getText();
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+	                  	</handler>
+               		</button>
+               		<button name="btnEditar" enabled="false" width="90" visible="true" >Descontar
+               			<utils name="utl" />
+                  		<handler name="onclick" >
+                  			<![CDATA[
+                  			var dp=	classroot.cad.getPointer();
+							var lNext=dp.selectChild(2);
+							var vl_Desconto=0.0;
+							var vlr=0.0;
+							var chave="0";
+							var qtd=0;
+							while (lNext) {
+						    	var z =	dp.getNodeAttribute("dm_Desconta");
+						    	var x = dp.getNodeAttribute("oid_Movimento_Conta_Corrente")
+								if (z==true && x>0 ) {
+					    			var x = dp.getNodeAttribute("oid_Movimento_Conta_Corrente");
+						    		chave +="," + x ;
+									vlr=Number(utl.convertStringToDouble(dp.getNodeAttribute("vl_Movimento_Conta_Corrente")));
+									vl_Desconto+=vlr;
+									qtd++;
+								}
+						    	lNext=dp.selectNext();
+				     	 	}
+				     	 	oids=chave;
+							if (vl_Desconto > 0) {
+								var con= parent.parent.parent.tabSel.corSel.formSel.vCampos.edits;
+	                  			var formA=classroot.tela.gtt316Aw.tela.corCab;
+	                  			
+	                  			formA.nm_Concessionaria.setAttribute('text',con.oid_Concessionaria.lookup_dsProperty.getText());
+	                  			formA.vl_Credito.setAttribute('text',utl.convertDoubleToString(vl_Desconto,2));
+	                  			formA.qt_Creditos.setAttribute('text',qtd);
+	                  			var formAprov=classroot.tela.gtt316Aw.tela.formAprov.vCampos;
+	                  			formAprov.oid_Concessionaria.setAttribute('text',con.oid_Concessionaria.getText());
+	                  			formAprov.oids.setAttribute('text',oids);
+	                  			formAprov.vl_Movimento_Conta_Corrente.setAttribute('text',utl.convertDoubleToString(vl_Desconto,2));
+								classroot.tela.gtt316Aw.open();
+							}
+							]]>
+                  		</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	
+  	  	<modaldialog  name="gtt316Aw" bgcolor="#FAFAFA"  visible="false"  >
+			<view name="tela" y="-10">
+				<!-- Título da tela -->
+				<titulo x="1" y="1" text="Descontar crédito" widthLine="${parent.parent.width-50}" corFrente="#FF9900" />
+				<view name="corCab" x="1" y="1" width="500" >
+					<text x="4" 	y="30" 	text="Concessionaria:" />
+					<text x="100" 	y="30" 	fgcolor="#228B22" 	name="nm_Concessionaria" width="400" />
+					<text x="61" 	y="50"  text="Valor:" />
+					<text x="100" 	y="50" 	fgcolor="#228B22" 	name="vl_Credito" />
+					<text x="15" 	y="70" 	text="Qtde créditos:" />
+					<text x="100" 	y="70" 	fgcolor="#228B22"	name="qt_Creditos" width="400" />
+				</view>
+				<separador x="1" y="100" widthLine="${parent.parent.width-50}"/>
+		  		<form name="formAprov" x="1" y="110" >	
+			  		<cpoEdits name="vCampos"  layout="axis:none" >
+	  					<edittext name="tela" visible="false" text="gtt316A" />
+						<edittext name="acao" visible="false" text="DC" />
+						<edittext name="ed" visible="false" text="Movimento_Conta_CorrenteED" />
+						<edittext name="rn" visible="false" text="Movimento_Conta_CorrenteRN" />
+						<edittext name="oid_Concessionaria" visible="false" />
+						<edittext name="oids" visible="false" />	  
+						<edittext name="vl_Movimento_Conta_Corrente" visible="false" />			
+			      		<text		 	x="1" 	y="0" 	text="Descontar creditos?:" />
+			  			<datacombobox 	x="140" y="0" 	name="dm_Descontado" width="60" height="21" itemdatapath="dmSimNao:/item" />
+			  			<text		 	x="40" 	y="24" 	text="Nº NF/Fatura:" />
+			  			<edittext 		x="140" y="24" name="nr_Fatura_Tipler" width="70" maxlength="7" height="21"
+		  					 oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" onfocus="parent.deformat(this,'int');" />
+			      	</cpoEdits>
+			      	<submit name="filtra" datapath="local:classroot.atuDesblo:/" />
+		      	</form>
+		      	<separador x="1" y="180" widthLine="${parent.parent.width-50}"/>
+		      	<view name="botoes" y="190" >
+			      	<button x="1" >Fechar
+			      		<handler name="onclick">
+			      			parent.parent.parent.close();
+			      		</handler>
+			      	</button>
+			      	<button x="67" >OK
+			      		<handler name="onclick">
+			      			if (this.valida())
+			      				parent.parent.formAprov.filtra.submit();
+			      		</handler>
+			      		<method name="valida">
+			      			retorna=true;
+			      			var x = parent.parent.formAprov.vCampos;
+			      			if (x.dm_Descontado.getValue()=="N") {
+			      				retorna=false;	
+			      			}else
+			      			if (x.requerido(x.nr_Fatura_Tipler.getText()) ) {
+			      				classroot.tela.janelaAviso.mostra("Informe o número da nf fatura do desconto!")
+			      				retorna=false;	
+			      			}
+			      			return retorna;
+			      		</method>
+			      	</button>
+		      	</view>
+	      	</view>
+	   	</modaldialog>
+
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />   	
+   	</view>
+   	
+	</class>   
+
+</library>

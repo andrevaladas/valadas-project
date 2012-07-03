@@ -1,0 +1,42 @@
+<library>
+	<class name="dragdropgridrow" extends="basegridrow">
+		<attribute name="dragging" value="false" type="boolean" />
+		
+		<method event="oninit">
+			LzTrack.register(ownerGrid, "dragdropgrid");
+			LzTrack.register(this, "dragdropgrid_row");
+		</method>
+
+		<method event="onmousedown">
+			select();
+		</method>
+		
+		<method event="onmousedragout">
+			if (!this.dragging) {
+				ownerGrid.dorowmousedown(this, this.datapath);
+				LzTrack.activate('dragdropgrid_row');
+				this.dragging = true;
+			}
+		</method>
+
+		<method event="ondblclick">
+			ownerGrid.dorowdblclick(this, this.datapath);
+		</method>
+
+		<method event="onmouseup">
+			this.dragging = false;
+			ownerGrid.dorowmouseup();
+			LzTrack.deactivate('dragdropgrid_row');
+		</method>
+
+		<method event="onmousetrackover">
+			domouseover();
+			ownerGrid.dorowmouseover(this.datapath);
+		</method>
+
+		<method event="onmousetrackout">
+			domouseout();
+			ownerGrid.dorowmouseout(this.datapath);
+		</method>
+	</class>
+</library>

@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<class name="montaCarro" extends="view" >
+		<!-- Coloca o numero a fogo na posição correta -->
+		<method name="nomeiaPneu" args="carro,pos,oidPneu,fogo,data,odometro,kmAcumulada,mmEntrada" >
+			var pneu;
+			// Descobre a posicao e joga o objeto posicao na variavel pneu
+			switch (pos) {
+				case "DE":  pneu = carro.de; break
+				case "D2E": pneu = carro.d2e; break;
+				case "TEE": pneu = carro.tee; break;
+				case "TEI": pneu = carro.tei; break;
+				case "TKEE": pneu = carro.tkee; break;
+				case "TKEI": pneu = carro.tkei; break;
+				case "L1EE": pneu = carro.l1ee; break;
+				case "L1EI": pneu = carro.l1ei; break;
+				case "L2EE": pneu = carro.l2ee; break;
+				case "L2EI": pneu = carro.l2ei; break;
+				case "L3EE": pneu = carro.l3ee; break;
+				case "L3EI": pneu = carro.l3ei; break;
+				case "L4EE": pneu = carro.l4ee; break;
+				case "L4EI": pneu = carro.l4ei; break;
+				case "L5EE": pneu = carro.l5ee; break;
+				case "L5EI": pneu = carro.l5ei; break;
+				case "L6EE": pneu = carro.l6ee; break;
+				case "L6EI": pneu = carro.l6ei; break;
+				case "L7EE": pneu = carro.l7ee; break;
+				case "L7EI": pneu = carro.l7ei; break;
+				case "L8EE": pneu = carro.l8ee; break;
+				case "L8EI": pneu = carro.l8ei; break;
+				case "DD": pneu = carro.dd; break;
+				case "D2D": pneu = carro.d2d; break;
+				case "TDE": pneu = carro.tde; break;
+				case "TDI": pneu = carro.tdi; break;
+				case "TKDE": pneu = carro.tkde; break;
+				case "TKDI": pneu = carro.tkdi; break;
+				case "L1DE": pneu = carro.l1de; break;
+				case "L1DI": pneu = carro.l1di; break;
+				case "L2DE": pneu = carro.l2de; break;
+				case "L2DI": pneu = carro.l2di; break;
+				case "L3DE": pneu = carro.l3de; break;
+				case "L3DI": pneu = carro.l3di; break;
+				case "L4DE": pneu = carro.l4de; break;
+				case "L4DI": pneu = carro.l4di; break;
+				case "L5DE": pneu = carro.l5de; break;
+				case "L5DI": pneu = carro.l5di; break;
+				case "L6DE": pneu = carro.l6de; break;
+				case "L6DI": pneu = carro.l6di; break;
+				case "L7DE": pneu = carro.l7de; break;
+				case "L7DI": pneu = carro.l7di; break;
+				case "L8DE": pneu = carro.l8de; break;
+				case "L8DI": pneu = carro.l8di; break;
+				case "STP1": pneu = carro.stp1; break;
+				case "STP2": pneu = carro.stp2; break;
+			}
+			// Monta os dados na posição
+ 			pneu.pos.setText(fogo); 
+			pneu.setAttribute("oidPneu",oidPneu); 
+			pneu.setAttribute("data",data); 
+			pneu.setAttribute("odometro",odometro);
+			pneu.setAttribute("kmAcumulada",kmAcumulada);
+			pneu.setAttribute("mmEntrada",mmEntrada);
+		</method>
+
+		<!-- Acha a configuração do tipo de chassis -->
+		<method name="confChassis" args="carro,tpChassis,qtdStep">
+			switch (tpChassis) {
+				case 1:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l1ee,30,6);
+					posicionaPneu(carro.l1ei,30,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l1di,30,145);
+					posicionaPneu(carro.l1de,30,169);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,222,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,222,101);
+					break;
+				case 2:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l2ee,30,6);
+					posicionaPneu(carro.l2ei,30,30);
+					posicionaPneu(carro.l1ee,104,6);
+					posicionaPneu(carro.l1ei,104,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l2di,30,145);
+					posicionaPneu(carro.l2de,30,169);
+					posicionaPneu(carro.l1di,104,145);
+					posicionaPneu(carro.l1de,104,169);
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,222,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,222,101);
+					break;
+				case 3:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l3ee,30,6);
+					posicionaPneu(carro.l3ei,30,30);
+					posicionaPneu(carro.l2ee,104,6);
+					posicionaPneu(carro.l2ei,104,30);
+					posicionaPneu(carro.l1ee,178,6);
+					posicionaPneu(carro.l1ei,178,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l3di,30,145);
+					posicionaPneu(carro.l3de,30,169);
+					posicionaPneu(carro.l2di,104,145);
+					posicionaPneu(carro.l2de,104,169);
+					posicionaPneu(carro.l1di,178,145);
+					posicionaPneu(carro.l1de,178,169);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,252,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,252,101);
+					break;
+				case 4:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l4ee,30,6);
+					posicionaPneu(carro.l4ei,30,30);
+					posicionaPneu(carro.l3ee,104,6);
+					posicionaPneu(carro.l3ei,104,30);
+					posicionaPneu(carro.l2ee,178,6);
+					posicionaPneu(carro.l2ei,178,30);
+					posicionaPneu(carro.l1ee,252,6);
+					posicionaPneu(carro.l1ei,252,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l4di,30,145);
+					posicionaPneu(carro.l4de,30,169);
+					posicionaPneu(carro.l3di,104,145);
+					posicionaPneu(carro.l3de,104,169);
+					posicionaPneu(carro.l2di,178,145);
+					posicionaPneu(carro.l2de,178,169);
+					posicionaPneu(carro.l1di,252,145);
+					posicionaPneu(carro.l1de,252,169);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,327,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,327,101);
+					break;
+				case 5:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l1ee,22,101);
+					posicionaPneu(carro.l1ei,22,125);
+					posicionaPneu(carro.l2ee,22,0);
+					posicionaPneu(carro.l2ei,22,24);
+					posicionaPneu(carro.l3ee,105,101);
+					posicionaPneu(carro.l3ei,105,125);
+					posicionaPneu(carro.l4ee,105,0);
+					posicionaPneu(carro.l4ei,105,24);
+					posicionaPneu(carro.l5ee,188,101);
+					posicionaPneu(carro.l5ei,188,125);
+					posicionaPneu(carro.l6ee,188,0);
+					posicionaPneu(carro.l6ei,188,24);
+					posicionaPneu(carro.l7ee,271,101);
+					posicionaPneu(carro.l7ei,271,125);
+					posicionaPneu(carro.l8ee,271,0);
+					posicionaPneu(carro.l8ei,271,24);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l1di,22,152);
+					posicionaPneu(carro.l1de,22,176);
+					posicionaPneu(carro.l2di,22,51);
+					posicionaPneu(carro.l2de,22,75);
+					posicionaPneu(carro.l3di,105,152);
+					posicionaPneu(carro.l3de,105,176);
+					posicionaPneu(carro.l4di,105,51);
+					posicionaPneu(carro.l4de,105,75);
+					posicionaPneu(carro.l5di,188,152);
+					posicionaPneu(carro.l5de,188,176);
+					posicionaPneu(carro.l6di,188,51);
+					posicionaPneu(carro.l6de,188,75);
+					posicionaPneu(carro.l7di,271,152);
+					posicionaPneu(carro.l7de,271,176);
+					posicionaPneu(carro.l8di,271,51);
+					posicionaPneu(carro.l8de,271,75);
+					break;
+				case 6:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l2ee,30,6);
+					posicionaPneu(carro.l1ee,104,6);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l2de,30,169);
+					posicionaPneu(carro.l1de,104,169);
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,223,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,223,101);
+					break;
+				case 7:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l3ee,30,6);
+					posicionaPneu(carro.l2ee,104,6);
+					posicionaPneu(carro.l1ee,178,6);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l3de,30,169);
+					posicionaPneu(carro.l2de,104,169);
+					posicionaPneu(carro.l1de,178,169);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,252,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,252,101);
+					break;
+				case 8:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tee,65,19);
+					posicionaPneu(carro.de,301,19);
+					//-- Pneus direitos --		
+					posicionaPneu(carro.tde,65,156);		
+					posicionaPneu(carro.dd,302,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,17,66);
+					break;
+				case 9:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tee,65,6);
+					posicionaPneu(carro.tei,65,30);
+					posicionaPneu(carro.de,351,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.tdi,65,145);
+					posicionaPneu(carro.tde,65,170);
+					posicionaPneu(carro.dd,351,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,142,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,142,101);
+					break;
+				case 10:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tkee,28,6);
+					posicionaPneu(carro.tkei,28,30);
+					posicionaPneu(carro.tee,102,6);
+					posicionaPneu(carro.tei,102,30);
+					posicionaPneu(carro.de,351,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.tkdi,28,145);
+					posicionaPneu(carro.tkde,28,170);
+					posicionaPneu(carro.tdi,102,145);
+					posicionaPneu(carro.tde,102,170);
+					posicionaPneu(carro.dd,351,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,226,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,226,101);
+					break;
+				case 11:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l2ee,30,6);
+					posicionaPneu(carro.l2ei,30,30);
+					posicionaPneu(carro.l1ee,104,6);
+					posicionaPneu(carro.l1ei,104,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l2di,30,145);
+					posicionaPneu(carro.l2de,30,169);
+					posicionaPneu(carro.l1di,104,145);
+					posicionaPneu(carro.l1de,104,169);
+					break;
+				case 12:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tkee,81,6);
+					posicionaPneu(carro.tee,155,6);
+					posicionaPneu(carro.de,363,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.tkde,81,169);
+					posicionaPneu(carro.tde,155,169);
+					posicionaPneu(carro.dd,363,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,277,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,277,101);
+					break;
+				case 13:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tkee,28,6);
+					posicionaPneu(carro.tee,102,6);
+					posicionaPneu(carro.tei,102,30);
+					posicionaPneu(carro.de,351,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.tkde,28,170);
+					posicionaPneu(carro.tdi,102,145);
+					posicionaPneu(carro.tde,102,170);
+					posicionaPneu(carro.dd,351,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,228,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,228,101);
+					break;
+				case 14:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tkee,155,6);
+					posicionaPneu(carro.tee,81,6);
+					posicionaPneu(carro.tei,81,30);
+					posicionaPneu(carro.de,363,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.tkde,155,169);
+					posicionaPneu(carro.tdi,81,145);
+					posicionaPneu(carro.tde,81,169);
+					posicionaPneu(carro.dd,363,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,275,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,275,101);
+					break;
+				case 15:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tkee,102,6);
+					posicionaPneu(carro.tee,28,6);
+					posicionaPneu(carro.tei,28,30);
+					posicionaPneu(carro.d2e,283,19);
+					posicionaPneu(carro.de,360,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.tkde,102,169);
+					posicionaPneu(carro.tdi,28,145);
+					posicionaPneu(carro.tde,28,169);
+					posicionaPneu(carro.d2d,283,156);
+					posicionaPneu(carro.dd,360,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,210,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,210,101);
+					break;
+				case 16:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.tkee,155,6);
+					posicionaPneu(carro.tkei,155,30);
+					posicionaPneu(carro.tee,81,6);
+					posicionaPneu(carro.tei,81,30);
+					posicionaPneu(carro.d2e,306,19);
+					posicionaPneu(carro.de,382,19);
+					//-- Pneus direitos --		
+					posicionaPneu(carro.tkdi,155,145);		
+					posicionaPneu(carro.tkde,155,169);
+					posicionaPneu(carro.tdi,81,145);
+					posicionaPneu(carro.tde,81,169);
+					posicionaPneu(carro.d2d,306,156);
+					posicionaPneu(carro.dd,383,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,235,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,235,101);
+					break;
+				case 17:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l1ee,8,6);
+					posicionaPneu(carro.l1ei,8,30);
+					posicionaPneu(carro.l2ee,88,6);
+					posicionaPneu(carro.l2ei,88,30);
+					posicionaPneu(carro.tee,168,6);  
+					posicionaPneu(carro.tei,168,30);
+					posicionaPneu(carro.de,343,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l1de,8,145);
+					posicionaPneu(carro.l1di,8,169);
+					posicionaPneu(carro.l2de,88,145);
+					posicionaPneu(carro.l2di,88,169);
+					posicionaPneu(carro.tde,168,145);
+					posicionaPneu(carro.tdi,168,169);
+					posicionaPneu(carro.dd,343,156);
+					// Steps
+					if (qtdStep>0)
+						posicionaPneu(carro.stp1,244,31);
+						if (qtdStep>1)
+							posicionaPneu(carro.stp2,244,101);
+					break;
+				case 18:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l1ee,65,19);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l1de,65,156);
+					break;
+				case 19:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l2ee,30,6);
+					posicionaPneu(carro.l2ei,30,30);
+					posicionaPneu(carro.l1ee,216	,6);
+					posicionaPneu(carro.l1ei,216,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l2di,30,145);
+					posicionaPneu(carro.l2de,30,169);
+					posicionaPneu(carro.l1di,216,145);
+					posicionaPneu(carro.l1de,216,169);
+					break;
+				case 20:
+					//-- Pneus esquerdos --
+					posicionaPneu(carro.l3ee,30,6);
+					posicionaPneu(carro.l3ei,30,30);
+					posicionaPneu(carro.l2ee,104,6);
+					posicionaPneu(carro.l2ei,104,30);
+					posicionaPneu(carro.l1ee,290,6);
+					posicionaPneu(carro.l1ei,290,30);
+					//-- Pneus direitos --				
+					posicionaPneu(carro.l3di,30,145);
+					posicionaPneu(carro.l3de,30,169);
+					posicionaPneu(carro.l2di,104,145);
+					posicionaPneu(carro.l2de,104,169);
+					posicionaPneu(carro.l1di,290,145);
+					posicionaPneu(carro.l1de,290,169);
+					break;
+			}
+			// Coloca a imagem certa na view do carro 
+			// carro.setResourceNumber(tipoChassis);
+		</method>
+		<!-- Posiciona o pneu na posição correta e dá o nome default pra ele -->
+        <method name="posicionaPneu" args="pos,x,y">
+        	pos.setAttribute("x",x); 
+			pos.setAttribute("y",y); 
+			pos.setAttribute('visible',true);
+			pos.pos.setText(pos.getAttribute('name').toUpperCase());
+		</method>
+
+	</class>		
+</library>

@@ -1,0 +1,701 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+  	<dataset name="sisTas102FabPneu" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Pneu" />
+  	<datapointer name="sisdpTas102FabPneu" xpath="local:sisTas102FabPneu:/" />
+  	
+	<dataset name="sisTas102FabBnd" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Banda" />
+  	<datapointer name="sisdpTas102FabBnd" xpath="local:sisTas102FabBnd:/" />
+  	
+  	<dataset name="sisTas102BanDim" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+	 src="../../ComboServlet?combo=Banda_Dimensao&amp;oid_Banda=0" 
+	 ondata="canvas.wTas102.tas102.tela.carregando.stopAni();
+	 		 canvas.wTas102.tas102.tela.tab.tabReg.corReg.fReg.edits.frame3.oid_Banda_Dimensao.selectItemAt(-1); "
+	 />
+  	<datapointer name="sisdpTas102BanDim" xpath="local:sisTas102BanDim:/" />
+
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+  		var dpMov=null;
+  		var dpDim=null;
+  	</script>
+	<!-- Classes locais -->
+   
+   	<!-- Classe da Tela -->
+	<class name="tas102" extends="view" >
+
+	<method name="selfPopulate">
+		cad.setAttribute("src","../../ControlerServlet?");
+		cad.setQueryString({tela : "tas103",
+										   ed : "Stas_Pneu_SucateadoED",
+			  							   rn : "Stas_Pneu_SucateadoRN",
+						   			  	 acao : "L",
+				  	              oid_Analise : tela.tab.tabReg.corReg.fReg.edits.oid_Analise.getAttribute('text')
+						   });	
+		cad.doRequest();
+		tela.carregando.startAni();
+	</method>
+
+	<method name="selfPopulate2">
+		cadDim.setAttribute("src","../../ControlerServlet?");
+		cadDim.setQueryString({tela : "tas103",
+										   ed : "Stas_Dimensao_SucateadoED",
+			  							   rn : "Stas_Dimensao_SucateadoRN",
+						   			  	 acao : "L",
+				  	              oid_Analise : tela.tab.tabReg.corReg.fReg.edits.oid_Analise.getAttribute('text')
+							});	
+		cadDim.doRequest();
+		tela.carregando.startAni();
+	</method>
+		
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	if (resultado == 'LOGON'){
+              		parent.logon();
+              	}else {
+              		parent.selfPopulate2();
+              	}	
+         		"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Lista de DImensoes -->
+	<dataset name="cadDim" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	if (resultado == 'LOGON'){
+              		parent.logon();
+              	} else {
+          			parent.tela.carregando.stopAni();
+              	}	
+         		"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+      	/>
+	<datapointer name="cadDimdp" xpath="local:cadDim:/" />
+	<datapointer name="cadDimdp1" xpath="local:cadDim:/ret/item" />	
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp1.xpathQuery('@oknok');
+      			if (resultado == 'LOGON'){
+          			parent.logon();
+          		}  else {
+	          		if (resultado == 'IOK') {
+	          			parent.tela.janelaAviso.mostra('Registro incluído com sucesso!');
+	          			if (classroot.atudp1.xpathQuery('@dm_Gravou_Dimensao')=='true' ) {
+	          				parent.selfPopulate2();
+	          			}
+	          			classroot.caddp.selectChild();
+	          			classroot.caddp.addNodeFromPointer( classroot.atudp2 );
+	          			classroot.caddp.setAttribute('xpath','local:cad:/');
+	          			parent.tela.tab.tabReg.corReg.fReg.edits.frame1.nr_Fogo.setAttribute('text','');
+	          			parent.tela.tab.tabReg.corReg.fReg.edits.frame4.nr_Mm_Medido.setAttribute('text','');
+	          		} else
+	      			if (resultado == 'AOK') {
+	      				parent.selfPopulate();
+	               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!');
+	               		var x=parent.tela.tab.tabReg.barReg;
+	               		x.resetFields(); 
+	               		x.btnCancelarReg.setAttribute('visible',false);
+						x.btnFecharReg.setAttribute('visible',true);
+						x.btnIncluirReg.setAttribute('text','Incluir');
+						x.btnExcluirReg.setAttribute('enabled',false);
+						parent.tela.tab.tabReg.corReg.fReg.edits.acao.setAttribute('text','I');
+	    			} else
+	      			if (resultado == 'DOK') {
+	      				parent.selfPopulate();
+	               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+	               		var x=parent.tela.tab.tabReg.barReg;
+	               		x.resetFields(); 
+	               		x.btnCancelarReg.setAttribute('visible',false);
+						x.btnFecharReg.setAttribute('visible',true);
+						x.btnIncluirReg.setAttribute('text','Incluir');
+						x.btnExcluirReg.setAttribute('enabled',false);
+						parent.tela.tab.tabReg.corReg.fReg.edits.acao.setAttribute('text','I');
+					} else	
+	      			if (resultado == 'EOK') {
+	      				parent.selfPopulate();
+	               		parent.tela.janelaAviso.mostra('Análise encerrada com sucesso!'); 
+	               		var x=parent.tela.tab.tabReg.barReg;
+	               		var y=parent.tela.tab.tabCad.barCad;
+	               		var z=parent.tela.tab.tabLis.barLis;
+						x.btnFecharReg.setAttribute('enabled',true);
+						x.btnIncluirReg.setAttribute('enabled',false);
+						x.btnExcluirReg.setAttribute('enabled',false);
+						x.btnGravarReg.setAttribute('enabled',false);
+						x.btnCalcularReg.setAttribute('enabled',false);
+						y.btnEditarCad.setAttribute('enabled',false);
+						z.btnEditarLis.setAttribute('enabled',false);
+					} else	
+	      			if (resultado == 'COK') {
+	      				parent.selfPopulate();
+	               		parent.tela.janelaAviso.mostra('Cálculo efetuado com sucesso!'); 
+	    			} else {
+	      				parent.tela.janelaAviso.mostra(resultado); 
+	    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+      	/>
+    <datapointer name="atudp1" xpath="local:atu:/cad/ret" />  
+    <datapointer name="atudp2" xpath="local:atu:/cad/item[1]" />	
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atuDim" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="
+      			var resultado = classroot.atuDimdp1.xpathQuery('@oknok');
+      			if (resultado == 'LOGON'){
+          			parent.logon();
+          		}  else {
+	      			if (resultado == 'AOK') {
+	               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!');
+	               		var x=parent.tela.tab.tabReg.barReg;
+	               		classroot.selfPopulate2();
+	    			} else {
+	      				parent.tela.janelaAviso.mostra(resultado); 
+	    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+      	/>
+    <datapointer name="atuDimdp1" xpath="local:atuDim:/ret/item" />  
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/stcb.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Análise de sucatas" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela" height="${parent.parent.height}" width="${parent.parent.width}">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabReg.barReg.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+        
+		<!-- Janela para edição da Dimensão -->
+		<modaldialog name="editaDimensao" title="Dados da dimensão !" width="400" height="335" bgcolor="#FAFAFA">
+			<simplelayout spacing="5" />
+			<view name="A" width="${parent.width}" >
+				<frame3d y="1" x="1" name="aFcab" caption="" width="${parent.width-45}" height="35">
+					<!-- Labels -->
+					<text y="10" x="40" height="21"  text="Dimensión:" oninit="this.setAttribute('text', ('E'==lang ? 'Dimensión:' : 'Dimensão:') );"/>
+					<text y="10" x="105" name="nm_Dimensao_Sucateado" 	width="450" height="21" fgcolor="green" />
+				</frame3d>
+			</view>	
+			<view name="B" width="${parent.width}"  >
+				<frame3d y="1" x="1" name="bFcab" caption="" height="205" width="${parent.width-45}"  >
+					<view name ="labels" width="150" layout="axis:none">
+						<text height="21" y="5" align="right">TWI:</text>
+						<text height="21" y="29" align="right">Valor pneu novo:</text>
+						<text height="21" y="53" align="right">Valor recapagem:</text>
+						<text height="21" y="77" align="right">Valor carcaça R1:</text>
+						<text height="21" y="101" align="right">Valor carcaça R2:</text>
+						<text height="21" y="125" align="right">Valor carcaça R3:</text>
+						<text height="21" y="149" align="right">Valor carcaça R4:</text>
+						<text height="21" y="173" align="right">Valor carcaça R5:</text>
+					</view>
+					<cpoEditsXY name="edits" >
+						<edittext y="5" x="157" name="nr_Twi" maxlength="6" width="40" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />
+						<edittext y="29" x="157" name="vl_Pneu_Novo" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />	
+						<edittext y="53" x="157" name="vl_Recapagem" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+						<edittext y="77" x="157" name="vl_Carcaca_R1" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+						<edittext y="101" x="157" name="vl_Carcaca_R2" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+						<edittext y="125" x="157" name="vl_Carcaca_R3" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />	
+						<edittext y="149" x="157" name="vl_Carcaca_R4" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />	
+						<edittext y="173" x="157" name="vl_Carcaca_R5" maxlength="15" width="90" height="21"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />				
+					</cpoEditsXY>
+				</frame3d>
+			</view>	
+				
+			<view name="C"  layout="axis:x; spacing:5">
+				<button name="btnCancelar" onclick="parent.parent.close()" isdefault="true">Cancelar</button>
+            	<button name="btnGravar">
+               		Gravar
+               		<method event="onclick">
+           				var x=parent.parent.B.bFcab.edits;
+						classroot.atuDim.setAttribute("src","../../ControlerServlet?");
+						classroot.atuDim.setQueryString({tela : "tas103",
+										   ed : "Stas_Dimensao_SucateadoED",
+			  							   rn : "Stas_Dimensao_SucateadoRN",
+						   			  	 acao : "A",
+				  	   oid_Dimensao_Sucateado : dpDim.xpathQuery("@oid_Dimensao_Sucateado"),
+				  	   				   nr_Twi : x.nr_Twi.getAttribute('text'),
+		  	   				     vl_Pneu_Novo : x.vl_Pneu_Novo.getAttribute('text'),
+		  	   				     vl_Recapagem : x.vl_Recapagem.getAttribute('text'),
+		  	   				    vl_Carcaca_R1 : x.vl_Carcaca_R1.getAttribute('text'),
+		  	   				    vl_Carcaca_R2 : x.vl_Carcaca_R2.getAttribute('text'),
+		  	   				    vl_Carcaca_R3 : x.vl_Carcaca_R3.getAttribute('text'),
+		  	   				    vl_Carcaca_R4 : x.vl_Carcaca_R4.getAttribute('text'),
+		  	   				    vl_Carcaca_R5 : x.vl_Carcaca_R5.getAttribute('text')
+							});	
+						classroot.atuDim.doRequest();
+						classroot.tela.carregando.startAni();
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+        
+        <frame3d y="5" x="5" name="fCabecalho" caption="" width="${parent.parent.parent.width-30}" height="60">
+			<!-- Labels -->
+			<text y="10" x="100"  height="21"  text="Cliente:" oninit="this.setAttribute('text', ('E'==lang ? 'Cliente:' : 'Cliente:') );"/>
+			<text y="32" x="105" height="21"  text="Fecha:" oninit="this.setAttribute('text', ('E'==lang ? 'Fecha:' : '  Data:') );"/>								
+			<text y="10" x="150" name="nm_Razao_Social" 	width="450" height="21" fgcolor="green" />
+			<text y="32" x="150" name="dt_Inicio" 		width="80" 	height="21" fgcolor="green" />	
+		</frame3d>
+		
+      	<tabs name="tab" x="5" y="65" height="${parent.parent.parent.height-75-60}" width="${parent.parent.parent.width-30}" >
+         	<!-- Seleção -->
+         	<tabpane name="tabReg">
+            	Registro de pneus
+            	<view name="corReg" x="-10" y="-5" width="${parent.parent.width-8}" height="${parent.parent.height-71}" >
+            		<form name="fReg">
+						<!-- Campos -->
+						<cpoEditsXY name="edits">
+							<edittext name="tela" visible="false" text="tas102" />
+							<edittext name="acao" visible="false" text="I" />
+							<edittext name="ed" visible="false" text="Stas_Pneu_SucateadoED" />
+							<edittext name="rn" visible="false" text="Stas_Pneu_SucateadoRN" />
+							<edittext name="oid_Pneu_Sucateado" visible="false"  />
+							<edittext name="oid_Analise" visible="false" />
+							
+							<frame3d y="0" x="0" name="frame1" caption="" width="${parent.parent.parent.width-10}" height="60">
+								<text 		y="8" x="080"  height="21" text="Neumático:" oninit="this.setAttribute('text', ('E'==lang ? 'Neumático:' : '    Nr Fogo:') );"/>
+								<edittext 	y="8" x="153" name="nr_Fogo" maxlength="12" width="100" height="21"  
+									oninit="parent.parent.pattern(this,'txt')" onblur="parent.parent.format(this,'txt');" />
+										   
+								<text 		y="32" x="080"  height="21" text="Dimensión:" oninit="this.setAttribute('text', ('E'==lang ? 'Dimensión:' : ' Dimensão:') );"/>		   
+								<lookup   	y="32" x="153" name="oid_Pneu_Dimensao" width="80" height="21" 
+									cdProperty="cd_Pneu_Dimensao" dsProperty="nm_Pneu_Dimensao" showDsProperty="false"
+									widthCdProperty="110" callService="Pneu_Dimensao"  oninit="parent.parent.pattern(this,'txt')"  >
+									<relatedText name="nm_Pneu_Dimensao" width="300" height="21" fgcolor="green"/>
+								</lookup>
+							</frame3d>
+							
+							<frame3d y="61" x="0" name="frame2" caption="" width="${parent.parent.parent.width-10}" height="60">
+								<text 		  y="8" x="022"  height="21" text="Fabricante neumático:" oninit="this.setAttribute('text', ('E'==lang ? 'Fabricante neumático:' : '   Fabricante do pneu:') );"/>
+								<datacombobox y="8" x="153" name="oid_Fabricante_Pneu" width="200" height="21" itemdatapath="sisTas102FabPneu:/cad/item"  defaulttext="Escolha ..."
+						  			onselect="parent.oid_Modelo_Pneu.resetLookupValues();parent.oid_Modelo_Pneu.setCriteria('oid_Fabricante_Pneu',this.value);"  />	
+								
+								<text 		y="32" x="100"  height="21" text="Modelo:" oninit="this.setAttribute('text', ('E'==lang ? 'Modelo:' : 'Modelo:') );"/>
+								<lookup   	y="32" x="153" name="oid_Modelo_Pneu" width="80" height="21" 
+									cdProperty="CD_Modelo_Pneu" dsProperty="NM_Modelo_Pneu" showDsProperty="false"
+									widthCdProperty="110" callService="Modelo_Pneu"  oninit="parent.parent.pattern(this,'txt')"  >
+									<relatedText name="nm_Tipo_Pneu" width="300" height="21" fgcolor="green"/>
+									<propertyMapping modelProperty="oid_Fabricante_Pneu" criteriaProperty="999999"/>
+								</lookup>
+							</frame3d>
+							
+							<frame3d y="122" x="0"  name="frame3" caption="" width="${parent.parent.parent.width-10}" height="85">
+								<text 		  y="8" x="052"  height="21" text="Fabricante banda:" oninit="this.setAttribute('text', ('E'==lang ? 'Fabricante banda:' : 'Fabricante banda:') );"/>
+								<datacombobox y="8" x="153" name="oid_Fabricante_Banda" width="200" height="21" itemdatapath="sisTas102FabBnd:/cad/item"  defaulttext="Escolha ..." 
+							  		onselect="parent.oid_Banda.resetLookupValues();parent.oid_Banda.setCriteria('oid_Fabricante_Banda',this.value);" />
+								
+								<text 		y="32" x="065"  height="21" text="Banda aplicada:" oninit="this.setAttribute('text', ('E'==lang ? 'Banda aplicada:' : 'Banda aplicada:') );"/>
+								<lookup   	y="32" x="153" name="oid_Banda" width="80" height="21" 
+									cdProperty="cd_Banda" dsProperty="nm_Banda" showDsProperty="false"
+									widthCdProperty="110" callService="Banda"  oninit="parent.parent.pattern(this,'txt')"  >
+									<relatedText name="nm_Banda" width="300" height="21" fgcolor="green" />
+									<propertyMapping modelProperty="oid_Fabricante_Banda" criteriaProperty="999999"/>
+									<method name="ondataLookup">parent.ajustaDimensao(); if (parent.parent.frame4.nr_Vida.value==0) parent.parent.frame4.nr_Vida.selectItemAt(-1);</method>
+								</lookup>
+								<text 		  y="56" x="083"  height="21" text="Dimensão:" oninit="this.setAttribute('text', ('E'==lang ? 'Dimensión:' : 'Dimensão:') );"/>
+								<datacombobox y="56" x="153" name="oid_Banda_Dimensao" width="200" height="21" itemdatapath="sisTas102BanDim:/cad/item"  defaulttext="Escolha a dimensão"   />
+					      		<method name="ajustaDimensao">
+					      			var este = oid_Banda.getText();
+					      			if (este!="") {
+					      				classroot.tela.carregando.startAni();
+					      				sisTas102BanDim.setSrc("../../ComboServlet?combo=Banda_Dimensao&amp;oid_Banda=" + este);
+					  					sisTas102BanDim.doRequest();
+					      			}
+								</method>
+							</frame3d>
+											
+							<frame3d y="208" x="0"  name="frame4" caption="" width="${parent.parent.parent.width-10}" height="84">	
+								<text 		y="8" x="103"  height="21" text="Motivo:" oninit="this.setAttribute('text', ('E'==lang ? 'Motivo:' : 'Motivo:') );"/>
+								<lookup   	y="8" x="153" name="oid_Motivo_Sucata" width="80" height="21" 
+									cdProperty="cd_Motivo_Sucata" dsProperty="nm_Motivo_Sucata" showDsProperty="false"
+									widthCdProperty="110" callService="Stas_Motivo_Sucata"  oninit="parent.parent.pattern(this,'txt')"  >
+									<relatedText name="nm_Motivo_Sucata" width="340" height="21" fgcolor="green" />
+								</lookup>
+								
+								<text 		  y="32" x="115" height="21" text="Vida:" oninit="this.setAttribute('text', ('E'==lang ? 'Vida:' : 'Vida:') );"/>
+								<datacombobox y="32" x="153" name="nr_Vida" width="200" height="21" shownitems="5" itemdatapath="dmVidaStas:/item" 	defaulttext="Escolha ..." 
+									onselect="if (this.value=='0') {parent.parent.frame3.oid_Fabricante_Banda.selectItemAt(-1); parent.parent.frame3.oid_Banda.resetLookupValues();parent.parent.frame3.oid_Banda_Dimensao.selectItemAt(-1) } "/>
+								
+								<text 		y="56" x="74" height="21" text="Mm medido:" oninit="//this.setAttribute('text', ('E'==lang ? 'Mm medido:' : 'Mm medido:') );"/>
+								<edittext 	y="56" x="153" name="nr_Mm_Medido" maxlength="12" width="50" height="21"  
+									oninit="parent.parent.pattern(this,'dec')" onblur="parent.parent.format(this,'dec',1);" onfocus="parent.parent.deformat(this,'dec');" />
+							</frame3d>	
+						</cpoEditsXY>
+						<submit name="filtra" datapath="local:classroot.atu:/" />
+           			</form>
+            	</view>
+            	<view name="barReg" x="0" y="305" layout="axis:x; spacing:2">
+            		<button name="btnCancelarReg" width="70" visible="false">
+                  		Cancelar
+                  		<handler name="onclick" >
+                  			parent.parent.corReg.fReg.edits.acao.setAttribute('text','I');
+                  			parent.resetFields();
+                     		this.setAttribute('visible',false);
+                     		parent.btnFecharReg.setAttribute('visible',true);
+                     		parent.btnIncluirReg.setAttribute('text','Incluir')
+                     		parent.btnExcluirReg.setAttribute('enabled',false);
+                  		</handler>
+               		</button>
+               		<button name="btnFecharReg" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnIncluirReg" width="70" >
+                  		Incluir
+                  		<handler name="onclick">
+                  			if (parent.valida()) {
+                  				parent.parent.parent.parent.carregando.startAni(); 
+                     			local:classroot.atu.setSrc("../../ControlerServlet"); 
+                     			parent.parent.corReg.fReg.filtra.submit();	
+                  			}
+                  		</handler>
+               		</button>
+               		<button name="btnExcluirReg" width="70" enabled="false">
+                  		Excluir
+                  		<handler name="onclick">
+                  			classroot.tela.alertaExclusao.mostra();
+                  		</handler>
+               		</button>            	
+           			<text  y="3" height="21" text="Fecha final:" oninit="this.setAttribute('text', ('E'==lang ? 'Fecha final:' : '  Data final:') );"/>
+           			<edittext y="2" name="dt_Fim" width="80" height="21"  
+				  		oninit="parent.parent.corReg.fReg.edits.pattern(this,'dat')"  onfocus="parent.parent.corReg.fReg.edits.deformat(this,'dat');" >
+           				<handler name="onblur">
+           					parent.parent.corReg.fReg.edits.format(this,'dat',0);
+           					if (parent.parent.corReg.fReg.edits.util.validaData(this.getAttribute('text'))) {
+           						parent.btnGravarReg.setAttribute('enabled',true);
+           						LzFocus.setFocus(parent.btnGravarReg);
+           					} else {
+           						parent.btnGravarReg.setAttribute('enabled',false);
+           						this.setAttribute('text',"");
+           					}
+           				</handler>
+           			</edittext>	
+				  	<button name="btnGravarReg" width="70" enabled="false">
+                  		Encerrar
+                  		<handler name="onclick">
+                  			if (parent.validaEncerramento()) {
+	                     		classroot.tela.carregando.startAni(); 
+								classroot.atu.setAttribute("src","../../ControlerServlet?");
+								classroot.atu.setQueryString({tela : "tas103",
+												   ed : "Stas_AnaliseED",
+					  							   rn : "Stas_AnaliseRN",
+								   			  	 acao : "E",
+								   		  oid_Analise : parent.parent.corReg.fReg.edits.oid_Analise.getAttribute('text'),
+				  	   				           dt_Fim : parent.parent.barReg.dt_Fim.getAttribute('text')
+									});	
+								classroot.atu.doRequest();
+								classroot.tela.carregando.startAni();
+                  			}
+                  		</handler>
+               		</button> 
+				  	<button name="btnCalcularReg" width="70" enabled="true">
+                  		Calcular
+                  		<handler name="onclick">
+                  			if (parent.validaEncerramento()) {
+	                     		classroot.tela.carregando.startAni(); 
+								classroot.atu.setAttribute("src","../../ControlerServlet?");
+								classroot.atu.setQueryString({tela : "tas103",
+												   ed : "Stas_AnaliseED",
+					  							   rn : "Stas_AnaliseRN",
+								   			  	 acao : "C",
+								   		  oid_Analise : parent.parent.corReg.fReg.edits.oid_Analise.getAttribute('text')
+									});	
+								classroot.atu.doRequest();
+								classroot.tela.carregando.startAni();
+                  			}
+                  		</handler>
+               		</button>                		
+					<method name="validaEncerramento">
+						<![CDATA[
+						var result=true;
+						var dp=classroot.cadDim.getPointer();
+						var lNext=dp.selectChild(2);
+					   	while (lNext) {
+				    		var nr_Twi = dp.getNodeAttribute("nr_Twi");
+				    		var vl_Pneu_Novo = dp.getNodeAttribute("vl_Pneu_Novo");
+				    		var vl_Recapagem = dp.getNodeAttribute("vl_Recapagem");
+				    		var vl_Carcaca_R1 = dp.getNodeAttribute("vl_Carcaca_R1");
+				    		var vl_Carcaca_R2 = dp.getNodeAttribute("vl_Carcaca_R2");
+				    		var vl_Carcaca_R3 = dp.getNodeAttribute("vl_Carcaca_R3");
+				    		var vl_Carcaca_R4 = dp.getNodeAttribute("vl_Carcaca_R4");
+				    		var vl_Carcaca_R5 = dp.getNodeAttribute("vl_Carcaca_R5");
+				    		if (nr_Twi=="0,0" || vl_Pneu_Novo=="0,00" || vl_Recapagem=="0,00" || vl_Carcaca_R1=="0,00" || vl_Carcaca_R2=="0,00" || vl_Carcaca_R3=="0,00" || vl_Carcaca_R4=="0,00" || vl_Carcaca_R5=="0,00" ) {
+				    			result=false;
+				    		}
+					        lNext=dp.selectNext();
+					   	}
+					   	if (result==false) {
+					   		classroot.tela.janelaErro.mostra("Informe os dados das dimensões!")
+							parent.parent.tabLis.setAttribute('selected',true);
+					   	} else {
+					   		var x = parent.parent.tabReg.corReg.fReg.edits.util;
+					   		if (x.comparaDatas(parent.parent.parent.fCabecalho.dt_Inicio.getAttribute('text'),">",parent.barReg.dt_Fim.getAttribute('text'))) {
+								result=false;
+						   		classroot.tela.janelaErro.mostra("Data final deve ser superior ou igual a data do início!")
+					   		}
+					   	}
+					   	return result
+					   	]]>
+					</method>
+               			
+               		<method name="valida">
+              			var retorno=true;
+              			var cpo=parent.corReg.fReg.edits;
+              			var jEr=parent.parent.parent.janelaErro;
+              			if (cpo.requerido(cpo.frame1.nr_Fogo.getAttribute('text'))) {
+              				retorno=false;
+              				jEr.mostra("Informe o número a fogo do pneu!");
+              			} else 
+              			if (cpo.requerido(cpo.frame1.oid_Pneu_Dimensao.lookup_cdProperty.getAttribute('text'))){
+              				retorno=false;
+              				jEr.mostra("Informe a dimensão do pneu!");
+              			} else 
+              			if (cpo.requerido(cpo.frame2.oid_Modelo_Pneu.lookup_cdProperty.getAttribute('text'))){
+              				retorno=false;
+              				jEr.mostra("Informe o modelo do pneu!");
+              			} else 
+              			if (cpo.requerido(cpo.frame4.oid_Motivo_Sucata.lookup_cdProperty.getAttribute('text'))){
+              				retorno=false;
+              				jEr.mostra("Informe o motivo do sucateamento!");
+              			} else 
+              			if (cpo.requerido(cpo.frame4.nr_Mm_Medido.getAttribute('text'))){
+              				retorno=false;
+              				jEr.mostra("Informe a profundidade do sulco medido!");
+              			} else
+              			if (!cpo.util.comparaFracionario(cpo.frame4.nr_Mm_Medido.getAttribute('text'),">","0,0")){
+              				retorno=false;
+              				jEr.mostra("Informe a profundidade do sulco medido!");
+              			} else
+              			if (cpo.requerido(cpo.frame4.nr_Vida.value)){
+              				retorno=false;
+              				jEr.mostra("Informe a vida do pneu!");
+              			} else
+              			if (cpo.frame4.nr_Vida.value!=0){
+                  			if (cpo.requerido(cpo.frame3.oid_Banda.lookup_cdProperty.getAttribute('text'))){
+                  				retorno=false;
+                  				jEr.mostra("Informe a banda aplicada!");
+                  			} else  
+                  			if (cpo.requerido(cpo.frame3.oid_Banda_Dimensao.value)){
+                  				retorno=false;
+                  				jEr.mostra("Informe as dimensões da banda aplicada!");
+                  			}
+              			}
+              			return retorno;
+              		</method>
+
+               		<method name="resetFields">
+              			var cpo=parent.corReg.fReg.edits;
+              			cpo.oid_Pneu_Sucateado.setAttribute('text','');
+              			cpo.frame1.nr_Fogo.setAttribute('text','')
+              			cpo.frame1.oid_Pneu_Dimensao.resetLookupValues();
+              			cpo.frame2.oid_Fabricante_Pneu.selectItemAt(-1);
+              			cpo.frame2.oid_Modelo_Pneu.resetLookupValues();
+              			cpo.frame3.oid_Fabricante_Banda.selectItemAt(-1);
+              			cpo.frame3.oid_Banda.resetLookupValues();
+              			cpo.frame3.oid_Banda_Dimensao.selectItemAt(-1);
+              			cpo.frame4.oid_Motivo_Sucata.resetLookupValues();
+              			cpo.frame4.nr_Mm_Medido.setAttribute('text','');
+              			cpo.frame4.nr_Vida.selectItemAt(-1);
+              		</method>
+
+					<method name="exclui">
+	   			        parent.corReg.fReg.edits.acao.setAttribute('text','D');
+	             		parent.parent.parent.carregando.startAni(); 
+	             		local:classroot.atu.setSrc("../../ControlerServlet"); 
+	             		parent.corReg.fReg.filtra.submit();
+					</method>
+           		</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Pneus sucateados
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-8}" width="${parent.width-10}" multiselect="false" rowheight="16">
+               			<gridtext editable="false" resizable="false" datapath="@nr_Fogo" text="Pneu" width="80"/>
+               			<gridtext editable="false" resizable="false" datapath="@nm_Pneu_Dimensao" text="Dimensão" width="90"/>
+               			<gridtext editable="false" resizable="false" datapath="@nm_Modelo_Pneu" text="Modêlo" width="100"/>
+               			<gridtext editable="false" resizable="false" datapath="@nm_Banda" text="Banda" width="100"/>
+               			<gridtext editable="false" resizable="false" datapath="@nr_Mm_Medido" text="mm Medido" width="75" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Pneu" text="Valor" width="90" textalign="right" />
+               			<gridtext editable="false" resizable="false" datapath="@nm_Vida" text="Vida" width="60" />
+               			<gridtext editable="false" resizable="false" datapath="@nm_Motivo_Sucata" text="Motivo" width="300" />
+                  		<method event="onselect" args="row">
+                  			parent.parent.barCad.btnEditarCad.setAttribute("enabled",true);
+                  			dpMov=row.datapath;
+                 		</method>
+               		</grid>
+               	</view>	
+            	<view name="barCad" x="0" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+            		<button name="btnFecharCad" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnEditarCad" width="90" enabled="false">
+               			Editar/Excluir
+               			<handler name="onclick">
+                  			var x=parent.parent.parent.tabReg.corReg.fReg.edits;
+                  			x.oid_Pneu_Sucateado.setAttribute('text',dpMov.xpathQuery("@oid_Pneu_Sucateado"));
+                  			x.frame1.nr_Fogo.setAttribute('text',dpMov.xpathQuery("@nr_Fogo"));
+                  			x.frame1.oid_Pneu_Dimensao.__findById(dpMov.xpathQuery("@oid_Pneu_Dimensao"));
+                  			x.frame2.oid_Fabricante_Pneu.selectItem(dpMov.xpathQuery("@oid_Fabricante_Pneu"));
+                  			x.frame2.oid_Modelo_Pneu.__findById(dpMov.xpathQuery("@oid_Modelo_Pneu"));
+                  			x.frame3.oid_Fabricante_Banda.selectItem(dpMov.xpathQuery("@oid_Fabricante_Banda"));
+                  			x.frame3.oid_Banda.__findById(dpMov.xpathQuery("@oid_Banda"));
+                  			x.frame3.oid_Banda_Dimensao.selectItem(dpMov.xpathQuery("@oid_Banda_Dimensao"));
+                  			x.frame4.nr_Vida.selectItem(dpMov.xpathQuery("@nr_Vida"));
+                  			x.frame4.oid_Motivo_Sucata.__findById(dpMov.xpathQuery("@oid_Motivo_Sucata"));
+                  			x.frame4.nr_Mm_Medido.setAttribute('text',dpMov.xpathQuery("@nr_Mm_Medido"));
+                  			x.acao.setAttribute('text','A');
+                  			var y=parent.parent.parent.tabReg;
+                     		y.setAttribute('selected',true);
+                     		y.barReg.btnExcluirReg.setAttribute('enabled',true);
+                     		y.barReg.btnCancelarReg.setAttribute('visible',true);
+                     		y.barReg.btnFecharReg.setAttribute('visible',false);
+                     		y.barReg.btnIncluirReg.setAttribute('text','Alterar');
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Dimensões dos pneus
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cadDim:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-8}" width="${parent.width-10}" multiselect="false" rowheight="16">
+               			<gridtext editable="false" resizable="false" datapath="@nm_Pneu_Dimensao" text="Dimensão" width="130"/>
+               			<gridtext editable="false" resizable="false" datapath="@nr_Twi" text="TWI" width="50" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Pneu_Novo" text="Novo" width="80" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Recapagem" text="Recapagem"  width="80" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Carcaca_R1" text="R1"  width="80" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Carcaca_R2" text="R2"  width="80" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Carcaca_R3" text="R3"  width="80" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Carcaca_R4" text="R4"  width="80" textalign="right"/>
+               			<gridtext editable="false" resizable="false" datapath="@vl_Carcaca_R5" text="R5"  width="80" textalign="right"/>
+                  		<method event="onselect" args="row">
+                  			parent.parent.barLis.btnEditarLis.setAttribute("enabled",true);
+                  			dpDim=row.datapath;
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="0" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+            		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnEditarLis" width="70" enabled="false">
+               			Editar
+               			<handler name="onclick">
+               				var x=classroot.tela.editaDimensao;
+               				x.A.aFcab.nm_Dimensao_Sucateado.setAttribute('text',dpDim.xpathQuery("@nm_Pneu_Dimensao"));
+               				x.B.bFcab.edits.nr_Twi.setAttribute('text',dpDim.xpathQuery("@nr_Twi"));
+               				x.B.bFcab.edits.vl_Pneu_Novo.setAttribute('text',dpDim.xpathQuery("@vl_Pneu_Novo"));
+               				x.B.bFcab.edits.vl_Recapagem.setAttribute('text',dpDim.xpathQuery("@vl_Recapagem"));
+               				x.B.bFcab.edits.vl_Carcaca_R1.setAttribute('text',dpDim.xpathQuery("@vl_Carcaca_R1"));
+               				x.B.bFcab.edits.vl_Carcaca_R2.setAttribute('text',dpDim.xpathQuery("@vl_Carcaca_R2"));
+               				x.B.bFcab.edits.vl_Carcaca_R3.setAttribute('text',dpDim.xpathQuery("@vl_Carcaca_R3"));
+               				x.B.bFcab.edits.vl_Carcaca_R4.setAttribute('text',dpDim.xpathQuery("@vl_Carcaca_R4"));
+               				x.B.bFcab.edits.vl_Carcaca_R5.setAttribute('text',dpDim.xpathQuery("@vl_Carcaca_R5"));
+               				x.mostra();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

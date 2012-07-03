@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="false"> 
+	<splash persistent="false">
+		<view center="true" resource="../include/explore_loading.swf" />
+	</splash>
+	
+	<!-- Fonts -->
+	<font src="bitstream-vera-1.10/verabd.ttf" name="vera"/>
+	<font src="bitstream-vera-1.10/vera.ttf"   name="veraroman"/>
+   	<!-- Resources -->
+   	<!--  <resource name="capa" src="../images/logoTipler.png" /> -->	
+    <resource name="loadBotLft" src="../images/loadwndw_bot_lft.png"/>
+    <resource name="loadBotMid" src="../images/loadwndw_bot_mid.png"/>  
+    <resource name="loadBotRt" src="../images/loadwndw_bot_rt.png"/>
+    <resource name="loadMidLft" src="../images/loadwndw_lft_mid.png"/>
+    <resource name="loadMidRt" src="../images/loadwndw_rt_mid.png"/>
+    <resource name="loadTopLft" src="../images/loadwndw_top_lft.png"/>
+    <resource name="loadTopRt" src="../images/loadwndw_top_lrt.png"/>
+    <resource name="loadTopMid" src="../images/loadwndw_top_mid.png"/>
+   	
+	<view id="loadWindow" align="center" y="${(canvas.height/2.3)-(this.height/2)}"  
+		  width="180" height="44" pixellock="true" initstage="early" >
+        	
+		<method event="oninit" reference="canvas">
+		    this.animate("width", this.loginView.width + 7, 1000,false, {motion:"easein"} );
+		    var anm = loadWindow.animate( "height", 
+		    							  this.loginView.height+44,
+		                                  1000,
+		                                  false,
+		                                  {motion:"easein"} );
+			var delg = new LzDelegate( loginView.fadeUp, "doStart",  anm, "onstop");
+		</method>        	
+        	
+       	
+        <view name="window" width="${ parent.width }" height="${ parent.height }">
+            <simplelayout axis="y"/>
+            <view name="top" width="${ parent.width }">
+                <stableborderlayout axis="x"/>
+                <view resource="loadTopLft"/>
+                <view>
+                    <view height="30" width="${ parent.width }" bgcolor="#303030"/>
+                    <view height="1" y="30" width="${ parent.width }" bgcolor="black"/>
+                </view>
+                <view resource="loadTopRt"/>
+            </view> 
+            <view name="middle" 
+                  width="${ parent.width }" 
+                  height="${ parent.height - parent.top.height - parent.bottom.height }">
+                <stableborderlayout axis="x"/>
+                <view resource="loadMidLft" stretches="height" height="${ parent.height }"/>
+                <view bgcolor="#FF9934" height="${ parent.height }"/>
+                <view resource="loadMidRt" stretches="height" height="${ parent.height }"/>
+            </view> 
+            <view name="bottom" width="${ parent.width }">
+                <stableborderlayout axis="x"/>
+                <view resource="loadBotLft" name="left"/>
+                <view resource="loadBotMid" stretches="width" height="${ parent.left.height }" bgcolor="#C26E54"/>
+                <view resource="loadBotRt"/>
+            </view>
+        </view>
+       
+        <view name="loginView" x="4" y="31" width="300" height="140" opacity="0"
+        	  visible="${this.opacity == 0 ? false : true }" font="veraroman" fontsize="12" >
+            <animator attribute="opacity" name="fadeUp" to="1" duration="1000" start="false"/>
+            <view name="top" x="30" >
+                <view y="20" name="textArea">
+                    <view name="empresa"   >
+                        <text>CNPJ</text> 
+                        <edittext height="20" width="170" x="70" maxlength="14" pattern="[0-9]*" name="cnpj"/>
+                    </view>
+                    <view name="namePart"   >
+                        <text >Usuário</text> 
+                        <edittext height="20" width="170" x="70" maxlength="20" pattern="[A-Z0-9/\\-.,ÃÕÁÉÍÓÚÄËÏÖÜÊÇ ]*" name="usuario"/>
+                    </view>
+                    <view name="titlePart" >
+                        <text >Senha</text> 
+                        <edittext height="20" width="170" x="70" password="true" maxlength="10" pattern="[A-Z0-9/\\-ÃÕÁÉÍÓÚÄËÏÖÜÊÇ]*" name="senha"/>
+                    </view>
+                    <button x="100" >Login</button>
+                    <simplelayout axis="y" spacing="10"/>
+                </view>
+            </view>
+		</view>
+	</view>
+</canvas>

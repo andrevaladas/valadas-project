@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<menu>
+  <section name="Cadastros">
+	<topic name="Veiculos" >
+      	<item name="Cadastro" >
+      	</item>
+      	<item name="Marcas" >
+      	</item>
+      	<item name="Modelos" >
+      	</item>
+	</topic>
+	<topic name="Pneus" >
+      	<item name="Cadastro" >
+      	</item>
+      	<item name="Vidas" >
+      	</item>
+      	<item name="Ultimo recape" >
+      	</item>
+      	<item name="Venda" >
+      	</item>
+      	<item name="Marcas" 	src="../pneu/pns002C.lzx" >
+      	</item>
+      	<item name="Modelos" 	src="../pneu/pns003C.lzx" >
+      	</item>
+      	<item name="Dimensoes" >
+      	</item>
+	</topic>
+	<topic name="Fornecedores" >
+	</topic>
+	<topic name="Indexadores" >
+	</topic>
+	<topic name="Locais de estoques" >
+	</topic>
+	<topic name="Hodometros" >
+      	<item name="Trocas" >
+      	</item>
+      	<item name="Historico" >
+      	</item>
+	</topic>
+	<topic name="Motivos sucateamento" >
+	</topic>
+	<topic name="Cotacoes" >
+	</topic>
+	<topic name="Unidades" >
+	</topic>
+  </section>
+
+  <section name="Movimentacoes">
+	<topic name="Troca" >
+	</topic>
+	<topic name="Desfaz troca" >
+	</topic>
+	<topic name="Registro Conserto" >
+	</topic>
+	<topic name="Registro Resulcagem" >
+	</topic>  
+  </section>
+
+  <section name="Consultas">
+	<topic name="Pneus em estoque" >
+	</topic>
+	<topic name="Pneus em recapagem" >
+	</topic>
+	<topic name="Pneus sucateados" >
+	</topic>
+	<topic name="Pneus do veiculo" >
+	</topic>
+	<topic name="Localizar um pneu" >
+	</topic>
+	<topic name="Procurar um par" >
+	</topic>
+	<topic name="Previsao retirada" >
+	</topic>
+	<topic name="Previsao retirada veiculo" >
+	</topic>
+	<topic name="Saida com baixa km" >
+	</topic>
+	<topic name="Situacao da frota" >
+	</topic>
+	<topic name="Posicoes vazias" >
+	</topic>
+	<topic name="Geminacao nao conforme" >
+	</topic>
+	<topic name="Indice de recapabilidade" >
+	</topic>  
+	<topic name="Recapes efetuados" >
+	</topic>  
+	<topic name="Recapes recusados" >
+	</topic>  
+	<topic name="Medicoes efetuadas" >
+	</topic>  
+	<topic name="Historico de consertos" >
+	</topic>  
+	<topic name="Conserto por vida" >
+	</topic>
+	<topic name="Pneus por marca" >
+	</topic>
+	<topic name="Pneus colocados" >
+	</topic>
+	<topic name="Pneus comprados" >
+	</topic>
+	<topic name="Pneus retirados" >
+	</topic>
+	<topic name="Pneus vendidos" >
+	</topic>
+	<topic name="Historico" >
+	</topic>
+</section>
+
+  <section name="Relatorios analise" >
+	<topic name="Custo reposicao" >
+	</topic>
+	<topic name="Borracha custo do km" >
+	</topic>
+	<topic name="Recapador custo do km" >
+	</topic>
+	<topic name="Carcaca custo do km" >
+	</topic>
+	<topic name="Desenho custo do km" >
+	</topic>
+	<topic name="Sucata" >
+	</topic>
+  </section>
+
+  <section name="Graficos">
+	<topic name="Analise custo reposicao" >
+	</topic>
+	<topic name="Analise carcaca" >
+	</topic>
+	<topic name="Custo atualizado" >
+	</topic>
+	<topic name="Distribuicao por marcas" >
+	</topic>
+	<topic name="Distribuicao por dimensao" >
+	</topic>
+	<topic name="Motivo de sucateamento" >
+	</topic>
+  </section>
+
+  <section name="Parametros">
+	<topic name="Parametros" >
+	</topic>
+  </section>
+
+
+</menu>

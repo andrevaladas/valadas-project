@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+		var dp=null;
+		var lang="P";
+	</script>
+
+   	<!-- Classe da Tela -->
+	<class name="tif102" extends="view" width="${parent.width}" height="${parent.height}" >
+
+	<!-- Dataset Busca os itens da inspeção -->
+	<dataset name="dsInspecaoList" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?acao=L&amp;ed=Stif_InspecaoED&amp;rn=Stif_InspecaoRN"
+      	ondata="var resultado = classroot.dsInspecaoListdp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsInspecaoListdp" xpath="local:dsInspecaoList:/" />
+	<datapointer name="dsInspecaoListdp1" xpath="local:dsInspecaoList:/ret/item" />
+	
+	<!-- Dataset para execuções -->
+	<dataset name="dsInspecaoExecute" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+      	ondata="var resultado = classroot.dsInspecaoExecutedp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+              		if (resultado=='DOK'){
+              			dp.deleteNode();
+              			classroot.tela.form.vCampos.edits.editRightPanel.reset();
+              			classroot.tela.janelaAviso.mostra('Inspeção excluída com sucesso!');
+
+              		} else if (resultado=='EOK'){
+              			dp.deleteNode();
+              			classroot.tela.form.vCampos.edits.editRightPanel.reset();
+              			classroot.tela.janelaAviso.mostra('Inspeção encerrada com sucesso!');
+
+              		} else if (resultado=='AOK'){
+              			var editRightPanel = classroot.tela.form.vCampos.edits.editRightPanel;
+              			dp.setNodeAttribute('vl_pneu_novo', editRightPanel.vl_pneu_novo.getValue());
+	          			dp.setNodeAttribute('vl_pneu_r1', editRightPanel.vl_pneu_r1.getValue());
+	          			dp.setNodeAttribute('vl_pneu_r2', editRightPanel.vl_pneu_r2.getValue());
+	          			dp.setNodeAttribute('vl_pneu_r3', editRightPanel.vl_pneu_r3.getValue());
+	          			dp.setNodeAttribute('vl_pneu_r4', editRightPanel.vl_pneu_r4.getValue());
+              			classroot.tela.janelaAviso.mostra('Valores alterados com sucesso!');
+
+              		} else {
+              			classroot.tela.janelaAviso.mostra(resultado);
+              		}	
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsInspecaoExecutedp" xpath="local:dsInspecaoExecute:/" />
+	<datapointer name="dsInspecaoExecutedp1" xpath="local:dsInspecaoExecute:/ret/item" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Inspeções em Andamento" widthLine="${parent.width-30}" corFrente="#FF9900" oninit="this.setAttribute('text', ('E'==lang ? 'Inspecciónes en Marcha   ' : 'Inspeções em Andamento') );"/>
+
+	<!-- View da tela -->
+	<view name="tela" y="30" width="${parent.width}" height="${parent.height-30}">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg"> 
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de exclusão -->
+		<modaldialog name="alertaExcluir" title="A v i s o !" width = "300" >
+			<simplelayout spacing="5" />
+			<text  oninit="this.setAttribute('text', ('E'==lang ? 'Confirme exclusión de la inspeción?' : 'Confirma a exclusão da inspeção?') ); this.setAttribute('width',250);"/>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" oninit="this.setAttribute('text', ('E'==lang ? 'No' : 'Não') );" isdefault="true" />
+            	<button oninit="this.setAttribute('text', ('E'==lang ? 'Sí' : 'Sim') );" >
+               		<method event="onclick">
+	  					classroot.dsInspecaoExecute.setAttribute("src","../../ControlerServlet?");
+	  					classroot.dsInspecaoExecute.setQueryString({
+									 tela : "tif102",
+									   ed : "Stif_InspecaoED",
+		  							   rn : "Stif_InspecaoRN",
+					   			  	 acao : "D",
+			  	             oid_Inspecao : dp.getNodeAttribute("oid_Inspecao")
+	  					});	
+						classroot.dsInspecaoExecute.doRequest();
+						classroot.carregando.startAni();
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+      	
+      	<!-- Janela de encerramento -->
+		<modaldialog name="alertaEncerrar" title="A v i s o !" width = "300" >
+			<simplelayout spacing="5" />
+			<text text="Deseja encerrar a Inspeção?" width="250"/>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" text="Não" isdefault="true" />
+            	<button text="Sim" >
+               		<method event="onclick">
+	  					classroot.dsInspecaoExecute.setAttribute("src","../../ControlerServlet?");
+	  					classroot.dsInspecaoExecute.setQueryString({
+									 tela : "tif102",
+									   ed : "Stif_InspecaoED",
+		  							   rn : "Stif_InspecaoRN",
+					   			  	 acao : "E",
+			  	             oid_Inspecao : dp.getNodeAttribute("oid_Inspecao")
+	  					});
+						classroot.dsInspecaoExecute.doRequest();
+						classroot.carregando.startAni();
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+        <view name="form" x="10">
+        	<simplelayout spacing="1" />
+        	<view name="vCampos" width="70" height="35" align="left" layout="axis:x; spacing:5" >
+        		<view y="5" align="right" width="70" layout="axis:y; spacing:3">
+	        		<text text="Cliente:" align="right" height="21" />
+        		</view>
+        		<cpoEditsXY y="5" name="edits">
+        			<lookup y="0" height="21" 
+						name="oid_Cliente" 
+						cdProperty="nr_Cnpj" 
+						dsProperty="nm_Razao_Social" 
+						widthCdProperty="110" 
+						widthDsProperty="280"
+						callService="Empresa"
+						exactActionService="CU" >
+						<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="U"/>
+
+						<method name="ondataLookup">
+							classroot.tela.form.vCampos.edits.editRightPanel.reset();
+
+							classroot.dsInspecaoList.setAttribute("src","../../ControlerServlet?");
+		  					classroot.dsInspecaoList.setQueryString({
+										 tela : "tif102",
+										   ed : "Stif_InspecaoED",
+			  							   rn : "Stif_InspecaoRN",
+						   			  	 acao : "L",
+				  	              oid_Cliente : parent.oid_Cliente.getValue()
+		  					});	
+							classroot.dsInspecaoList.doRequest();
+							classroot.carregando.startAni();
+						</method>
+					</lookup>
+
+					<!-- rightPanel -->
+					<view name="rightPanel" y="77" x="310" layout="axis:y; spacing:3">
+						<text height="21" align="right">Novo:</text>
+						<text height="21" align="right">R1:</text>
+						<text height="21" align="right">R2:</text>
+						<text height="21" align="right">R3:</text>
+						<text height="21" align="right">R4:</text>
+					</view>
+					<view x="250" y="30" width="150" name="editRightPanel" >
+						<frame3d x="5" y="7" name="frame" width="${parent.width+5}" height="195" caption="  Cotação dos pneus"/>
+						<text x="25" y="20">Vida</text>
+						<text x="110" y="20">Valor</text>
+						<edittext x="65" y="44" name="vl_pneu_novo" maxlength="6" width="80" height="21" enabled="false"
+							oninit="parent.parent.pattern(this,'dec',2)" onblur="parent.parent.format(this,'dec',2);" />
+						<edittext x="65" y="68" name="vl_pneu_r1" maxlength="6" width="80" height="21" enabled="false"
+							oninit="parent.parent.pattern(this,'dec',2)" onblur="parent.parent.format(this,'dec',2);" />
+						<edittext x="65" y="92" name="vl_pneu_r2" maxlength="6" width="80" height="21" enabled="false"
+							oninit="parent.parent.pattern(this,'dec',2)" onblur="parent.parent.format(this,'dec',2);" />
+						<edittext x="65" y="116" name="vl_pneu_r3" maxlength="6" width="80" height="21" enabled="false"
+							oninit="parent.parent.pattern(this,'dec',2)" onblur="parent.parent.format(this,'dec',2);" />
+						<edittext x="65" y="140" name="vl_pneu_r4" maxlength="6" width="80" height="21" enabled="false"
+							oninit="parent.parent.pattern(this,'dec',2)" onblur="parent.parent.format(this,'dec',2);" />
+
+						<button x="30" y="168" name="btnEditar" oninit="this.setAttribute('text', ('E'==lang ? 'Editar valores' : 'Editar valores') );" enabled="false">
+			          		<handler name="onclick">
+			          			classroot.dsInspecaoExecute.setAttribute("src","../../ControlerServlet?");
+			  					classroot.dsInspecaoExecute.setQueryString({
+											 tela : "tif102",
+											   ed : "Stif_InspecaoED",
+				  							   rn : "Stif_InspecaoRN",
+							   			  	 acao : "A",
+					  	             oid_Inspecao : dp.getNodeAttribute("oid_Inspecao"),
+					  	             vl_pneu_novo : parent.vl_pneu_novo.getValue(),
+					  	               vl_pneu_r1 : parent.vl_pneu_r1.getValue(),
+					  	               vl_pneu_r2 : parent.vl_pneu_r2.getValue(),
+					  	               vl_pneu_r3 : parent.vl_pneu_r3.getValue(),
+					  	               vl_pneu_r4 : parent.vl_pneu_r4.getValue()
+			  					});
+
+								classroot.dsInspecaoExecute.doRequest();
+								classroot.carregando.startAni();
+			              	</handler>
+			       		</button>
+
+			       		<method name="reset">
+			       			var editRightPanel = parent.editRightPanel;
+		          			editRightPanel.vl_pneu_novo.setAttribute('enabled',false);
+		          			editRightPanel.vl_pneu_r1.setAttribute('enabled',false);
+		          			editRightPanel.vl_pneu_r2.setAttribute('enabled',false);
+		          			editRightPanel.vl_pneu_r3.setAttribute('enabled',false);
+		          			editRightPanel.vl_pneu_r4.setAttribute('enabled',false);
+		          			editRightPanel.btnEditar.setAttribute('enabled',false);
+
+		          			editRightPanel.vl_pneu_novo.clearText();
+		          			editRightPanel.vl_pneu_r1.clearText();
+		          			editRightPanel.vl_pneu_r2.clearText();
+		          			editRightPanel.vl_pneu_r3.clearText();
+		          			editRightPanel.vl_pneu_r4.clearText();
+
+		          			classroot.tela.form.vButtons.btnEncerrar.setAttribute('enabled',false);
+		          			classroot.tela.form.vButtons.btnExcluir.setAttribute('enabled',false);
+	          				classroot.tela.form.vButtons.btnIncluirDados.setAttribute('enabled',false);
+			       		</method>
+					</view>
+				</cpoEditsXY>
+        	</view>
+
+			<view name="vGrid" x="0" height="${parent.parent.height-105}" width="${parent.parent.width-190}" >
+	       		<grid name="lst" datapath="local:classroot.dsInspecaoList:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+					height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+	       			<gridtext sortable="false" editable="false" datapath="@oid_Inspecao" width="1" text="oid_Inspecao" />
+	       			<gridtext editable="false" resizable="false" datapath="@dt_Inspecao" text="Data da Inspeção" width="110" textalign="center"/>
+	       			<gridtext editable="false" resizable="false" datapath="@nr_Veiculos_Text" text="Quantidade de Veículos" width="211" textalign="center"/>
+	          		<method event="onselect" args="row">
+	          			dp=row.datapath;
+	          			parent.parent.vButtons.btnEncerrar.setAttribute('enabled',true);
+	          			parent.parent.vButtons.btnExcluir.setAttribute('enabled',true);
+	          			parent.parent.vButtons.btnIncluirDados.setAttribute('enabled',true);
+
+	          			var editRightPanel = parent.parent.vCampos.edits.editRightPanel;
+	          			editRightPanel.vl_pneu_novo.setAttribute('enabled',true);
+	          			editRightPanel.vl_pneu_r1.setAttribute('enabled',true);
+	          			editRightPanel.vl_pneu_r2.setAttribute('enabled',true);
+	          			editRightPanel.vl_pneu_r3.setAttribute('enabled',true);
+	          			editRightPanel.vl_pneu_r4.setAttribute('enabled',true);
+	          			editRightPanel.btnEditar.setAttribute('enabled',true);
+
+	          			editRightPanel.vl_pneu_novo.setAttribute("text",dp.getNodeAttribute("vl_pneu_novo"));
+	          			editRightPanel.vl_pneu_r1.setAttribute("text",dp.getNodeAttribute("vl_pneu_r1"));
+	          			editRightPanel.vl_pneu_r2.setAttribute("text",dp.getNodeAttribute("vl_pneu_r2"));
+	          			editRightPanel.vl_pneu_r3.setAttribute("text",dp.getNodeAttribute("vl_pneu_r3"));
+	          			editRightPanel.vl_pneu_r4.setAttribute("text",dp.getNodeAttribute("vl_pneu_r4"));
+	         		</method>
+	       		</grid>
+			</view>
+
+	     	<view name="vButtons" yoffset="5" layout="axis:x; spacing:2">
+	       		<button name="btnFechar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+	          		<handler name="onclick" >
+	             		parent.parent.parent.parent.parent.close();
+	          		</handler>
+	       		</button>
+	       		<button name="btnIncluirDados" width="100" oninit="this.setAttribute('text', ('E'==lang ? 'Incluir datos' : 'Incluir dados') );" enabled="false">
+	       			<handler name="onmousedown">
+	       				classroot.carregando.startAni();
+	       			</handler>
+	          		<handler name="onclick">
+	          			var wTif103 = canvas.wTif103;
+	          			var tif103Class = new tif103(wTif103, {
+	          				name:'tif103'
+	          			});
+	          			tif103Class.selfPopulate(dp.getNodeAttribute("oid_Inspecao"));
+	          			tif103Class.janela.setAttribute('xoffset', 10);
+	          			tif103Class.janela.setAttribute('yoffset', 10);
+	          			wTif103.open();
+
+	          			classroot.carregando.stopAni();
+	              	</handler>
+	       		</button>
+	       		<button name="btnEncerrar" width="70" text="Encerrar" enabled="false">
+	          		<handler name="onclick">
+	          			parent.parent.parent.alertaEncerrar.mostra();
+	              	</handler>
+	       		</button>
+	       		<button name="btnExcluir" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Excluir' : 'Excluir') );" enabled="false">
+	          		<handler name="onclick">
+	          			parent.parent.parent.alertaExcluir.mostra();
+	              	</handler>
+	       		</button>
+	    	</view>
+		</view>
+ 	</view>
+    <!-- Reloginho -->
+    <loadingAni name="carregando" />
+
+	</class>   
+</library>

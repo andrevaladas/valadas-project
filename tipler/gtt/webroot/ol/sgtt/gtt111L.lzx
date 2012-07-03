@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+  	
+   	<!-- Includes -->
+	
+   	<!-- Classe da Tela -->
+	<class name="gtt111" extends="view" >
+		
+	<simplelayout spacing="1" />
+	<!-- Título da tela -->
+	<titulo name="tit101" x="5" text="Detalhes da Reforma" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+	
+	<!-- View da tela -->
+	<view name="tela" >
+
+		<method name="logon">
+			LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+		</method>
+
+		<simplelayout spacing="1" />
+		
+    	<view name="corSel"  x="5" width="${parent.parent.width-10}" height="280" >
+       		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view name="labels" width="120" align="right" layout="axis:nome">
+					<text height="21" align="right" y="10" >Concessionária:</text>
+					<text height="21" align="right" y="34" >Cliente:</text>
+					<text height="21" align="right" y="58">Nota Fiscal:</text>
+					<text height="21" align="right" y="82">Fabricante pneu:</text>
+					<text height="21" align="right" y="106">Modelo Pneu:</text>
+					<text height="21" align="right" y="130">Tipo pneu:</text>
+					<text height="21" align="right" y="154">Nº série/fogo:</text>
+					<text height="21" align="right" y="178">DOT:</text>
+					<text height="21" align="right" y="202">Reforma:</text>
+					<text height="21" align="right" y="226">Banda utilizada:</text>
+					<text height="21" align="right" name="lbl_Valor" y="250">Valor do serviço:</text>
+				</view>
+				<!-- Campos -->
+				<view name="campos" layout="axis:none">
+					<text height="21" x="1" y="10" fgcolor="#228B22" name="nm_Razao_Social_Concessionaria" width="300" />
+					<text height="21" x="1" y="34" fgcolor="#228B22" name="nr_Cnpj" width="110" />
+					<text height="21" x="110" y="34" text="-" />
+					<text height="21" x="120" y="34" fgcolor="#228B22" name="nm_Razao_Social_Cliente" width="300" /> 
+					<text height="21" x="1" y="58" fgcolor="#228B22" name="nr_Nota_Fiscal" width="80" />
+					<text height="21" x="1" y="82" fgcolor="#228B22" name="nm_Fabricante_Pneu" width="200" />	
+					<text height="21" x="1" y="106" fgcolor="#228B22" name="nm_Modelo_Pneu" width="200" />
+					<text height="21" x="1" y="130" fgcolor="#228B22" name="dm_Tipo_Pneu" width="100"  />
+					<text height="21" x="1" y="154" fgcolor="#228B22" name="nr_Fogo" width="200"  />
+					<text height="21" x="1" y="178" fgcolor="#228B22" name="nr_Dot" width="40"  />
+					<text height="21" x="75" y="178" text="Índice carga:"/>
+					<text height="21" x="161" y="178" fgcolor="#228B22" name="nr_Indice_Carga" width="42" />
+					<text height="21" x="1" y="202" fgcolor="#228B22" name="nr_Vida" width="200" />
+					<text height="21" x="1" y="226" fgcolor="#228B22" name="nm_Banda" width="300" />
+					<text height="21" x="1" y="250" fgcolor="#228B22" name="vl_Servico" width="90" />
+				</view>	
+				
+			</view>
+    	</view>
+    	<view name="barSel" x="10" layout="axis:x; spacing:2">
+       		<button name="btnFecharSel" width="70">
+          		Fechar
+          		<handler name="onclick" >
+             		parent.parent.parent.parent.close()
+          		</handler>
+       		</button>
+      	</view>
+	</view>
+
+	</class>
+</library>

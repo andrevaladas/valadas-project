@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="false" >
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />	
+
+	<!-- Desabilita o menu de contexto -->
+    <script><![CDATA[ var cntxtmenu = new LzContextMenu(); ]]> </script>
+    <handler name="oninit" > canvas.setDefaultContextMenu(cntxtmenu); </handler>
+   	<!-- Splash -->
+   	<splash persistent="false">
+      	<view center="true" resource="../include/explore_loading.swf" />
+   	</splash>
+	<script>
+		var flag=false;
+		var oidBanda=0;
+		var oidBanda2=0;
+	</script>
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+      	ondata="var resultado = parent.caddp1.xpathQuery('@oknok'); 
+              	parent.ban101w.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = parent.caddp.xpathQuery('*/item/last()');
+	              	if ( regs==0 ) {
+	      				parent.ban101w.tela.janelaAviso.mostra('Nenhum comparativo encontrado para esta banda!'); 	
+	              	}	
+	       		}"
+      	onerror="parent.ban101w.tela.carregando.stopAni();"
+      	ontimeout="parent.ban101w.tela.carregando.stopAni();
+  			   	   parent.ban101w.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!--Data set para atualização dos comparativos -->
+   	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.ban101w.tela.carregando.stopAni();
+      			var resultado = parent.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'IOK') {
+      				parent.ban101w.tela.bandas.bandaRel.edits.oid_Banda.resetLookupValues();
+               		parent.ban101w.tela.janelaAviso.mostra('Registro incluído com sucesso!');
+               		parent.buscaRelacionados(); 
+               		parent.ban101w.tela.bandas.botoes.btnIncluir.setAttribute('enabled',false);
+    			} else
+      			if (resultado == 'DOK') {
+      			    parent.ban101w.tela.bandas.bandaRel.edits.oid_Banda.resetLookupValues();
+               		parent.ban101w.tela.janelaAviso.mostra('Registro excluído com sucesso!');
+               		parent.buscaRelacionados(); 
+               		parent.ban101w.tela.bandas.botoes.btnExcluir.setAttribute('enabled',false);
+               		flag=false;
+    			} else {
+      				parent.ban101w.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.ban101w.tela.carregando.stopAni();"
+      	ontimeout="parentban101w.tela.carregando.stopAni();
+  			   	   parent.ban101w.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/stcb.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+   	<method name="buscaRelacionados" >
+		ban101w.tela.carregando.startAni();
+		cad.setAttribute("src","../../ControlerServlet?");
+		cad.setQueryString({tela : "ban101",
+		ed : "Banda_RelacionamentoED",
+		rn : "Banda_RelacionamentoRN",
+		acao : "L",
+		oid_Banda_1 : oidBanda	
+		});
+		cad.doRequest();
+   	</method>
+   	<window name="ban101w" title="ban101" bgcolor="#FAFAFA" height="548" width="663"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+  		<!-- Título da tela -->
+		<titulo x="5" text="Montagem de Comparativos de Bandas" widthLine="633" corFrente="#FF9900" />
+		<view name="tela" y="25" x="5" layout="axis:x; spacing:3">
+	    	<!-- Janelas de avisos e de erros -->
+			<!-- Janela de aviso -->
+			<alert name="janelaAviso" title="A v i s o !" width="300">
+				Aviso Padrão!
+				<method name="mostra" args="msg">
+					this.setAttribute('text', msg); 
+					this.open();
+				</method>
+	 		</alert>      
+			<!-- Janela de alerta de erro de validação -->
+			<alert name="janelaErro" title="E r r o !" width="300">
+				Erro Padrão!
+				<method name="mostra" args="erro">
+					this.setAttribute('text', erro); 
+					this.open();
+				</method>
+			</alert>
+			<!-- Janela de aviso de exclusão - Cadastro -->
+			<modaldialog name="alertaExclusao" title="A v i s o !" >
+				<simplelayout spacing="5" />
+				<text>Confirma a exclusão do registro?</text>
+				<view align="right" layout="axis:x; spacing:20">
+					<button onclick="parent.parent.close()" isdefault="true">Não</button>
+	            	<button>
+	               		Sim
+	               		<method event="onclick">
+	               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+	               			parent.parent.close();
+	               		</method>
+	            	</button>
+	         	</view>
+	         	<method name="mostra" args="msg">
+	         		this.open();
+	         	</method>
+	      	</modaldialog>
+			<!-- lookups das bandas -->			
+			<view name="bandas" layout="axis:y; spacing:3" >
+				<text height="19" text="Relacionar esta:" />
+				<view name="banda" width="430" height="200" bgcolor="#EeEeEe" >
+					<cpoEditsXY name="edits" layout="axis:none">
+						<text y="5" x="10" height="21">Banda:</text>
+						<lookup y="5" x="60" name="oid_Banda" cdProperty="cd_Banda" dsProperty="nm_Banda"
+							widthCdProperty="70" widthDsProperty="250" callService="Banda" oninit="parent.pattern(this,'txt')" >
+							<propertyMapping modelProperty="dm_Escapa_Substituida" criteriaProperty="S"/>
+							<text y="32" x="0" height="22" text="Fabricante:" />
+							<relatedText y ="32" x="83" name="nm_Fabricante" width="200" height="22" fgcolor="green"/>
+							<text y="54" x="0" height="23" text="Tipo de Pneu:" />
+							<relatedText y ="54" x="83" name="nm_Tipo_Pneu" width="200" height="22" fgcolor="green"/>
+							<text y="76" x="0" height="23" text="Aplicação:" />
+							<relatedText y ="76" x="83" name="nm_Aplicacao" width="200" height="22" fgcolor="green"/>
+							<text y="98" x="0" height="23" text="Eixo:" />
+							<relatedText y ="98" x="83" name="nm_Eixo" width="200" height="22" fgcolor="green"/>
+							<text y="120" x="0" height="23" text="Descrição:" />
+							<relatedText y ="120" x="83" name="tx_Descricao" width="280" multiline="true" height="70" fgcolor="green" />
+							<relatedText y="154" x="-30"   name="nm_Fora_Uso"  fgcolor="red" />
+							<method name="ondataLookup">
+								oidBanda = this.getText();
+								canvas.buscaRelacionados();
+								parent.parent.parent.bandaRel.edits.oid_Banda.resetLookupValues();
+			 				</method>
+						</lookup>
+							
+					</cpoEditsXY>
+				</view>
+				<text height="19" text="Com esta:" />
+				<view name="bandaRel" width="430" height="200" bgcolor="#EeEeEe" >
+					<cpoEditsXY name="edits" layout="axis:none">
+						<text y="5" x="10" height="21">Banda:</text>
+						<lookup y="5" x="60" name="oid_Banda" cdProperty="cd_Banda" dsProperty="nm_Banda"
+							widthCdProperty="70" widthDsProperty="250" callService="Banda" oninit="parent.pattern(this,'txt')" >
+							<propertyMapping modelProperty="dm_Escapa_Substituida" criteriaProperty="S"/>
+							<text y="32" x="0" height="22" text="Fabricante:" />
+							<relatedText y ="32" x="83" name="nm_Fabricante" width="200" height="22" fgcolor="green"/>
+							<text y="54" x="0" height="23" text="Tipo de Pneu:" />
+							<relatedText y ="54" x="83" name="nm_Tipo_Pneu" width="200" height="22" fgcolor="green"/>
+							<text y="76" x="0" height="23" text="Aplicação:" />
+							<relatedText y ="76" x="83" name="nm_Aplicacao" width="200" height="22" fgcolor="green"/>
+							<text y="98" x="0" height="23" text="Eixo:" />
+							<relatedText y ="98" x="83" name="nm_Eixo" width="200" height="22" fgcolor="green"/>
+							<text y="120" x="0" height="23" text="Descrição:" />
+							<relatedText y ="120" x="83" name="tx_Descricao" width="280" multiline="true" height="70" fgcolor="green" />
+							<relatedText y="154" x="-30" name="nm_Fora_Uso"  fgcolor="red" />
+							<method name="ondataLookup">
+								parent.parent.parent.testaLookups();
+			 				</method>
+						</lookup>	
+					</cpoEditsXY>
+				</view>	
+				<view name="botoes" layout="axis:x; spacing:2" >
+					<button name="btnIncluir" enabled="false">Incluir
+						<handler name="onclick">
+							if ( parent.parent.banda.edits.oid_Banda.getText() == parent.parent.bandaRel.edits.oid_Banda.getText() ) {
+								parent.parent.parent.janelaErro.mostra("Impossível incluir bandas iguais!");
+							} else {
+								parent.parent.parent.carregando.startAni();
+								atu.setAttribute("src","../../ControlerServlet?");
+								atu.setQueryString({tela : "ban101",
+								ed : "Banda_RelacionamentoED",
+								rn : "Banda_RelacionamentoRN",
+								acao : "I",
+								oid_Banda_1 : parent.parent.banda.edits.oid_Banda.getText() ,
+								oid_Banda_2 : parent.parent.bandaRel.edits.oid_Banda.getText()	
+								});
+		     					atu.doRequest();
+							}
+						</handler>
+					</button>
+					<button name="btnExcluir" enabled="false">Excluir
+						<handler name="onclick">
+							parent.parent.parent.carregando.startAni();
+							atu.setAttribute("src","../../ControlerServlet?");
+							atu.setQueryString({tela : "ban101",
+							ed : "Banda_RelacionamentoED",
+							rn : "Banda_RelacionamentoRN",
+							acao : "D",
+							oid_Banda_1 : oidBanda ,
+							oid_Banda_2 : oidBanda2	
+							});
+	     					atu.doRequest();
+						</handler>
+					</button>
+					<button name="btnFechar" >Fechar
+						<handler name="onclick">
+							parent.parent.parent.parent.close();
+						</handler>
+					</button>
+				</view>
+				<method name="testaLookups">
+					<![CDATA[
+					if ( banda.edits.oid_Banda.getText()!="" && bandaRel.edits.oid_Banda.getText()!="" && flag==false) {
+						botoes.btnIncluir.setAttribute('enabled',true);
+						botoes.btnExcluir.setAttribute('enabled',false);
+					} else {
+						botoes.btnIncluir.setAttribute('enabled',false);
+					}
+					flag=false;
+					]]>
+				</method>
+			</view>
+			<view name="relacionamento"  layout="axis:y; spacing:3" >
+				<text height="19" text="Comparativos existentes:" />
+				<view name="listaRel"  width="200" height="426" bgcolor="#EeEeEe" >
+					<grid name="lst" datapath="cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height}" width="${parent.width}" multiselect="false" rowheight="16">
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Banda_2" text="Banda" width="90"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Fabricante_Banda_2" text="Marca" width="111"/>
+                  		<method event="onselect" args="row">
+                  			var dpMov=row.datapath;
+                  			oidBanda2=row.datapath.xpathQuery("@oid_Banda_2");
+                  			parent.parent.parent.bandas.bandaRel.edits.oid_Banda.setValue(oidBanda2);
+                  			parent.parent.parent.bandas.botoes.btnExcluir.setAttribute('enabled',true);
+                  			parent.parent.parent.bandas.botoes.btnIncluir.setAttribute('enabled',false);
+                  			flag=true;
+                 		</method>
+               		</grid>
+				</view>
+			</view>
+			<loadingAni name="carregando"  />	
+		</view>
+      				
+   	</window>
+</canvas>
+

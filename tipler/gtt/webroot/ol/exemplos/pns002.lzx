@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#FAFAFA" debug="true">
+   <!-- Includes -->
+   <include href="../include/botoesCadastro.lzx" />
+   <include href="../include/objetosDeTela.lzx" />
+
+   <!-- Splash -->
+   <splash persistent="true">
+      <view center="true" resource="../include/explore_loading.swf" />
+   </splash>
+
+   <!-- Datasets  -->
+   <dataset name="cad" src="../jsp/jspVazio.jsp" request="true " type="http"
+      ondata="var regs = caddp.xpathQuery('cad/item/last()'); barCad.atuTxtDataControl(regs == null ? '0' : regs ); carregando.stopAni();"
+      onerror="carregando.stopAni();" />
+
+   <!-- Datapointers -->
+   <datapointer name="caddp" xpath="cad:/" />
+
+   <!-- Clases locais -->
+   <!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+   <class name="campos" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+      <edittext name="tela" visible="false" text="pns002" />
+      <edittext name="acao" visible="false" text="X" />
+      <edittext name="oidMarca" visible="false" datapath="@oidMarca" />
+      <edittext name="descricao" visible="true" maxlength="80" width="480" height="21" datapath="@descricao"></edittext>
+      <!-- Validação -->
+      <method name="valida" >
+         var retorno = true; 
+         if ( descricao.getText() == '' ) { 
+            janelaErro.mostra('Preencha o campo descrição!');
+            retorno = false; 
+         } 
+         return retorno;
+      </method>
+   </class>
+
+   <simplelayout spacing="1" />
+
+   <!-- Título da tela -->
+   <titulo x="5" text="Cadastro de Marcas de Pneus" tela="pns002" widthLine="695" corFrente="#FF9900" />
+
+   <!-- Tabs da tela -->
+   <view>
+      <view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      <tabs id="cadTab" x="5" y="5" height="400" width="700">
+         <!-- Seleção -->
+         <tabpane id="tabSel">
+            Seleção
+            <simplelayout spacing="1" />
+            <view id="corSel" width="695" height="325">
+               <view width="110" align="left" layout="axis:x; spacing:5">
+                  <!-- Labels -->
+                  <view width="110" align="right" layout="axis:y; spacing:3">
+                     <text height="21" align="right">Descrição</text>
+                  </view>
+                  <!-- Campos -->
+                  <view align="left" layout="axis:y; spacing:3">
+                     <edittext id="descricao" maxlength="60" width="480" height="21"></edittext>
+                  </view>
+               </view>
+            </view>
+            <view id="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               <button id="btnFecharSel" width="70">Fechar</button>
+               <button id="btnSelectSel" width="70">
+                  Selecionar
+                  <method event="onclick">
+                     carregando.startAni(); 
+                     canvas.cad.setSrc("../jsp/jsp.jsp" ) ; 
+                     canvas.cad.doRequest(); 
+                     tabCad.setAttribute('selected',true);
+                  </method>
+               </button>
+            </view>
+         </tabpane>
+         <!-- Cadastro -->
+         <tabpane id="tabCad">
+            Cadastro
+            <simplelayout spacing="1" />
+            <view id="corCad" width="695" height="325">
+               <view width="110" align="left" layout="axis:x; spacing:5">
+                  <!-- Labels -->
+                  <view width="110" align="right" layout="axis:y; spacing:3">
+                     <text height="21" align="right">Descrição</text>
+                  </view>
+                  <!-- View para update -->
+                  <campos id="updCad" visible="true" datapath="cad:/cad/item[1]" />
+                  <!-- View campos para inclusão -->
+                  <campos id="newCad" visible="false" datapath="new:/cad/item" />
+               </view>
+            </view>
+            <botoesCad id="barCad" oninit="barCad.atuTxtDataControl(0);" />
+         </tabpane>
+         <!-- Lista -->
+         <tabpane id="tabLis">
+            Lista
+            <simplelayout spacing="1" />
+            <view id="corLis" width="695" height="325">
+               <simplelayout spacing="2" />
+               <grid id="lst" datapath="cad:/" contentdatapath="cad/item" height="${parent.height-12}" width="${parent.width-20}" bgcolor0="#FEEEAA"
+                  multiselect="false" rowheight="16">
+                  <gridtext editable="false" width="480" datapath="@descricao" text="Descrição" />
+                  <method event="onselect" args="row">updCad.datapath.setPointer(row.datapath.p); tabCad.setAttribute('selected',true);</method>
+               </grid>
+            </view>
+            <view id="barLis" x="1" y="300" layout="axis:x; spacing:2">
+               <button id="btnFecharLis" width="70">Fechar</button>
+               <button id="btnRelatoLis" width="70">Relatório</button>
+            </view>
+         </tabpane>
+      </tabs>
+      <loadingAni id="carregando" />
+   </view>
+</canvas>
+

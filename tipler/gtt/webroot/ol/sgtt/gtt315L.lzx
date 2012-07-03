@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<!-- Variáveis globais -->
+	<script>
+		var dpMov;
+		var escapaSegundoAviso=false;
+  	</script>
+  	
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+		
+   	<!-- Classe da Tela -->
+	<class name="gtt315" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok');
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+	              	var regs = classroot.caddp.xpathQuery('*/item/last()');
+	              	var x = parent.tela.tab.tabLis.barLis;
+              		x.btnEditar.setAttribute('enabled',false);
+	      			if ( !regs==0 ) {
+	              		x.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabLis.setAttribute('selected',true);
+	      			} else {
+	      				x.btnRelatoLis.setAttribute('enabled',false);          		
+						if (escapaSegundoAviso==false)
+	          				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!');
+	          			escapaSegundoAviso=false;	
+	      			}
+      			}
+      			"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />		
+	<datapointer name="caddp2" xpath="local:cad:/cad/media/item" />
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+    <!-- Desbloqueio -->
+	<dataset name="atuDesblo" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="var resultado = atuDesblodp.xpathQuery('@oknok');
+				parent.tela.carregando.stopAni();
+				if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+					if (resultado='AOK') {
+						parent.tela.gtt315Aw.close();
+						parent.tela.janelaAviso.mostra('Desbloqueio efetuado com sucesso!');
+						escapaSegundoAviso=true;
+						parent.tela.carregando.startAni();
+						parent.tela.tab.tabSel.corSel.formSel.filtra.submit();
+					} else
+						parent.tela.janelaAviso.mostra(resultado);
+				}	
+				"
+				
+		onerror="parent.tela.carregando.stopAni();"
+		ontimeout="parent.tela.carregando.stopAni(); parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" >
+	</dataset>
+	<datapointer name="atuDesblodp" xpath="local:atuDesblo:/ret/item" />
+    
+    <method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<simplelayout spacing="1" />
+	
+	<!-- Título da tela -->
+	<titulo x="5" text="Créditos Bloqueados" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela" height="490" width="852">
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+       	<tabs name="tab" x="5" y="5"  height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel">
+	               		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:1">
+							<!-- Labels -->
+							<view name="label" width="130" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="CNPJ Concessionária:" />							
+								<text height="21" align="right" text="Período de:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" x="40" align="left" layout="axis:y; spacing:3">
+								<edittext name="tela" visible="false" text="gtt315" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="Movimento_Conta_CorrenteED" />
+								<edittext name="rn" visible="false" text="Movimento_Conta_CorrenteRN" />
+								<edittext name="dm_Bloqueado" visible="false" text="S" />
+								<lookup y="216" name="oid_Concessionaria" idProperty="oid_Empresa" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+									widthCdProperty="110" widthDsProperty="400"	callService="Empresa" exactActionService="C" visible="true">
+									<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="C"/>
+								</lookup>		
+								<view name="datas" layout="axis:x; spacing:3">
+									<edittext align="left" name="dt_Movimento_Conta_Corrente_Inicial" maxlength="8" width="80" height="21"
+										oninit="parent.parent.pattern(this,'dat')" onblur="parent.parent.format(this,'dat',4);" onfocus="parent.parent.deformat(this,'dat');" />	
+									<text height="21" width="27" text="Até:" visible="true"/>
+									<edittext align="left" name="dt_Movimento_Conta_Corrente_Final" maxlength="8" width="80" height="21"
+										oninit="parent.parent.pattern(this,'dat')" onblur="parent.parent.format(this,'dat',4);" onfocus="parent.parent.deformat(this,'dat');" />	
+								</view>
+
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="360" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="true">
+                  		Selecionar
+                  		<handler name="onclick">       
+                  			if (parent.valida()) parent.click();
+	                  	</handler>
+               		</button>
+               		<method name="click">
+                 			parent.parent.parent.carregando.startAni(); 
+                 			local:classroot.cad.setSrc("../../ControlerServlet"); 
+                 			parent.corSel.formSel.filtra.submit();
+               		</method>
+               		<method name="valida">
+               			var retorno = true;
+               			var x = parent.corSel.formSel.vCampos.edits;
+              			if ( x.requerido(x.oid_Concessionaria.getText())) { 
+               				parent.parent.parent.janelaErro.mostra('Escolha uma concessionária !');
+               				retorno = false;
+               			} else  
+               			if (!x.validaData(x.datas.dt_Movimento_Conta_Corrente_Inicial)) {
+               				parent.parent.parent.janelaErro.mostra('Preencha o campo Período inicial !');
+               				retorno = false;
+               			} else
+               			if (!x.validaData(x.datas.dt_Movimento_Conta_Corrente_Final)) {
+               				parent.parent.parent.janelaErro.mostra('Preencha o campo Período final !');
+               				retorno = false;
+               			} 
+               			return retorno
+					</method>
+               		
+            	</view>
+     		</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout axis="y" spacing="3" />
+
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-8}" width="${parent.width-10}" multiselect="false" rowheight="16">
+	                	<gridtext editable="false" datapath="@oid_Movimento_Conta_Corrente" text="oid" 				width="0" 	visible="false" />
+	                	<gridtext editable="false" datapath="@dt_Movimento_Conta_Corrente" 	text="Data" 			width="75"  resizable="false"/>
+	                	<gridtext editable="false" datapath="@tx_Bloqueio" 					text="Motivo" 			width="300" resizable="true" />
+	                	<gridtext editable="false" datapath="@tx_Descricao" 				text="Descrição"		width="230" resizable="true"/>
+	                	<gridtext editable="false" datapath="@vl_Movimento_Conta_Corrente" 	text="Valor"			width="75"  resizable="false" textalign="right"/>
+                  		<method event="onselect" args="row">
+	               			dpMov=row.datapath;
+                  			var wOid=row.datapath.xpathQuery("@oid_Movimento_Conta_Corrente");
+                 			parent.parent.barLis.btnEditar.setAttribute('enabled',wOid>0?true:false);
+             			</method>
+               		</grid>               		          
+            	</view>
+            	<view name="barLis" x="1" y="360" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+   					<button name="btnRelatoLis" enabled="false" width="70">Relatório
+                  		<handler name="onclick">
+                  			parent.parent.parent.parent.carregando.startAni();
+                  			var x = parent.parent.parent.tabSel.corSel.formSel.vCampos.edits;
+                  			var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=gtt315";
+							chamada += "&amp;"+"ed=Movimento_Conta_CorrenteED";
+							chamada += "&amp;"+"rn=Movimento_Conta_CorrenteRN";
+							chamada += "&amp;"+"acao=L";
+							chamada += "&amp;"+"dm_Bloqueado=S";
+							chamada += "&amp;"+"rel=2";
+							chamada += "&amp;"+"oid_Concessionaria="+ x.oid_Concessionaria.getText();
+							chamada += "&amp;"+"nm_Concessionaria="+ x.oid_Concessionaria.lookup_dsProperty.getText();
+							chamada += "&amp;"+"dt_Movimento_Conta_Corrente_Inicial="+ x.datas.dt_Movimento_Conta_Corrente_Inicial.getText();
+							chamada += "&amp;"+"dt_Movimento_Conta_Corrente_Final="+ x.datas.dt_Movimento_Conta_Corrente_Final.getText();
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+	                  	</handler>
+               		</button>
+               		<button name="btnEditar" enabled="true" width="90">Desbloquear
+                  		<handler name="onclick" >
+                  			classroot.tela.gtt315Aw.tela.formAprov.vCampos.oid_Movimento_Conta_Corrente.setAttribute('text',dpMov.xpathQuery("@oid_Movimento_Conta_Corrente"));
+                  			classroot.tela.gtt315Aw.tela.corCab.nm_Concessionaria.setAttribute('text',dpMov.xpathQuery("@nm_Concessionaria"));
+                  			classroot.tela.gtt315Aw.tela.corCab.dt_Movimento_Conta_Corrente.setAttribute('text',dpMov.xpathQuery("@dt_Movimento_Conta_Corrente"));
+                  			classroot.tela.gtt315Aw.tela.corCab.tx_Bloqueio.setAttribute('text',dpMov.xpathQuery("@tx_Bloqueio"));
+                  			classroot.tela.gtt315Aw.tela.corCab.tx_Descricao.setAttribute('text',dpMov.xpathQuery("@tx_Descricao"));
+                  			classroot.tela.gtt315Aw.tela.corCab.vl_Movimento_Conta_Corrente.setAttribute('text',dpMov.xpathQuery("@vl_Movimento_Conta_Corrente"));
+							classroot.tela.gtt315Aw.open();
+                  		</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	
+  	  	<modaldialog  name="gtt315Aw" bgcolor="#FAFAFA"  visible="false"  >
+			<view name="tela" y="-10">
+				<!-- Título da tela -->
+				<titulo x="1" y="1" text="Desbloqueia crédito" widthLine="${parent.parent.width-50}" corFrente="#FF9900" />
+				<view name="corCab" x="1" y="1" width="500" >
+					<text x="4" 	y="30" 	text="Concessionaria:" />
+					<text x="100" 	y="30" 	fgcolor="#228B22" 	name="nm_Concessionaria" width="400" />
+					<text x="64" 	y="50"  text="Data:" />
+					<text x="100" 	y="50" 	fgcolor="#228B22" 	name="dt_Movimento_Conta_Corrente" />
+					<text x="54" 	y="70" 	text="Motivo:" />
+					<text x="100" 	y="70" 	fgcolor="#228B22"	name="tx_Bloqueio" width="400" />
+					<text x="35" 	y="90" 	text="Descrição:" />
+					<text x="100" 	y="90" 	fgcolor="#228B22"	name="tx_Descricao" width="400" />
+					<text x="61" 	y="110" 	text="Valor:" />
+					<text x="100" 	y="110" 	fgcolor="#228B22"	name="vl_Movimento_Conta_Corrente"  />
+				</view>
+				<separador x="1" y="140" widthLine="${parent.parent.width-50}"/>
+		  		<form name="formAprov" x="1" y="145" >	
+			  		<cpoEdits name="vCampos"  layout="axis:none" >
+	  					<edittext name="tela" visible="false" text="gtt315A" />
+						<edittext name="acao" visible="false" text="A" />
+						<edittext name="ed" visible="false" text="Movimento_Conta_CorrenteED" />
+						<edittext name="rn" visible="false" text="Movimento_Conta_CorrenteRN" />
+						<edittext name="oid_Movimento_Conta_Corrente" visible="false" />	  			
+			      		<text		 	x="1" 	y="0" 	text="Desbloquear credito?:" />
+			  			<datacombobox 	x="140" y="0" 	name="dm_Bloqueado" width="60" height="21" itemdatapath="dmSimNao:/item" />
+			      	</cpoEdits>
+			      	<submit name="filtra" datapath="local:classroot.atuDesblo:/" />
+		      	</form>
+		      	<separador x="1" y="210" widthLine="${parent.parent.width-50}"/>
+		      	<view name="botoes" >
+			      	<button x="1" y="220">Fechar
+			      		<handler name="onclick">
+			      			parent.parent.parent.close();
+			      		</handler>
+			      	</button>
+			      	<button x="67" y="220">OK
+			      		<handler name="onclick">
+			      			if (this.valida())
+			      				parent.parent.formAprov.filtra.submit();
+			      		</handler>
+			      		<method name="valida">
+			      			retorna=true;
+			      			var x = parent.parent.formAprov.vCampos;
+			      			if (x.dm_Bloqueado.getValue()=="N") {
+			      			//	classroot.tela.janelaAviso.mostra("Crédito não foi desbloqueado!")
+			      				retorna=false;	
+			      			}
+			      			return retorna;
+			      		</method>
+			      	</button>
+		      	</view>
+	      	</view>
+	   	</modaldialog>
+
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />   	
+   	</view>
+   	
+	</class>   
+
+</library>

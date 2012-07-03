@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<!-- Includes -->
+	<include href="../include/domain.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+  		var x_flyWindow=0;
+  		var y_flyWindow=0;
+  	</script>
+   
+   	<dataset name="sisBan102FabBndC" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Banda&amp;consulta=sim" />
+  	<datapointer name="sisdpBan10FabBndC" xpath="local:sisBan102FabBndC:/" />
+
+  	<!-- Datasets para grid de dimensoes -->
+ 	<dataset name="cadDimensao" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+   		ondata="ban102w.ban102.tela.carregando.stopAni(); " 
+   		onerror="ban102w.ban102.tela.carregando.stopAni(); "
+      	ontimeout="ban102w.ban102.tela.carregando.stopAni();
+  			   	   ban102w.ban102.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+	/>
+
+	<!-- Lista dos Registros -->
+	<dataset name="cadRel" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+      	ondata="var resultado = parent.cadReldp1.xpathQuery('@oknok'); 
+              	ban102w.ban102.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+	       		}"
+      	onerror="ban102w.ban102.tela.carregando.stopAni();"
+      	ontimeout="ban102w.ban102.tela.carregando.stopAni();
+  			   	   ban102w.ban102.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="cadReldp1" xpath="local:cadRel:/ret/item" />
+
+
+   	<!-- Classe da janela voadora -->
+	<class name="flyWindow" extends="window" width="410" height="400" visible="false"  bgcolor="#FAFAFA" closeable="true">
+		<!-- Datasets  -->
+		<!-- Lista dos Registros -->
+		<dataset name="cadBanda" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+	   		src="../../ControlerServlet"
+	      	ondata="var resultado = classroot.cadBandadp1.xpathQuery('@oknok');
+	      			classroot.tela.carregando.stopAni(); 
+	              	if (resultado == 'LOGON'){
+	              		parent.logon();
+	              	}	
+		         	"
+	      	onerror="classroot.tela.carregando.stopAni();"
+	      	ontimeout="classroot.tela.carregando.stopAni();
+	  			   	   classroot.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+	      	/>
+		<datapointer name="cadBandadp" xpath="local:cadBanda:/" />
+		<datapointer name="cadBandadp1" xpath="local:cadBanda:/ret/item" />
+		<datapointer name="cadBandadp2" xpath="local:cadBanda:/cad/item" />
+
+	  	<!-- Datasets para grid de dimensoes -->
+	 	<dataset name="cadDimensao" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+	   		src="../../ControlerServlet?"
+	   		ondata="classroot.tela.carregando.stopAni(); " 
+	   		onerror="classroot.tela.carregando.stopAni(); "
+	      	ontimeout="classroot.tela.carregando.stopAni();
+	  			   	   classroot.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+		/>
+		
+		<method name="logon">
+			LzBrowser.loadURL('javascript:window.open("' + "../../principal/stcb.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+		</method>
+
+	   	<method name="buscaRelacionados" args="p" >
+			tela.carregando.startAni();
+			cadBanda.setAttribute("src","../../ControlerServlet?");
+			cadBanda.setQueryString({tela : "ban102",
+								   ed : "BandaED",
+								   rn : "BandaRN",
+								   acao : "L",
+								   oid_Banda : p
+								   });
+			cadBanda.doRequest();
+		</method>
+
+		<!-- View da tela -->
+		<view name="tela" y="5" x="5" width="${parent.width-5}" height="${parent.height-5}" layout="axis:x; spacing:3" datapath="local:classroot.cadBanda:/cad/item">
+			<!-- Janelas de avisos e de erros -->
+			<!-- Janela de aviso -->
+			<alert name="janelaAviso" title="A v i s o !" width = "300" >
+				Aviso Padrão!
+				<method name="mostra" args="msg">
+					this.setAttribute('text', msg); 
+					this.open();
+				</method>
+	 		</alert>      
+			<!-- Janela de alerta de erro de validação -->
+			<alert name="janelaErro" title="E r r o !"  width = "300" >
+				Erro Padrão!
+				<method name="mostra" args="erro">
+					this.setAttribute('text', erro); 
+					this.open();
+				</method>
+			</alert> 
+			<!-- banda -->
+			<view name="banda" width="${parent.width-25}" height="${parent.height-50}" bgcolor="#EAEAEA" >
+				<text y="0"   x="5" text="Banda:" />
+				<!--<text y="0"   x="90" name="cd_Banda" width="${parent.width}" datapath="@cd_Banda" height="21" fgcolor="green"/>-->
+				<text y="0"   x="90" name="nm_Banda" width="${parent.width}" datapath="@nm_Banda" height="21" fgcolor="green"/>
+				<text y="17"  x="5" text="Fabricante:" />
+				<text y="17"  x="90" name="nm_Fabricante_Banda" width="${parent.width}" datapath="@nm_Fabricante_Banda" height="21" fgcolor="green"/>
+				<text y="34"  x="5" text="Tipo de Pneu:" />
+				<text y="34"  x="90" name="nm_Tipo_Pneu" width="${parent.width}" datapath="@nm_Tipo_Pneu" height="21" fgcolor="green"/>
+				<text y="51"  x="5" text="Aplicação:" />
+				<text y="51"  x="90" name="nm_Aplicacao" width="${parent.width}" datapath="@nm_Aplicacao" height="21" fgcolor="green"/>
+				<text y="68"  x="5" text="Eixo:" />
+				<text y="68"  x="90" name="nm_Eixo" width="${parent.width}" datapath="@nm_Eixo" height="21" fgcolor="green"/>
+				<text y="85" x="5" text="Descrição:" />
+				<text y="85" x="90" name="tx_Descricao" width="280" datapath="@tx_Descricao" height="100" multiline="true" fgcolor="green"/>
+				<text y="102" x="0" name="nm_Fora_Uso" datapath="@nm_Fora_Uso" fgcolor="red" />
+				<view y="185" x="5" height="152" width="152" bgcolor="black" />
+				<view y="186" x="6" height="150" width="150" bgcolor="#FAFAFA" />
+				<view y="186" x="6" name="myimage" height="150" width="150" stretches="both"  />
+				<grid y="185" x="160" datapath="local:classroot.cadDimensao:/" contentdatapath="cad/item" bgcolor0="#EeEeEe" bgcolor1="#EeEeEe" width="215" height="150" rowheight="16" >
+					<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Largura" 		text="Larg" width="50" />
+					<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Profundidade" 	text="Prof"   width="50"/>
+					<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Peso_Metro" 	text="kg/m"    width="51"/>
+					<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Peso" 			text="Peso"    width="54"/>
+				</grid>
+			</view>
+	      	<!-- Reloginho -->
+      		<loadingAni name="carregando" />
+		</view>
+				
+	</class>
+
+   	<!-- Classe da Tela -->
+	<class name="ban102" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	if (resultado == 'LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = classroot.caddp.xpathQuery('*/item/last()');
+          			parent.tela.carregando.stopAni();
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabLis.setAttribute('selected',true);
+	              	} else {
+	      				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	              	}
+              	}	
+	         	"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/stcb.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Comparativos de Bandas" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+      	<tabs name="tab" x="5" y="5" height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel">
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Marca:" />
+								<text height="21" align="right" text="Modelo:" />
+								<text height="21" align="right" text="Código:" />
+								<text height="21" align="right" text="Aplicacao:" />
+								<text height="21" align="right" text="Eixo:" />
+								<text height="21" align="right" text="Tipo pneu:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits">
+								<edittext name="tela" visible="false" text="ban102" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="BandaED" />
+								<edittext name="rn" visible="false" text="BandaRN" />
+								<edittext name="dm_Escapa_Substituida" visible="false" text="S"/>
+								<datacombobox name="oid_Fabricante_Banda" width="200" height="21"  itemdatapath="sisBan102FabBndC:/cad/item"  defaulttext="TODOS"/>
+								<edittext name="nm_Banda" maxlength="30" width="200" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="cd_Banda" maxlength="10" width="80" height="21"  
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+									
+								<datacombobox name="dm_Aplicacao" 	shownitems="5" width="220" height="21" itemdatapath="dmAplicacaoC:/item" 		defaulttext="Escolha Aplicação"/>
+								<datacombobox name="dm_Eixo" 		shownitems="5" width="220" height="21" itemdatapath="dmEixoC:/item" 				defaulttext="Escolha o Eixo"/>
+								<datacombobox name="dm_Tipo_Pneu" 	shownitems="5" width="220" height="21" itemdatapath="dmTipoPneuQualquerC:/item" 	defaulttext="Escolha o Tipo"/>
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  		</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Bandas
+            	<simplelayout spacing="1" />
+            	<view name="corLis"  width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+               			<gridtext editable="false" resizable="false" datapath="@cd_Banda" text="Cód." width="61"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Banda" text="Modelo" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Fabricante_Banda" text="Marca" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Aplicacao" text="Aplicação" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Eixo" text="Eixo" width="110"/>
+                  		<gridtext editable="false" resizable="false" datapath="@nm_Tipo_Pneu" text="Tipo" width="110"/>
+                  		<method event="onselect" args="row">
+                     		var dpMov=row.datapath;
+                  			var oidBanda=row.datapath.xpathQuery("@oid_Banda");
+                  			parent.parent.parent.tabCad.corCad.banda.edits.oid_Banda.setValue(oidBanda);
+                  			parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        		</handler>
+            		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Comparativos
+            	<simplelayout spacing="1" />
+            	<view name="corCad"  width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		
+					<view name="banda" width="380" height="360" bgcolor="#EeEeEe" >
+						<cpoEditsXY name="edits" layout="axis:none">
+							<text y="5" x="10" height="21">Banda:</text>
+							<lookup y="5" x="60" name="oid_Banda" cdProperty="cd_Banda" dsProperty="nm_Banda"
+								widthCdProperty="70" widthDsProperty="200" callService="Banda" oninit="parent.pattern(this,'txt')" >
+								<propertyMapping modelProperty="dm_Escapa_Substituida" criteriaProperty="S"/>
+								<text y="27" x="-50" height="22" text="Fabricante:" />
+								<relatedText y ="27" x="33" name="nm_Fabricante" width="200" height="22" fgcolor="green"/>
+								<text y="44" x="-50" height="23" text="Tipo de Pneu:" />
+								<relatedText y ="44" x="33" name="nm_Tipo_Pneu" width="200" height="22" fgcolor="green"/>
+								<text y="61" x="-50" height="23" text="Aplicação:" />
+								<relatedText y ="61" x="33" name="nm_Aplicacao" width="200" height="22" fgcolor="green"/>
+								<text y="78" x="-50" height="23" text="Eixo:" />
+								<relatedText y ="78" x="33" name="nm_Eixo" width="200" height="22" fgcolor="green"/>
+								<text y="95" x="-50" height="23" text="Descrição:" />
+								<relatedText y ="95" x="33" name="tx_Descricao" width="280" multiline="true" height="100" fgcolor="green" />
+								<relatedText y="112" x="-50" name="nm_Fora_Uso"  fgcolor="red" />								
+								<method name="ondataLookup">
+									oidBanda = this.getText();
+									parent.parent.buscaRelacionados();
+									parent.parent.parent.relacionamento.listaRel.lst.fechaJanelas();
+									x_flyWindow = 0 ; y_flyWindow = 0 ;
+	    	              			parent.myimage.setSource('http://127.0.0.1:8080/stcb/ImageServlet?oid_Banda='+oidBanda);
+									cadDimensao.setQueryString({tela : "ban102",
+															  ed : "Banda_DimensaoED",
+															  rn : "Banda_DimensaoRN",
+															  acao : "L",
+															  oid_Banda : oidBanda
+															  });
+									cadDimensao.doRequest();
+									
+				 				</method>
+							</lookup>	
+							<view y="200" x="5" height="152" width="152" bgcolor="black" />
+							<view y="201" x="6" height="150" width="150" bgcolor="#FAFAFA" />
+							<view y="201" x="6" name="myimage" height="150" width="150" stretches="both"  />
+							<grid name ="gridDimensoes" y="200" x="160" datapath="cadDimensao:/" contentdatapath="cad/item" bgcolor0="#EeEeEe" bgcolor1="#EeEeEe" width="215" height="150" rowheight="16" >
+								<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Largura" 		text="Larg" width="50" />
+          						<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Profundidade" 	text="Prof"   width="50"/>
+          						<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Peso_Metro" 	text="kg/m"    width="51"/>
+          						<gridtext editable="false" textalign="right" resizable="false" datapath="@nr_Peso" 			text="Peso"    width="54"/>
+							</grid>
+						</cpoEditsXY>
+					   	<method name="buscaRelacionados" >
+							ban102w.ban102.tela.carregando.startAni();
+							cadRel.setAttribute("src","../../ControlerServlet?");
+							cadRel.setQueryString({tela : "ban102",
+												   ed : "Banda_RelacionamentoED",
+												   rn : "Banda_RelacionamentoRN",
+												   acao : "L",
+												   oid_Banda_1 : oidBanda
+												   });
+							cadRel.doRequest();
+   						</method>
+					</view>
+					<view name="relacionamento" x="385" layout="axis:y; spacing:3" >
+						<view name="listaRel" width="200" height="360" bgcolor="#EeEeEe" >
+							<text height="19" text="Contratipo(s) existente(s):" />
+							<grid y="22" name="lst" datapath="cadRel:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+							    height="${parent.height-32}" width="${parent.width-1}" multiselect="false" rowheight="16">
+		                  		<gridtext editable="false" resizable="false" datapath="@nm_Banda_2" text="Banda" width="93"/>
+		                  		<gridtext editable="false" resizable="false" datapath="@nm_Fabricante_Banda_2" text="Marca" width="94"/>
+		                  		<method event="onselect" args="row">
+		                  			var dpMov=row.datapath;
+		                  			parent.parent.parent.parent.corCad.abreJanela();
+		                  			var oidBanda2=dpMov.xpathQuery("@oid_Banda_2");
+		                  			var nmBanda2=dpMov.xpathQuery("@nm_Banda_2") + " - " + dpMov.xpathQuery("@nm_Fabricante_Banda_2");
+
+		                  			if (validaJanela(oidBanda2)) {
+
+		                  				var limiteH = parent.parent.parent.parent.parent.height;
+		                  				var limiteW = parent.parent.parent.parent.parent.width;
+		                  				
+		                  				if (x_flyWindow==0) {x_flyWindow=160;y_flyWindow=-60}
+			                  			
+		                  				x_flyWindow= x_flyWindow+50;  y_flyWindow=y_flyWindow+50;
+		                  				var totalH = (y_flyWindow+400)+40;
+		                  				var totalW = (x_flyWindow+410)+390;
+		                  				if (totalH > limiteH) { y_flyWindow=-30 }
+		                  				if (totalW > limiteW) {	x_flyWindow=(limiteW-410)-490; }
+		                  				
+			                  			var p = new flyWindow(this, {x:x_flyWindow , y:y_flyWindow , title:nmBanda2 , name:oidBanda2});
+			                  			
+			                  			p.setAttribute('visible',true);
+			                  			p.buscaRelacionados(oidBanda2);
+			                  			p.tela.banda.myimage.setSource('http://127.0.0.1:8080/stcb/ImageServlet?oid_Banda='+oidBanda2);
+										p.cadDimensao.setQueryString({tela : "ban102",
+																  ed : "Banda_DimensaoED",
+																  rn : "Banda_DimensaoRN",
+																  acao : "L",
+																  oid_Banda : oidBanda2
+																  });
+										p.cadDimensao.doRequest();
+									} 
+		                 		</method>
+								<method name="validaJanela" args="pNome">
+									<![CDATA[
+									// Evita de abrir a janela mais de uma vez
+										var nodes = this.subnodes;
+										var quantos=0
+										for (var i = 0; i < nodes.length; i++) {
+											var elem = nodes[i];
+											if((elem instanceof flyWindow)) { 
+												var nome=elem.getAttribute('name');
+												if (pNome==nome){	elem.open(); return false; }
+											}	
+										}
+										return true
+									]]>
+								</method>
+		                 		
+								<method name="fechaJanelas">
+									<![CDATA[
+										var nodes = this.subnodes;
+										var quantos=0
+										for (var i = 0; i < nodes.length; i++) {
+											var elem = nodes[i];
+											if((elem instanceof flyWindow)) { elem.close(); quantos++; }
+										}
+										// Tive que fazer essa treta pois NÃO estava fazendo o destroy do elemento par. dai o negócio é ficar tentanto até terminar
+										while (quantos>0) {
+											for (var i = 0; i < nodes.length; i++) {
+												var elem = nodes[i];
+												if((elem instanceof flyWindow)) { elem.destroy();quantos--; }
+											}
+										}
+									]]>
+								</method>
+							</grid>
+						</view>	
+					</view>
+
+            	</view>
+            	<view name="barCad" x="1" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+            		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+        		</view>
+         		<method name="abreJanela">
+         			Debug.write("abreJanela");
+         		</method>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

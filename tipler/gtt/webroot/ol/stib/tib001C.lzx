@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="false" >
+	<!-- Desabilita o menu de contexto -->
+    <script><![CDATA[ var cntxtmenu = new LzContextMenu(); ]]> </script>
+    <handler name="oninit" > canvas.setDefaultContextMenu(cntxtmenu); </handler>
+   	<include href="tib001L.lzx" />
+   	<!-- Splash -->
+   	<splash persistent="false">
+      	<view center="true" resource="../include/explore_loading.swf" />
+   	</splash>
+   	<window title="tib001" bgcolor="#FAFAFA" height="500" width="765"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+      	<tib001 name="tib001" />
+   	</window>
+</canvas>
+

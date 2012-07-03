@@ -1,0 +1,44 @@
+<canvas debug="true" proxied="false">
+    <include href="lib/fusioncharts.lzx" />
+
+    <fusioncharts id="fc1"
+                  autoload="true"
+                  strSWFName="FC_2_3_MSColumn3D.swf"
+                  strURL="SalesComparisonData.xml"
+                  intChartWidth="400"
+                  intChartHeight="300"
+                  intChartStartX="0"
+                  intChartStartY="5"
+                  timetoload="5000"/>
+
+    <window title="Test panel"
+          x="405" y="5" >
+        <simplelayout/>
+        <button onclick="fc1.refresh()">Refresh first chart</button>
+        <button onclick="fc2.load()">Load second chart</button>
+        <button onclick="fc2.unload()">Unload second chart</button>
+        <button onclick="fc2.refresh()">Refresh second chart</button>
+    </window>
+
+    <!-- the second chart has autoload="false" , so user has to manually click the button to load it. -->
+    <fusioncharts id="fc2"
+                  autoload="false"
+                  strSWFName="FC_2_3_MSColumn3D.swf"
+                  strURL="SalesComparisonData.xml"
+                  intChartWidth="500"
+                  intChartHeight="300"
+                  intChartStartX="600"
+                  intChartStartY="5"
+                  timetoload="5000" />
+
+
+    <fusioncharts id="fc3"
+                  autoload="true"
+                  strSWFName="FC_2_3_MSColumn3D.swf"
+                  strURL="SalesComparisonData.xml"
+                  intChartWidth="400"
+                  intChartHeight="300"
+                  intChartStartX="0"
+                  intChartStartY="305"
+                  timetoload="5000"/>
+</canvas>

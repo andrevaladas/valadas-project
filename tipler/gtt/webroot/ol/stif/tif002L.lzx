@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	Tela de Última Recapagem
+-->		
+<library>
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+  
+   	<!-- Classe da Tela -->
+	<class name="tif002" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.caddp.xpathQuery('@oknok');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+					if (resultado == 'IOK') {
+						parent.tela.janelaAviso.mostra('Parametros cadastrados com sucesso!');
+					} else 	if (resultado == 'AOK') {
+						parent.tela.janelaAviso.mostra('Registro alterado com sucesso!');
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+					}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/ret/item" />
+	<datapointer name="caddp1" xpath="local:cad:/cad/item" />
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<!-- Consulta Percentuais -->
+	<dataset name="list" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.listdp.xpathQuery('@oid_stif_parametro');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+	      			if ( resultado > 0 ) {
+						parent.tela.tabCad.corCad.barCad.btnAlterar.setAttribute('visible',true);
+						parent.tela.tabCad.corCad.barCad.btnGravar.setAttribute('visible',false);
+						parent.tela.tabCad.corCad.formCad.vCampos.edits.populateDatapathValues(classroot.listdp);
+						parent.tela.tabCad.corCad.barCad.msg_Stamp.setText(classroot.listdp.xpathQuery('@msg_Stamp'));
+					} else {
+						parent.tela.tabCad.corCad.barCad.btnAlterar.setAttribute('visible',false);
+						parent.tela.tabCad.corCad.barCad.btnGravar.setAttribute('visible',true);
+						parent.tela.tabCad.corCad.formCad.vCampos.edits.resetElements();
+						parent.tela.tabCad.corCad.barCad.msg_Stamp.setText('');
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="listdp" xpath="local:list:/cad/item" />
+
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Pesos para Incidências" widthLine="390" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">	
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+         <view name="tabCad">
+        	<simplelayout spacing="1" />
+        	<view name="corCad" x="0" width="420" height="200" layout="axis:y; spacing:1" >
+	    		<form name="formCad" >
+	    			<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+		    			<cpoEditsXY name="edits" oninit="parent.parent.carregaParametro();">
+							<edittext name="tela" visible="false" text="tif001" />
+							<edittext name="acao" visible="false" text="AI" />
+							<edittext name="ed" visible="false" text="Stib_ParametroED" />
+							<edittext name="rn" visible="false" text="Stib_ParametoRN" />
+
+							<frame3d name="frame1" y="5" x="20" width="160" height="30" caption="" >
+								<text height="21" y="5" x="10" text="% Incidência" />
+								<text height="21" y="5" x="110" text="Peso" />
+							</frame3d>
+							<frame3d name="frame2" y="5" x="200" width="160" height="30" caption="" >
+								<text height="21" y="5" x="10" text="% Incidência" />
+								<text height="21" y="5" x="110" text="Peso" />
+							</frame3d>	
+
+							<!-- left sesion -->
+							<text y="50" x="64" height="21" text="0 a 5%:" />
+							<edittext y="50" x="120" name="pc_peso_0_5" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_0_5"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="74" x="57" height="21" text="6 a 10%:" />
+							<edittext y="74" x="120" name="pc_peso_6_10" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_6_10"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="98" x="50" height="21" text="11 a 15%:" />
+							<edittext y="98" x="120" name="pc_peso_11_15" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_11_15"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+								
+							<text y="122" x="50" height="21" text="16 a 21%:" />
+							<edittext y="122" x="120" name="pc_peso_16_20" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_16_20"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="146" x="50" height="21" text="21 a 25%:" />
+							<edittext y="146" x="120" name="pc_peso_21_25" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_21_25"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+	
+							<!-- right session-->
+							<text y="50" x="230" height="21" text="26 a 30%:" />
+							<edittext y="50" x="300" name="pc_peso_26_30" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_26_30"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="74" x="230" height="21" text="31 a 35%:" />
+							<edittext y="74" x="300" name="pc_peso_31_35" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_31_35"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="98" x="230" height="21" text="31 a 35%:" />
+							<edittext y="98" x="300" name="pc_peso_36_40" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_36_40"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="122" x="230" height="21" text="31 a 35%:" />
+							<edittext y="122" x="300" name="pc_peso_41_45" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_41_45"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="146" x="230" height="21" text="31 a 35%:" />
+							<edittext y="146" x="300" name="pc_peso_46_50" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_46_50"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+							<text y="170" x="203" height="21" text="acima de 50%:" />
+							<edittext y="170" x="300" name="pc_peso_acima_50" visible="true" maxlength="6" width="50" height="21" datapath="@pc_peso_acima_50"
+								oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+
+						</cpoEditsXY>
+	    			</view>
+
+					<method name="carregaParametro">
+						parent.parent.parent.carregando.startAni();
+		          		var src = "../../ControlerServlet?"; 
+							src += "tela=tif002"+"&amp;"; 
+					        src += "ed=Stif_ParametroED"+"&amp;"; 
+					        src += "rn=Stif_ParametroRN"+"&amp;"; 
+					        src += "acao=C"+"&amp;"; 
+					        src += "oid_stif_parametro=1&amp;";
+					    	parent.parent.parent.parent.list.setSrc(src);
+							parent.parent.parent.parent.list.doRequest();
+					</method>
+					<!-- Validação -->
+					<method name="valida" >
+         			  	return true;
+	      			</method>
+    			</form>
+	    		<view name="barCad" x="5" layout="axis:x; spacing:2">
+	       		<button name="btnFechar" width="70">
+	          		Fechar
+	          		<handler name="onclick" >
+	             		parent.parent.parent.parent.parent.parent.close();
+	          		</handler>
+	       		</button>
+	       		<button name="btnGravar" width="70" visible="true">
+	          		Gravar
+	          		<handler name="onclick">
+	          			if (parent.parent.parent.corCad.formCad.valida()){
+	          				parent.parent.parent.parent.carregando.startAni();
+	          				var form = parent.parent.parent.corCad.formCad.vCampos.edits;
+	          				
+	          				var src = "../../ControlerServlet?"; 
+			            	src += "tela=tif002"+"&amp;"; 
+			            	src += "ed=Stif_ParametroED"+"&amp;"; 
+			            	src += "rn=Stif_ParametroRN"+"&amp;"; 
+			            	src += "acao=I"+"&amp;"; 
+			            	src += "oid_stif_parametro=1&amp;";
+			            	src += parent.parent.parent.corCad.formCad.vCampos.edits.getRequestValues();
+							parent.parent.parent.parent.parent.cad.setSrc(src);
+							parent.parent.parent.parent.parent.cad.doRequest();
+	          			}	
+	              	</handler>
+	       		</button>
+	       		<button name="btnAlterar" width="70" visible="false">
+	          		Alterar
+	          		<handler name="oninit">
+	          			parent.btnAlterar.setAttribute('enabled',true);
+	          		</handler>
+	          		<handler name="onclick">
+	          			if (parent.parent.parent.corCad.formCad.valida()){
+	          				parent.parent.parent.parent.carregando.startAni();
+	          				var form = parent.parent.parent.corCad.formCad.vCampos.edits;
+	          				
+	          				var src = "../../ControlerServlet?"; 
+			            	src += "tela=tif002"+"&amp;"; 
+			            	src += "ed=Stif_ParametroED"+"&amp;"; 
+			            	src += "rn=Stif_ParametroRN"+"&amp;"; 
+			            	src += "acao=AI"+"&amp;";
+			            	src += "oid_stif_parametro=1&amp;";
+			            	src += parent.parent.parent.corCad.formCad.vCampos.edits.getRequestValues();
+							parent.parent.parent.parent.parent.cad.setSrc(src);
+							parent.parent.parent.parent.parent.cad.doRequest();
+	          			}	
+					</handler>
+	       		</button>
+	       		<text name="msg_Stamp" visible="true" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />
+	    	</view>
+	    	</view>
+      		<submit name="xMit" />
+         </view>
+      	<!-- Relogio -->
+      	<loadingAni name="carregando" />
+   	</view>
+	</class>   
+</library>

@@ -1,0 +1,1022 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<include href="lookup.lzx" />
+	<include href="dateUtils.lzx" />
+	<!--<include href="../../lps/components/lz/datacombobox.lzx" />-->
+   <!--  Classe para montar um texto com sombra
+      Parâmetros:
+      text      = Texto a ser exibido
+      corFrente = Cor para o foreground   
+   -->
+   <class name="dropshadow">
+      <attribute name="text" type="text" />
+      <attribute name="corFrente" type="color" />
+      <!-- Texto em background -->
+      <text name="bgtext" fgcolor="#8E8E8E" text="${this.parent.fgtext.text}" y="${this.parent.fgtext.y+1}" x="${this.parent.fgtext.x+1}"
+         width="${this.parent.width}" fontstyle="italic" resize="true" />
+      <!-- Texto em foreground -->
+      <text name="fgtext" fgcolor="${this.parent.corFrente}" text="${this.parent.text}" fontstyle="italic" resize="true" />
+   </class>
+
+   <!--  Classe para colocar título em telas 
+      Parâmetros:
+      text      = Título da tela.
+      tela      = Código da tela 'MMM999'.
+      widthLine = Tamanho da linha de sublinhado.
+      corFrente = Foregraound color para o texto.
+   -->
+   <class name="titulo">
+      <attribute name="text" type="text" />
+      <attribute name="widthLine" type="number" />
+      <attribute name="corFrente" type="color" />
+      <simplelayout />
+      <!-- Texto -->
+      <view name="titView" height="21" layout="axis:x; spacing:2">
+         <dropshadow name="titShadow" fontsize="14" text="${this.parent.parent.text}" corFrente="${this.parent.parent.corFrente}" />
+      </view>
+      <!-- Sublinha -->
+      <view width="${this.parent.widthLine}" height="1" bgcolor="${this.parent.corFrente}" />
+      <view width="${this.parent.widthLine}" height="1" bgcolor="#8E8E8E" />
+      <method name="setTitulo" args="texto">
+      	titView.titShadow.bgtext.setText(texto);
+      	titView.titShadow.fgtext.setText(texto);
+      </method>
+   </class>
+
+   <!-- Classe para mostrar progresso no centro da tela
+      Parâmetros:
+      Não há.
+   -->
+   <class name="loadingAni" extends="view" visible="false" 
+   	   x="${(this.parent.width-30)/2-30}" y="${(this.parent.height-60)/2-30}" width="30" height="30">
+      <view name="loadingswf" resource="../include/explore_loading.swf" play="false" />
+      <method name="startAni">this.bringToFront(); this.loadingswf.play(); this.setAttribute("visible",true);
+      this.turnOff = new LzDelegate( this, "turnOffAni" ); LzTimer.addTimer( this.turnOff, 5000 );
+      </method>
+      <method name="stopAni">this.setAttribute("visible",false); this.loadingswf.stop();</method>
+      <method name="turnOffAni" args="p">this.setAttribute("visible",false); this.loadingswf.stop();</method>
+   </class>
+
+	<!-- Classe com a placa -->
+	<resource name="imgPlaca" src="../images/placa.png"/>
+	<class name="placa" >
+		<view name="placa" width="120" height="50" resource="imgPlaca">
+			<text name="cidade" y="3" 	x="100" fgcolor="white" align="center" font="Arial" fontsize="10" >Tipler</text>
+			<text name="numero" y="17"  fgcolor="white" align="center" font="Arial" fontsize="21" fontstyle="bold" datapath="@nr_Placa" text="AAA-8888"/>
+		</view>
+	</class>
+
+	<!-- Classe basica para edits -->
+	<class name="baseEdits" extends="view">
+		<utils name="util" visible="false"/>
+		<dateUtils name="dateUtil" visible="false"/>
+
+		<method name="hiddenFields">
+			<![CDATA[
+			var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				nodes[i].setVisible(false);
+  			}
+			]]>
+		</method>
+
+		<method name="populateDatapathValues" args="dp">
+			<![CDATA[
+			var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if(!(elem instanceof LzText)) {
+					if(dp != undefined) {
+						if(elem.getAttribute("datapath") != undefined) {
+							elem.setText(dp.getNodeAttribute(elem.getAttribute('name')));
+						}
+					}
+				}
+  			}
+			]]>
+		</method>
+
+		<method name="getRequestValues">
+			<![CDATA[
+			var parameters = "";
+			var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if(!(elem instanceof LzText)) {
+					if(elem.getAttribute("datapath") != undefined) {
+						var name = elem.getAttribute('name');
+						var value = elem.getAttribute('text');
+						if(elem instanceof datacombobox) {
+							value = elem.getAttribute('value');
+						} else if(elem instanceof lookup) {
+							value = elem.getValue();
+						}
+						parameters += name+"="+value+"&";
+						Debug.write(parameters);
+					}
+				}
+  			}
+  			return parameters;
+			]]>
+		</method>
+
+		<method name="resetElements" args="datapathOnly">
+			<![CDATA[
+			var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if(!(elem instanceof LzText)) {
+					if(datapathOnly != undefined && datapathOnly == true) {
+						if(elem.getAttribute("datapath") != undefined) {
+							if(elem instanceof lookup) {
+								elem.resetLookupValues();
+							} else {
+								elem.setAttribute("value", "");
+								elem.setAttribute("text", "");
+							}
+						}
+					} else {
+						if(elem instanceof lookup) {
+							elem.resetLookupValues();
+						} else if(elem instanceof datacombobox) {
+							elem.selectItemAt(-1);
+						} else {
+							elem.setAttribute("value", "");
+							elem.setAttribute("text", "");
+						}
+					}
+				}
+  			}
+			]]>
+		</method>
+
+		<!-- 
+		Verifica o componente passado 
+		Retornando o "objeto controlador" correto quando necessário
+		-->
+		<method name="verifyFieldControler" args="field">
+			if (field instanceof lookup) {
+				field = field.lookup_cdProperty;
+			}
+			return field;
+		</method>
+		<method name="pattern" args="campo,tip" >
+			<![CDATA[
+			campo = this.verifyFieldControler(campo);
+			if (tip=="int") campo.setPattern("[0-9]*");
+			if (tip=="dat") campo.setPattern("[0-9]*"); 
+			if (tip=="hor") campo.setPattern("[0-9]*");
+			if (tip=="dec") campo.setPattern("[0-9,]*");
+			if (tip=="txt") campo.setPattern("[A-Z0-9/\\-+.,ÃÕÁÉÍÓÚÄËÏÖÜÊÇ ()]*");
+			]]>
+		</method>
+		<method name="format" args="cpo,tip,dec">
+			cpo = this.verifyFieldControler(cpo);
+			if (tip=="dec") { formataDecimal(cpo,dec);} 
+			else 
+			if (tip=="int") {formataInteiro(cpo);}
+			else 
+			if (tip=="txt") {formataTexto(cpo);} 
+			else
+			if (tip=="dat") {formataData(cpo);}
+			else
+			if (tip=="datma") {formataDataMesAno(cpo);}
+			else
+			if (tip=="hor") {formataHora(cpo);}
+		</method>
+		<method name="deformat" args="cpo,tip">
+			cpo = this.verifyFieldControler(cpo);
+			if (tip=="dec") {desFormataDecimal(cpo);} 
+			else 
+			if (tip=="int") {desFormataInteiro(cpo);}
+			else 
+			if (tip=="txt") {desFormataTexto(cpo);} 
+			else
+			if (tip=="dat") {desFormataData(cpo);}
+			else
+			if (tip=="hor") {desFormataHora(cpo);}
+		</method>
+		
+		<method name="formataDecimal" args="campo,decs">
+			var valor = util.desFormataDecimal(campo.getText()); 		// O valor do campo digitado, para garantir, desformata
+			campo.setAttribute("text",util.formataDecimal(valor,decs)); // Seta o valor de volta no campo
+		</method>
+		<method name="desFormataDecimal" args="campo">
+			var valor = campo.getText();			 					// O valor do campo digitado
+			campo.setAttribute("text",util.desFormataDecimal(valor));	// Seta o valor de volta no campo
+		</method>
+		
+		<method name="formataInteiro" args="campo">
+			var valor = campo.getText(); 		       					// O valor do campo digitado
+			campo.setAttribute("text",util.formataInteiro(valor));		// Seta o valor de volta no campo
+		</method>
+		<method name="desFormataInteiro" args="campo">
+			var valor = campo.getText();         						// O valor do campo digitado		
+			campo.setAttribute("text",util.desFormataInteiro(valor)); 	// Seta o valor de volta no campo
+		</method>
+		
+		<method name="formataTexto" args="cpo">
+			//cpo.setAttribute("text","Texto");
+		</method>
+		<method name="desFormataTexto" args="cpo">
+			//cpo.setAttribute("text","Texto");
+		</method>
+		
+		<method name="formataData" args="campo">
+			var valor = campo.getText();
+			campo.setAttribute("text",util.formataData(valor));
+		</method>
+		<method name="desFormataData" args="campo">
+			var valor = campo.getText(); 							// O valor do campo digitado
+			campo.setAttribute("text",util.desFormataData(valor));	// Seta o valor de volta no campo
+		</method>
+		<method name="formataDataMesAno" args="campo">
+			var valor = campo.getText();
+			campo.setAttribute("text",util.formataDataMesAno(valor));
+		</method>
+		
+		<method name="formataHora" args="campo">
+			var valor = campo.getText();
+			campo.setAttribute("text",util.formataHora(valor));
+		</method>
+		<method name="desFormataHora" args="campo">
+			var valor = campo.getText(); 							// O valor do campo digitado
+			campo.setAttribute("text",util.desFormataHora(valor));	// Seta o valor de volta no campo
+		</method>
+		
+		<!-- Metodo para validar uma data formatada dd/mm/aaaa
+			Recebe como parametro um objeto -->
+		<method name="validaData" args="campo">
+			var valor = campo.getText(); 	// O valor do campo digitado
+			return util.validaData(valor);	// Seta o valor de volta no campo
+		</method>
+		
+		<!-- Metodo para validar uma data formatada mm/aaaa
+			Recebe como parametro um objeto -->
+		<method name="validaDataMesAno" args="campo">
+			var valor = campo.getText(); 	// O valor do campo digitado
+			return util.validaDataMesAno(valor);	// Seta o valor de volta no campo
+		</method>
+
+		<!-- Metodo para validar uma hora formatada hh:mm
+			Recebe como parametro um objeto. -->
+		<method name="validaHora" args="campo">
+			var valor = campo.getText(); 	// O valor do campo digitado
+			return util.validaHora(valor);	// Seta o valor de volta no campo
+		</method>
+
+		<!-- Metodo para validar um campo DOT
+			Recebe como parametro um objeto. -->
+		<method name="validaDot" args="campo">
+			var valor = campo.getText(); 	// O valor do campo digitado
+			return util.validaDot(valor);	// Seta o valor de volta no campo
+		</method>
+		
+		<!-- Metodo para validar vencimento do DOT
+			Recebe como parametro um dot e verifica se é ainda valido -->
+		<method name="dotVencido" args="dot,tpPneu">
+			<![CDATA[
+			var maisDias=parseInt(0);
+			if (tpPneu=="R") maisDias = 1825 ; // 1095;
+			else maisDias = 1825 ; // 548;
+			
+			// aqui verificar se o vencimento do DOT é diferente para radial ou diagonal
+			// colocar em maisDias a quantidade de diaqs referentes ao numero de anos
+			// Agora é tudo igual - 22/07/2010 - Sergio
+			
+			// Transforma o dot em data
+			var dia=parseInt(dot.substring(0, 2)*7);
+			var ano=parseInt("20"+dot.substring(2, 4));
+			var mes=parseInt(1);					
+			while(dia>dateUtil.daysNmonth(mes,ano)) {
+		        mes++; dia-=dateUtil.daysNmonth(mes,ano);
+			}    
+			if (dia < 10) dia="0"+dia;
+			if (mes < 10) mes="0"+mes;
+			var dt1=dia+"/"+mes+"/"+ano;
+			// Adiciona os dias a data do dot
+			dt1=dateUtil.addDays(dt1,maisDias,"+")
+			// Pega a data de hoje
+			dt2=dateUtil.getSystemDate();
+			// Compara a data do dot contra a data de hoje
+			if (util.comparaDatas(dt1,">",dt2)) {
+				return true;	
+			}else {
+				return false
+			}
+			]]>
+		</method>
+
+		<!-- Método para validar campo requerido -->		
+		<method name="requerido" args="s">
+			return util.requerido(s);
+		</method>
+
+		<!-- Método para validar campo requerido e mostrar Alerta
+			Recebe o edittext e o label -->		
+		<method name="alertRequerido" args="objField, objLabel">
+			var isRequired = util.requerido(objField.getText());
+			if(isRequired) {
+				var strLabel = objLabel.getText();
+				if(strLabel.indexOf(":") > -1) {
+					strLabel = util.replaceAll(strLabel, ":", "");
+				}
+				this.janelaErro.mostra('Preencha o campo '+strLabel+"!");
+			}
+			return isRequired;
+		</method>
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+	</class>
+
+    <!-- Classe com view para conter os campos de form a serem tranmitidos -->
+	<class name="cpoEdits" extends="baseEdits" align="left" layout="axis:y; spacing:3"/>
+
+    <!-- Classe com view para conter os campos de form a serem tranmitidos -->
+	<class name="cpoEditsXY" extends="baseEdits"/>
+
+	<!-- Classe com methodos uteis em várias situacoes -->
+	<class name="utils">
+		
+		<method name="replaceAll" args="palavra, str1, str2">  // Troca um String por Outro
+			<![CDATA[
+				var newValor=""; 							
+				var pos=""; 								
+				for (var i=0; i < palavra.length;i++) { 		
+					pos=palavra.substring(i,i+1); 			
+					if (pos==str1) {
+						newValor=newValor+str2;
+					} else {
+						newValor=newValor+pos;
+					} 		
+				}
+				return newValor;	
+			]]>
+		</method>		
+
+		<method name="convertStringToDouble" args="valor">  // Tira os pontos e troca a virgula por ponto
+			<![CDATA[
+				valor=this.desFormataDecimal(valor);
+				var newValor="";
+				var pos=""; 								// Caractere na posição		
+				for (var i=0; i < valor.length;i++) { 		// Busca todos os caracteres individualmente
+					pos=valor.substring(i,i+1); 			// Separa o byte posicionalmente
+					if (pos==",") newValor=newValor+'.'; 	// Monta o valor de saida byte a byte
+					else          newValor=newValor+pos;
+				}
+				return newValor;
+			]]>
+		</method> 
+		
+		<method name="convertDoubleToString" args="valor,dec">  // Coloca os pontos e troca o  ponto por virgula
+			<![CDATA[
+				var valor1=""+valor;
+				var newValor="";
+				var pos=""; 								// Caractere na posição		
+				for (var i=0; i < valor1.length;i++) { 		// Busca todos os caracteres individualmente
+					pos=valor1.substring(i,i+1); 			// Separa o byte posicionalmente
+					if (pos==".") newValor=newValor+','; 	// Monta o valor de saida byte a byte
+					else          newValor=newValor+pos;
+				}
+				return valor=this.formataDecimal(newValor,dec);;
+			]]>
+		</method>		
+		<method name="formataInteiro" args="valor">
+			<![CDATA[ 										// Formata o campo numerico colocando os pontos
+			var pos=""; 									// Caractere na posição		
+			var newValor=""; 								// O novo valor a retornar
+			var ponto=0;									// Controlador da posicao do ponto
+			valor=valor+"";
+			if (valor.length==0) {							// Se campo em branco coloca "0"
+				return 0;									// Seta o valor de volta no campo				
+			} else {
+				if (valor.length>1) {
+					//Retira os zeros a esquerda se houverem
+					while (valor.substring(0,1)=="0") {
+						if (valor.length==1) break;
+						valor=valor.substring(1,valor.length);
+					}
+					for (var i=valor.length; i > -1;i--) { 	// Busca todos os caracteres individualmente
+						pos=valor.substring(i,i+1); 		// Separa o byte posicionalmente
+						newValor=pos+newValor; 				// Monta o valor de saida byte a byte
+						if (ponto==3) {						// Se for preciso coloca um ponto
+							ponto=0;
+							if (valor.length>3)
+								newValor="."+newValor;
+						}
+						ponto++	
+					}
+					if (newValor.substring(0,1)=="." ) {    // Se ficou um ponto a esquerda , retira
+						newValor=newValor.substring(1,newValor.length);
+					}
+				} else newValor=valor;
+			}	
+			return newValor	;
+			]]>	
+		</method>
+
+		<method name="desFormataInteiro" args="valor">
+			<![CDATA[ 									// Desformata o campo numerico retirando os pontos
+			var newValor=""; 							// O novo valor a retornar
+			var pos=""; 								// Caractere na posição		
+			for (var i=0; i < valor.length;i++) { 		// Busca todos os caracteres individualmente
+				pos=valor.substring(i,i+1); 			// Separa o byte posicionalmente
+				if (pos!=".") {newValor=newValor+pos;} 	// Monta o valor de saida byte a byte
+			}
+			return newValor;							// Seta o valor de volta no campo
+			]]>
+		</method>
+
+		<method name="formataDecimal" args="valor,decs">
+			<![CDATA[
+			var zeros = "0000000000000000000"; 			// Zeros para preencher no final
+			var newInteiro = "";						// O novo inteiro a retornar
+			var ponto=0;								// Controlador da posicao do ponto
+			var dec = valor.toString().indexOf(",",0); 	//Posição do virgula
+			if (dec==-1) valor=valor+","				// Se não tem virgula coloca uma no final e recalcula a posicao
+			dec = valor.toString().indexOf(",",0); 	    //Posição do virgula
+			
+			var decimal = valor.toString().substring(dec+1,dec+decs+1); // Pega a parte decimal ( sem a virgula )
+			var inteiro = valor.toString().substring(0,dec) + ""; 			// Pega a parte inteira
+	
+			if (inteiro.length==0) { inteiro = "0" }
+			
+			if (decimal.length!=decs) { // Se a parte decimal não tem o numero certo de casas preenche com o que falta
+				decimal = decimal + zeros.substring(decimal.length,decs) 
+			}
+				
+			while (inteiro.substring(0,1)=="0") { 			// Se tem zero a esquerda , retira
+				if (inteiro.length==1) break;
+				inteiro=inteiro.substring(1,inteiro.length);
+			}
+			for (var i=inteiro.length; i > -1;i--) { 		// Busca todos os caracteres individualmente
+				pos=inteiro.substring(i,i+1); 				// Separa o byte posicionalmente
+				newInteiro=pos+newInteiro; 					// Monta o valor de saida byte a byte
+				if (ponto==3) {								// Se for preciso coloca um ponto
+					ponto=0;
+					if (inteiro.length>3)
+						newInteiro="."+newInteiro;
+				}
+				ponto++	
+			}
+			if (newInteiro.substring(0,1)==".") {           // Se ficou um ponto a esquerda , retira
+				inteiro=newInteiro.substring(1,newInteiro.length);
+			} else {
+				inteiro=newInteiro;
+			}
+			return inteiro + "," + decimal; 				// Junta inteiro + virgula + decimal e mostra no campo
+			]]>
+		</method>
+		
+		<method name="desFormataDecimal" args="valor">
+			<![CDATA[ 									// Desformata o campo numerico retirando os pontos
+			var newValor=""; 							// O novo valor a retornar
+			var pos=""; 								// Caractere na posição		
+			for (var i=0; i < valor.length;i++) { 		// Busca todos os caracteres individualmente
+				pos=valor.substring(i,i+1); 			// Separa o byte posicionalmente
+				if (pos!=".") {newValor=newValor+pos;} 	// Monta o valor de saida byte a byte
+			}
+			return newValor;							// Retorna o valor sem formatacao porém com o ponto decimal
+			]]>
+		</method>
+
+		<method name="formataData" args="valor">
+			<![CDATA[
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+				var dia = valor.substring(0,2);
+				var mes = valor.substring(2,4);
+				var ano = valor.substring(4,8);
+				var newValor ="";
+
+				if (ano.length==1) {			// Se o ano tem tamanho 1 completa com 200
+					ano = "200" + ano			
+				} else {
+					if (ano.length==2) {		// Se o ano tem tamanho 2 ...
+						if (ano < "60") {		// e se for menor que 60 completa com 20
+							ano = "20" + ano
+						} else {
+							ano = "19" + ano    // e se for maior que 60 completa com 19
+						}
+					} else {
+						if (ano.length==3) {	// Se o ano tiver tamanho 3 compelta com 2
+							ano = "2" + ano
+						}
+					}
+				}
+				newValor= dia + "/" + mes  + "/" + ano
+				return newValor;
+			} else {
+				return "//";
+			}
+			]]>
+		</method>
+		
+		<method name="formataDataMesAno" args="valor">
+			<![CDATA[
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+				var mes = valor.substring(0,2);
+				var ano = valor.substring(2,6);
+				var newValor ="";
+
+				if (ano.length==1) {			// Se o ano tem tamanho 1 completa com 200
+					ano = "200" + ano			
+				} else {
+					if (ano.length==2) {		// Se o ano tem tamanho 2 ...
+						if (ano < "60") {		// e se for menor que 60 completa com 20
+							ano = "20" + ano
+						} else {
+							ano = "19" + ano    // e se for maior que 60 completa com 19
+						}
+					} else {
+						if (ano.length==3) {	// Se o ano tiver tamanho 3 compelta com 2
+							ano = "2" + ano
+						}
+					}
+				}
+				newValor= mes  + "/" + ano
+				return newValor;
+			} else {
+				return "//";
+			}
+			]]>
+		</method>
+		
+		<method name="formataHora" args="valor">
+			<![CDATA[
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+				var hor = valor.substring(0,valor.length-2);
+				if (hor.length>0) {
+					var min = valor.substring(valor.length-2,valor.length);
+				} else {
+					var min = valor;
+				}
+				var newValor ="";
+				if (hor.length==0) {			// 
+					hor = "0" + hor			
+				}
+				if (hor.length==1) {			// 
+					hor = "0" + hor			
+				}
+				if (min.length==0) {			// 
+					min = "0" 			
+				}
+				if (min.length==1) {			// 
+					min = "0" + min			
+				}
+				newValor= hor  + ":" + min
+				return newValor;
+			} else {
+				return ":";
+			}
+			]]>
+		</method>
+		
+		<method name="desFormataData" args="valor">
+			<![CDATA[ 									// Desformata o campo data retirando as barras
+			var newValor=""; 							// O novo valor a retornar
+			var pos=""; 								// Caractere na posição		
+			for (var i=0; i < valor.length;i++) { 		// Busca todos os caracteres individualmente
+				pos=valor.substring(i,i+1); 			// Separa o byte posicionalmente
+				if (pos!="/") {newValor=newValor+pos;} 	// Monta o valor de saida byte a byte
+			}
+			return newValor;							// Retorna o valor 
+			]]>
+		</method>
+		
+		<method name="desFormataHora" args="valor">
+			<![CDATA[ 									// Desformata o campo hora
+			var newValor=""; 							// O novo valor a retornar
+			var pos=""; 								// Caractere na posição		
+			for (var i=0; i < valor.length;i++) { 		// Busca todos os caracteres individualmente
+				pos=valor.substring(i,i+1); 			// Separa o byte posicionalmente
+				if (pos!=":") {newValor=newValor+pos;} 	// Monta o valor de saida byte a byte
+			}
+			return newValor;							// Retorna o valor 
+			]]>
+		</method>
+		
+		<!-- Compara dois numeros inteiros
+			Parametros : vlr1,cmp,vlr2
+				vlr1 = Um dos valores a serem comparados
+				cmp  = Operando de comparacao < ou > ou =
+				vlr2 = Outro dos valores a serem comparados
+			Retorno : true/false	
+		-->		
+		<method name="comparaInteiro" args="vlr1,cmp,vlr2">
+			<![CDATA[
+				var cmp1="000000000000000000";
+				var cmp2="000000000000000000";
+				cmp1=cmp1.substring(0,(cmp1.length-vlr1.length))+vlr1;
+				cmp2=cmp2.substring(0,(cmp2.length-vlr2.length))+vlr2;
+				if (cmp=='<')
+					if ( cmp1 < cmp2)
+						return true;
+				if (cmp=='>')
+					if ( cmp1 > cmp2)
+						return true;
+				if (cmp=='=')
+					if ( cmp1 == cmp2)
+						return true;
+				return false;
+			]]>
+		</method>		
+
+		<!-- Compara dois valores fracionados
+			Parametros : vlr1,cmp,vlr2
+				vlr1 = Um dos valores a serem comparados
+				cmp  = Operando de comparacao < ou > ou =
+				vlr2 = Outro dos valores a serem comparados
+			Retorno : true/false	
+		-->		
+		<method name="comparaFracionario" args="vlr1,cmp,vlr2">
+			<![CDATA[
+				vlr1=""+vlr1;
+				vlr2=""+vlr2;
+				var vlr1d=this.desFormataDecimal(vlr1);
+				var vlr2d=this.desFormataDecimal(vlr2);
+				var cmp1="00000000000000000000";
+				var cmp2="00000000000000000000";
+				cmp1=cmp1.substring(0,(cmp1.length-vlr1d.length))+vlr1d;
+				cmp2=cmp2.substring(0,(cmp2.length-vlr2d.length))+vlr2d;
+				if (cmp=='<')
+					if ( cmp1 < cmp2)
+						return true;
+				if (cmp=='>')
+					if ( cmp1 > cmp2)
+						return true;
+				if (cmp=='=')
+					if ( cmp1 == cmp2)
+						return true;
+				return false;
+			]]>
+		</method>		
+		
+		<!-- Verifica se a data passada como parametro é maior que a data de hoje 
+			Parametros : dt
+				dt = data formatada no formato dd/mm/aaa com os zeros a esquerda
+			Retiorno : true/false	
+		-->
+		<method name="comparaDtHoje" args="dt">
+			<![CDATA[
+			var hoje = new Date();
+			var ah=hoje.getFullYear();
+			var mh=hoje.getMonth()+1+"";
+			var dh=hoje.getDate()+"";
+			if (mh.length==1) mh="0"+mh;
+			if (dh.length==1) dh="0"+dh;
+			var di = dt.substring(0,2); //12/12/1212
+			var mi = dt.substring(3,5);
+			var ai = dt.substring(6,10);
+			var h = ah+mh+dh;
+			var i = ai+mi+di;
+			if (i>h)
+				return true;
+			else
+				return false;
+			]]>
+		</method>
+
+		<!-- Compara data do parametro 1 com data do parametro 3 usando comparador do parametro 2 
+			Parametros : dt
+				dt = data formatada no formato dd/mm/aaa com os zeros a esquerda
+			Retiorno : true/false	
+		-->
+		<method name="comparaDatas" args="dt1,cmp,dt2">
+			<![CDATA[
+			var di1 = dt1.substring(0,2); //12/12/1212
+			var mi1 = dt1.substring(3,5);
+			var ai1 = dt1.substring(6,10);
+			var data1 = ai1+mi1+di1;
+			var di2 = dt2.substring(0,2); //12/12/1212
+			var mi2 = dt2.substring(3,5);
+			var ai2 = dt2.substring(6,10);
+			var data2 = ai2+mi2+di2;
+			if (cmp=='<')
+				if ( data1 < data2)
+					return true;
+			if (cmp=='>')
+				if ( data1 > data2)
+					return true;
+			if (cmp=='=')
+				if ( data1 == data2)
+					return true;
+			return false;
+			]]>
+		</method>
+
+		<!-- Método para fazer o trim de uma string -->
+		<method name="dotrim" args="s">
+			<![CDATA[
+				var aEntry = s.split(' ');
+				var tEntry = new Array();
+				for (var n = 0; n < aEntry.length; n++) {
+					if (aEntry[n] != '') {
+						tEntry.push(aEntry[n]);
+					}
+				}
+				return tEntry.join(" ");
+			]]>
+		</method>
+	
+		<!-- Método para validar cnpj -->
+		<method name="validaCNPJ" args="strcnpj">
+			<![CDATA[
+				if (strcnpj.length < 14 || strcnpj == "00000000000000")
+					return true;
+        		var p = [6,5,4,3,2,9,8,7,6,5,4,3,2];		
+        		var t = 0;
+        		var d = 0;
+        		var d1= 0;
+        		var d2= 0;
+        		var i = 0;
+				// Calcula primeiro dígito 
+				t=0;        		
+			    for (i=12;i>-1;i--) {
+        			if (i==0) 
+        				d=0;
+        			else 
+        				d=parseInt(strcnpj.charAt(i-1));
+			    	t = t + (p[i] * d);
+			    }
+			    d = t % 11;
+			    if (d<2)
+			    	d1 = 0
+			    else {
+			    	d = d - 11;
+			    	if (d<0)
+			    		d1 = d * -1;
+			    	else
+			    		d1 = d;
+			    }
+				// Calcula segundo dígito
+			    t=0;        		
+			    for (i=12;i>-1;i--) {
+			    	t = t + (p[i] * parseInt(strcnpj.charAt(i)));
+			    }
+			    d = t % 11;
+			    if (d<2)
+			    	d2 = 0
+			    else {
+			    	d = d - 11;
+			    	if (d<0)
+			    		d2 = d * -1;
+			    	else
+			    		d2 = d;
+			    }
+				// Testa se fechou !!!
+			    var comp = " "+d1+d2;
+			    comp = this.dotrim(comp);
+				if (comp != strcnpj.substr(12,2))
+					return true
+			    
+        		return false;	
+			]]>
+		</method>
+
+		<!-- Método para validar cpf -->
+		<method name="validaCPF" args="strcpf">
+			<![CDATA[
+				// valida CPF
+				if (strcpf == null || strcpf == undefined || strcpf.length < 11) {
+					return true;
+				}
+
+				// valida entradas fáceis
+				var cpferr = "0000000000011111111111222222222223333333333344444444444"+
+								 "5555555555566666666666777777777778888888888899999999999"
+				if (cpferr.indexOf(strcpf) >= 0) { // informado campo de facil entrada
+					return true;
+				}
+
+				var dg='', dgc='', k=0, soma=0, mt=0;
+				var cpf = strcpf.substring(0,9);
+				var digito = strcpf.substring(9,11);
+				for (var j = 1; j <= 2; j++) {
+					soma = 0;
+					mt = 2;
+					for (var i = 8 + j; i >= 1; i--) {
+						soma += parseInt(cpf.charAt(i-1),10) * mt;
+						mt++;
+					}
+					dg = 11 - (soma % 11);
+					if (dg > 9) {dg = 0};
+					cpf += dg;
+					dgc+=dg
+				}
+
+				// digito inválido
+				if (dgc != digito) {
+					return true;
+				} else return false;
+			]]>
+		</method>
+
+		<!-- Metodo para validar uma data formatada dd/mm/aaaa
+			Recebe como parametro um texto 	-->
+		<method name="validaData" args="valor">
+			<![CDATA[
+			if (valor==null) return false;
+			var erro="Certo";
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+			
+				var dia = valor.substring(0,2);
+				var mes = valor.substring(3,5);
+				var ano = valor.substring(6,10);
+				
+				if ( dia < "01" || dia > "31") { erro="Erro"; }
+				if ( mes < "01" || mes > "12") { erro="Erro"; }
+				if ( ano < "0001" || ano > "9999") { erro="Erro"; }
+				
+				if ( mes=="04" || mes=="06" || mes=="09" || mes=="11" ) {
+					if (dia > 30) { erro="Erro"; }
+				}
+				
+				if ( mes=="02" ) {
+					// Calcula bisexto
+					var x = ano / 4;
+					var y = x.toString();
+					var z = 0;
+					if (y.indexOf(".")>0 ) z = y.substring(0,y.indexOf("."));
+					else z=y;
+					z = z * 4
+					if (ano==z.toString()) { // Se for ano bisexto
+						if (dia > "29")
+							erro="Erro";
+					} else {
+						if (dia > "28")
+							erro="Erro";
+					}	
+				}
+				// Retorna true de está correta false se está errada
+				if (erro=="Certo")  return true; 
+				else return false;
+			}					
+			]]>		
+		
+		</method>
+		
+		<!-- Metodo para validar uma data formatada mm/aaaa 
+			Recebe como parametro um texto -->
+		<method name="validaDataMesAno" args="valor">
+			<![CDATA[
+			if (valor==null) return false;
+			var erro="Certo";
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+			
+				var mes = valor.substring(0,2);
+				var ano = valor.substring(3,7);
+				if ( mes < "01" || mes > "12") { erro="Erro"; }
+				if ( ano < "0001" || ano > "9999") { erro="Erro"; }
+				
+				// Retorna true de está correta false se está errada
+				if (erro=="Certo")  return true; 
+				else return false;
+			}					
+			]]>		
+		
+		</method>
+
+		<!-- Metodo para validar uma hora formatada hh:mm 
+			Recebe como parametro um texto -->
+		<method name="validaHora" args="valor">
+			<![CDATA[
+			if (valor==null) return false;
+			var erro="Certo";
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+			
+				var hor = valor.substring(0,2);
+				var min = valor.substring(3,5);
+
+				if ( hor < "00" || hor > "23") { erro="Erro"; }
+				if ( min < "00" || min > "59") { erro="Erro"; }
+				
+				// Retorna true de está correta false se está errada
+				if (erro=="Certo")  return true; 
+				else return false;
+			}					
+			]]>		
+		
+		</method>
+
+		<!-- Metodo para validar uma campo DOT 
+			Recebe como parametro um texto -->
+		<method name="validaDot" args="valor">
+			<![CDATA[
+			if (valor==null) return false;
+			var erro="Certo";
+			if (valor.length > 0) {	// Se não for digitado nada não faz nada.
+				if (valor.length < 4) {
+					return false;
+				} else {
+					var sem = valor.substring(0,2);
+					var ano = valor.substring(2,4);
+					if ( sem < "00" || sem > "52") { erro="Erro"; }
+					if ( ano < "00" || ano > "99") { erro="Erro"; }
+					// Retorna true de está correta false se está errada
+					if (erro=="Certo")  return true; 
+					else return false;
+				}	
+			}					
+			]]>		
+		</method>
+
+		<!-- Método para validar campo requerido 
+			recebe como parametro um texto -->		
+		<method name="requerido" args="s">
+			<![CDATA[
+				if (s==null) return true; 
+				var entry=this.dotrim(s);
+				if (entry.length==0 || entry==null)
+					return true;
+				else
+					return false;
+			]]>
+		</method>
+
+		<method name="retiraAcento" args="s">  	// Retira os acentos da string informada
+			<![CDATA[
+				valor=s;
+				var newValor="";
+				var pos=""; 								// Caractere na posição
+				for (var i=0; i < valor.length;i++) { 		// Busca todos os caracteres individualmente
+					pos=valor.substring(i,i+1); 			// Separa o byte posicionalmente
+					if (pos=='Ã') newValor=newValor+'A'; else
+		            if (pos=='ã') newValor=newValor+'a'; else
+		            if (pos=='á') newValor=newValor+'a'; else
+		            if (pos=='Á') newValor=newValor+'A'; else
+		            if (pos=='á') newValor=newValor+'a'; else
+		            if (pos=='É') newValor=newValor+'E'; else
+		            if (pos=='é') newValor=newValor+'e'; else
+		            if (pos=='Í') newValor=newValor+'I'; else
+		            if (pos=='í') newValor=newValor+'i'; else
+		            if (pos=='Ó') newValor=newValor+'O'; else
+		            if (pos=='ó') newValor=newValor+'o'; else
+		            if (pos=='Ú') newValor=newValor+'U'; else
+		            if (pos=='ú') newValor=newValor+'u'; else
+		            if (pos=='Ç') newValor=newValor+'C'; else
+		            if (pos=='ç') newValor=newValor+'c'; else
+		            if (pos=='Ü') newValor=newValor+'U'; else
+		            if (pos=='ü') newValor=newValor+'u'; else
+		            if (pos=='&') newValor=newValor+'e'; else
+					newValor=newValor+pos;
+				}
+				return newValor;
+			]]>
+		</method> 
+
+	</class>
+
+   <!--  Classe para colocar separdor em telas 
+      Parâmetros:
+      widthLine = Tamanho da linha de ssublinhado.
+   -->	
+	<class name="separador" >
+		<attribute name="widthLine" type="number" />
+		<simplelayout/>
+	   	<view width="${this.parent.widthLine}" height="1" bgcolor="#FFFFFF"/>
+    	<view width="${this.parent.widthLine}" height="1" bgcolor="#8D8C8C"/>
+	</class>
+
+   <!--  Classe para colocar um frame 3D na tela 
+      Parâmetros:
+      caption = Texto que aparece no topo do frame.
+   -->	
+	<class name="frame3d" extends="view">
+		<attribute name="caption" type="text"/>
+		<attribute name="width1" type="text"/>
+		<attribute name="height1" type="text"/>
+		<view  width="${this.parent.width}" height="${this.parent.height}" >
+			<view width="1" height="${this.parent.height}" bgcolor="white"/>
+			<view width="${this.parent.width}" height="1" bgcolor="white"/>
+			<view x="${this.parent.width-1}" width="1" height="${this.parent.height}" bgcolor="#c0c0c0" />
+			<view y="${this.parent.height-1}" width="${this.parent.width}" height="1" bgcolor="#c0c0c0" />
+		</view>
+		<text y="-8" x="+10" width="${classroot.width}" text="${classroot.caption}"   />
+	</class>
+
+   <!--  Classe para colocar uma caixa cinza 3D na tela 
+      Parâmetros:
+      caption = Texto que aparece no topo do frame.
+   -->	
+	<class name="greyBox3D" extends="view">
+		<attribute name="caption" type="text"/>
+		<view y="${this.parent.y}" x="${this.parent.x}" width="${this.parent.width}" height="${this.parent.height}">
+			<view width="${this.parent.width}" height="${this.parent.height}" bgcolor="#E9E9E9" />
+			<view width="1" height="${this.parent.height}" bgcolor="white" />
+			<view width="${this.parent.width}" height="1" bgcolor="white" />
+			<view x="${this.parent.width-1}" width="1" height="${this.parent.height}" bgcolor="#c0c0c0" />
+			<view y="${this.parent.height-1}" width="${this.parent.width}" height="1" bgcolor="#c0c0c0" />
+		</view>
+		<text y="${this.parent.y-9}" x="${this.parent.x+8}" height="21" width="${this.parent.width}"  text="${this.parent.caption}" />
+	</class>
+
+
+</library>

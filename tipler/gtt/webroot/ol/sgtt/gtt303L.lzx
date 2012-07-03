@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<!-- Variáveis globais -->	
+	<script>
+ 		var wOid_RecGar;
+ 		var dpMov;
+  	</script>
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+	
+  	<!-- Datasets para os combos -->
+  	<dataset name="sisGtt003" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ComboServlet?combo=Usuario&amp;consulta=SIM" />
+  	<datapointer name="sisdpGtt003" xpath="local:sisGtt003:/" />
+  	
+   	<!-- Classe da Tela -->
+	<class name="gtt303" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok');
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+	              	var regs = classroot.caddp.xpathQuery('*/item/last()');
+	              	var x = parent.tela.tab.tabLis.barLis;
+	              	
+	      			if ( !regs==0 ) {
+	              		x.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabLis.setAttribute('selected',true);
+	      			} else {
+	      				x.btnRelatoLis.setAttribute('enabled',false);          		
+	          			parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!');
+	      			}
+      			}
+      			"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />		
+	<datapointer name="caddp2" xpath="local:cad:/cad/media/item" />
+
+    <method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<simplelayout spacing="1" />
+	
+	<!-- Título da tela -->
+	<titulo x="5" text="Consulta inspeções realizadas" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+		<view name="tela" height="${parent.parent.height}" width="${parent.parent.width}">
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+       	<tabs name="tab" x="5" y="5"  height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel">
+	               		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:1">
+							<!-- Labels -->
+							<view name="label" width="130" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Aprovada?:" />
+								<text height="21" align="right" text="Período de:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" x="40" align="left" layout="axis:y; spacing:3">
+								<edittext name="tela" visible="false" text="gtt303" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="IndenizacaoED" />
+								<edittext name="rn" visible="false" text="IndenizacaoRN" />
+								<datacombobox name="dm_Aprovacao" 			width="100" height="21" itemdatapath="dmSimNaoC:/item" />	
+								<view name="datas" layout="axis:x; spacing:3">
+									<edittext align="left" name="dt_Aprovacao_Inicial" maxlength="8" width="80" height="21"
+										oninit="parent.parent.pattern(this,'dat')" onblur="parent.parent.format(this,'dat',4);" onfocus="parent.parent.deformat(this,'dat');" />	
+									<text height="21" width="27" text="Até:" visible="true"/>
+									<edittext align="left" name="dt_Aprovacao_Final" maxlength="8" width="80" height="21"
+										oninit="parent.parent.pattern(this,'dat')" onblur="parent.parent.format(this,'dat',4);" onfocus="parent.parent.deformat(this,'dat');" />	
+								</view>
+
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="360" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="true">
+                  		Selecionar
+                  		<handler name="onclick">       
+                  			if (parent.valida()) parent.click();
+	                  	</handler>
+               		</button>
+               		<method name="click">
+                 			parent.parent.parent.carregando.startAni(); 
+                 			local:classroot.cad.setSrc("../../ControlerServlet"); 
+                 			parent.corSel.formSel.filtra.submit();
+               		</method>
+               		<method name="valida">
+               			var retorno = true;
+               			var x = parent.corSel.formSel.vCampos.edits;
+           				if ( x.dm_Aprovacao.value == null ) { 
+               				parent.parent.parent.janelaErro.mostra('Escolha um status da aprovação !');
+               				retorno = false;
+               			} else 
+               			if (!x.validaData(x.datas.dt_Aprovacao_Inicial)) {
+               				parent.parent.parent.janelaErro.mostra('Preencha o campo Período inicial !');
+               				retorno = false;
+               			} else
+               			if (!x.validaData(x.datas.dt_Aprovacao_Final)) {
+               				parent.parent.parent.janelaErro.mostra('Preencha o campo Período final !');
+               				retorno = false;
+               			} 
+               			return retorno
+					</method>
+               		
+            	</view>
+     		</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout axis="y" spacing="3" />
+
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-8}" width="${parent.width-10}" multiselect="false" rowheight="16">
+	                	<gridtext editable="false" datapath="@oid_Indenizacao" 		text="oid" 				width="0"  	visible="false" />
+	                	<gridtext editable="false" datapath="@nm_Usuario_Tecnico" 	text="Técnico" 			width="80" resizable="false"/>
+	                	<gridtext editable="false" datapath="@dt_Indenizacao" 		text="Dt Inden" 		width="80" resizable="false"/>
+	                	<gridtext editable="false" datapath="@nm_Aprovacao" 		text="Aprov" 			width="50" textalign="center" resizable="false"/>
+	                	<gridtext editable="false" datapath="@dt_Aprovacao" 		text="Dt Aprov" 		width="80" resizable="false"/>
+	                  	<gridtext editable="false" datapath="@nr_Fogo" 				text="Nº Fogo/Série" 	width="100" resizable="false" />
+	                	
+						<gridtext editable="false" datapath="@nm_Banda" 			text="Banda" 			width="200" resizable="false" />	                	
+	                	<gridtext editable="false" datapath="@nr_Nota_Fiscal" 		text="NF" 				width="85" 	resizable="false" />
+	                	
+	               		<method event="onselect" args="row">
+	               			dpMov=row.datapath;
+                  			wOid_RecGar=row.datapath.xpathQuery("@oid_Indenizacao");
+                 			//parent.parent.barLis.btnEditar.setAttribute('enabled',wOid_RecGar>0?true:false);
+             			</method>
+               		</grid>               		          
+            	</view>
+            	<view name="barLis" x="1" y="360" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+   					<button name="btnRelatoLis" enabled="false" width="70">Relatório
+                  		<handler name="onclick">
+                  			parent.parent.parent.parent.carregando.startAni();
+                  			var x = parent.parent.parent.tabSel.corSel.formSel.vCampos.edits;
+                  			var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=gtt303";submit
+							chamada += "&amp;"+"ed=IndenizacaoED";
+							chamada += "&amp;"+"rn=IndenizacaoRN";
+							chamada += "&amp;"+"acao=L";
+							chamada += "&amp;"+"rel=4"; 
+							chamada += "&amp;"+"dm_Aprovacao="+ x.dm_Aprovacao.value;
+							chamada += "&amp;"+"nm_Razao_Social=ESCAPACABECALHO";
+							chamada += "&amp;"+"dt_Aprovacao_Inicial="+ x.datas.dt_Aprovacao_Inicial.getText();
+							chamada += "&amp;"+"dt_Aprovacao_Final="+ x.datas.dt_Aprovacao_Final.getText();
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+	                  	</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />   	
+   	</view>
+   	
+	</class>   
+
+</library>

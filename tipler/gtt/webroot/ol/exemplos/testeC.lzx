@@ -1,0 +1,51 @@
+<canvas debug="true">
+    <!-- Data 
+    <dataset name="first">
+        <ducks>
+            <character name="Donald" type="duck" />
+            <character name="Daisy" type="duck" />
+            <character name="Scrooge" type="duck" />
+        </ducks>
+    </dataset>
+	
+	<dataset name="first">
+		<cad>
+			<item oid_Fabricante_Banda='2' cd_Fabricante_Banda='002' nm_Fabricante_Banda='BANDAG' msg_Stamp='Incluído por REGIS em 04/12/2009' />
+			<item oid_Fabricante_Banda='0' cd_Fabricante_Banda='000' nm_Fabricante_Banda='REGIS' msg_Stamp='Incluído por REGIS em 08/08/2011' />
+			<item oid_Fabricante_Banda='1' cd_Fabricante_Banda='001' nm_Fabricante_Banda='TIPLER' msg_Stamp='Incluído por IMPLANTAÇÃO em 29/07/2009' />
+			<item oid_Fabricante_Banda='3' cd_Fabricante_Banda='003' nm_Fabricante_Banda='VIPAL' msg_Stamp='Incluído por REGIS em 04/12/2009' />
+		</cad>
+	</dataset>
+	-->
+  	<dataset name="first" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ControlerServlet?acao=L&amp;ed=Fabricante_BandaED&amp;rn=Fabricante_BandaRN" />
+	<datapointer name="dp1" xpath="first:/cad" />
+	<!--
+  	<dataset name="second" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ControlerServlet?acao=L&amp;ed=Fabricante_BandaED&amp;rn=Fabricante_BandaRN&amp;oid_Fabricante_Banda=2" />
+	<datapointer name="dp2" xpath="second:/cad/item[1]" />	 
+	-->
+	<dataset name="second">
+		<ret>
+			<item oknok='IOK' oid='15' />
+		</ret>	 
+		<cad>
+			<item oid_Fabricante_Banda='2' cd_Fabricante_Banda='002' nm_Fabricante_Banda='BANDAG' msg_Stamp='Incluído por REGIS em 04/12/2009' />
+		</cad>
+	</dataset>	 
+	<datapointer name="dp2" xpath="second:/cad/item[1]" />
+	<datapointer name="dp2ret" xpath="second:/ret/item[1]" />
+	 
+	<simplelayout axis="y" spacing="2" />	
+     
+    <grid name="lst" datapath="first:/" contentdatapath="cad/item" width="300">
+        <gridtext editable="false" datapath="@nm_Fabricante_Banda" width="100" />
+        <gridtext editable="false" datapath="@cd_Fabricante_Banda" width="100" />
+	</grid>
+	
+    <button>Copy node over
+        <method event="onclick">
+            dp1.addNodeFromPointer( dp2 );
+        </method>
+    </button>
+</canvas>

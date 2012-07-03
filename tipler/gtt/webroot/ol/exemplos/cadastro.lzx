@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#FAFAFA" debug="true" >
+
+   <!-- Includes -->
+   <include href="../include/botoesCadastro.lzx"/>
+   <include href="../include/objetosDeTela.lzx"/>
+   
+   <splash />
+   <simplelayout spacing="1" />
+   <!-- Datasets -->
+   <dataset name="pneu">
+      <item idPneu="001" numSerie="0010100101" marca="001" dimensao="001" construcao="Borrachudo" />
+      <item idPneu="002" numSerie="0020200202" marca="002" dimensao="003" construcao="Borrachudo" />
+      <item idPneu="003" numSerie="0030300303" marca="003" dimensao="004" construcao="Liso" />
+      <item idPneu="004" numSerie="0040400404" marca="004" dimensao="003" construcao="Borrachudo" />
+      <item idPneu="005" numSerie="0050500505" marca="001" dimensao="002" construcao="Liso" />
+      <item idPneu="006" numSerie="0060600606" marca="002" dimensao="004" construcao="Liso" />
+      <item idPneu="007" numSerie="0070700707" marca="003" dimensao="005" construcao="Borrachudo" />
+      <item idPneu="008" numSerie="0080800808" marca="004" dimensao="003" construcao="Liso" />
+   </dataset>
+   <dataset name="marca">
+      <item value="001">GoodYear</item>
+      <item value="002">Pirelli</item>
+      <item value="003">Michellin</item>
+      <item value="004">FateO</item>
+   </dataset>
+   <dataset name="dimensao">
+   	<cad>
+      <item value="001">1000 / 20 R 20</item>
+      <item value="002">1000 / 20 X 20</item>
+      <item value="003">1100 X 20 R 22</item>
+      <item value="004">1100 X 20 X 22</item>
+      <item value="005">7.65 / 20 R 18</item>
+     </cad> 
+   </dataset>
+
+
+   <!-- Clases locais -->
+   <!-- Classe para instanciar campos nas view de editar e incluir parent.  -->
+   <class name="campos" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+      <edittext name="IdPneu" maxlength="10" width="84" height="21" datapath="@idPneu" pattern="[0-9]*"/>
+      <edittext name="NumSerie" maxlength="20" width="150" height="21" datapath="@numSerie" />
+      <datacombobox name="Marca" width="130" height="21" datapath="@marca" itemdatapath="marca:/item" />
+
+      <datacombobox name="Dimensao" width="130" height="21" datapath="@dimensao" itemdatapath="dimensao:/cad/item" />
+      <edittext name="Construcao" maxlength="20" width="150" height="21"></edittext>
+   </class>
+
+   <!-- Título da tela -->
+    <titulo x="5" text="Cadastro de pneus" tela="PNS001" widthLine="695" corFrente="#FF9900" />
+
+   <!-- Tabs da tela -->
+   <tabs id="cad" x="5" y="5" height="395" width="695">
+      <!-- Seleção -->
+      <tabpane id="tabSel">
+         Seleção
+         <simplelayout spacing="1" />
+         <view id="corSel" width="695" height="325">
+            <view width="110" align="left" layout="axis:x; spacing:5">
+               <!-- Labels -->
+               <view width="110" align="right" layout="axis:y; spacing:3">
+                  <text height="21" align="right">Pneu</text>
+                  <text height="21" align="right">Número de série</text>
+                  <text height="21" align="right">Marca</text>
+                  <text height="21" align="right">Dimensão</text>
+                  <text height="21" align="right">Construção</text>
+                  <text height="21" align="right">Modêlo</text>
+                  <text height="21" align="right">Nota Fiscal</text>
+                  <text height="21" align="right">Controle parcial</text>
+                  <text height="21" align="right">Código do estoque</text>
+               </view>
+               <!-- Campos -->
+               <view align="left" layout="axis:y; spacing:3">
+                  <edittext id="selIdPneu" maxlength="10" width="84" height="21"></edittext>
+                  <edittext id="selNumSerie" maxlength="20" width="150" height="21"></edittext>
+                  <edittext id="selMarca" maxlength="20" width="150" height="21"></edittext>
+                  <edittext id="selDimensao" maxlength="20" width="150" height="21"></edittext>
+                  <edittext id="selConstrucao" maxlength="20" width="150" height="21"></edittext>
+                  <edittext id="selModelo" maxlength="20" width="150" height="21"></edittext>
+                  <edittext id="selNF" maxlength="7" width="70" height="21"></edittext>
+                  <radiogroup id="selControleParcial" height="21" layout="axis:x; spacing:20">
+                     <radiobutton value="1" text="todos" />
+                     <radiobutton value="2" text="com" />
+                     <radiobutton value="3" text="sem" />
+                  </radiogroup>
+                  <edittext id="selCodEstoque" maxlength="10" width="100" height="21"></edittext>
+               </view>
+            </view>
+         </view>
+         <view id="barSel" x="1" y="300" layout="axis:x; spacing:2">
+            <button id="btnFecharSel" width="70">Fechar</button>
+            <button id="btnSelectSel" width="70">Selecionar</button>
+         </view>
+      </tabpane>
+      <!-- Cadastro -->
+      <tabpane id="tabCad">
+         Cadastro
+         <simplelayout spacing="1" />
+         <view id="corCad" width="695" height="325">
+            <view  width="110" align="left" layout="axis:x; spacing:5" >
+               <!-- Labels -->
+               <view width="110" align="right" layout="axis:y; spacing:3">
+                  <text height="21" align="right">Pneu</text>
+                  <text height="21" align="right">Número de série</text>
+                  <text height="21" align="right">Marca</text>
+                  <text height="21" align="right">Dimensão</text>
+                  <text height="21" align="right">Construção</text>
+               </view>
+               <!-- View para update -->
+               <campos id="updCad" visible="true" datapath="pneu:/item[1]"/>
+               <!-- View campos para inclusão -->
+               <campos id="newCad" visible="false" datapath="new:/item"/>
+            </view>
+         </view>
+         <botoesCad id="barCad"/>
+      </tabpane>
+      <!-- Lista -->
+      <tabpane id="tabLis">
+         Lista
+         <simplelayout spacing="1" />
+         <view id="corLis" width="695" height="325">
+            <simplelayout spacing="2" />
+            <grid id="lst" datapath="pneu:/" contentdatapath="item" height="${parent.height}" width="${parent.width-20}">
+               <gridtext editable="false" datapath="@idPneu" width="80">Código</gridtext>
+               <gridtext editable="false" datapath="@numSerie" width="120">Núm. de série</gridtext>
+               <gridtext editable="false" datapath="@marca" width="120">Marca</gridtext>
+               <gridtext editable="false" datapath="@dimensao" width="120">Dimensão</gridtext>
+               <gridtext editable="false" datapath="@construcao" width="120">Construção</gridtext>
+               <method event="onselect" args="row">updCad.datapath.setPointer(row.datapath.p);tabCad.setAttribute('selected',true);</method>
+            </grid>
+         </view>
+         <view id="barLis" x="1" y="300" layout="axis:x; spacing:2">
+            <button id="btnFecharLis" width="70">Fechar</button>
+            <button id="btnRelatoLis" width="70">Relatório</button>
+         </view>
+      </tabpane>
+   </tabs>
+
+</canvas>
+

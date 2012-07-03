@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+		var dp=null;
+	</script>
+
+   	<!-- Classe da Tela -->
+	<class name="tib104" extends="view" width="${parent.width}" height="${parent.height}" >
+
+	<!-- Dataset Busca os itens da inspeção -->
+	<dataset name="cadInsp" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?acao=L&amp;dm_Encerradas=S&amp;ed=Stib_InspecaoED&amp;rn=Stib_InspecaoRN"
+      	ondata="var resultado = classroot.cadInspdp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="cadInspdp" xpath="local:cadInsp:/" />
+	<datapointer name="cadInspdp1" xpath="local:cadInsp:/ret/item" />
+
+	<!-- Dataset para excluir inspeção -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+              		if (resultado=='DOK'){
+              			classroot.tela.janelaAviso.mostra('Inspeção excluída com sucesso!');
+              			parent.carregando.startAni();
+              			parent.cadInsp.doRequest();
+              		} else{ 	
+	              		if (resultado=='ROK'){	
+	              			var wTib102 = canvas.wTib102;
+          					wTib102.tib102.selfPopulate(dp.getNodeAttribute('oid_Inspecao'));
+							wTib102.tib102.tela.vCabecalho.edits.nm_Razao_Social.setAttribute('text',dp.getNodeAttribute('nm_Razao_Social'));
+							wTib102.tib102.tela.vCabecalho.edits.dt_Inicio.setAttribute('text',dp.getNodeAttribute('dt_Inicio'));
+							wTib102.tib102.tela.vCampos.edits.oid_Inspecao.setAttribute('text',dp.getNodeAttribute('oid_Inspecao'));
+		          			wTib102.open();
+		          			parent.parent.close();
+	              		} else {
+	              			classroot.tela.janelaAviso.mostra(resultado);
+              			}
+          			}	
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Inspeções encerradas" widthLine="${parent.width-30}" corFrente="#FF9900" oninit="this.setAttribute('text', ('E'==lang ? 'Inspecciónes concluídas ' : 'Inspeções encerradas') );"/>
+
+	<!-- View da tela -->
+	<view name="tela" y="30" width="${parent.width}" height="${parent.height-30}">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg"> 
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+	
+	
+		<!-- Janela de aviso de estorno - Cadastro -->
+		<modaldialog name="alertaExclui" title="A v i s o !" width = "300" >
+			<simplelayout spacing="5" />
+			<text  oninit="this.setAttribute('text', ('E'==lang ? 'Confirme exclusión de la inspeción?' : 'Confirma a exclusão da inspeção') ); this.setAttribute('width',250);"/>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" oninit="this.setAttribute('text', ('E'==lang ? 'No' : 'Não') );" isdefault="true" />
+            	<button oninit="this.setAttribute('text', ('E'==lang ? 'Sí' : 'Sim') );" >
+               		<method event="onclick">
+	  					classroot.cad.setAttribute("src","../../ControlerServlet?");
+	  					classroot.cad.setQueryString({tela : "tib104",
+														   ed : "Stib_InspecaoED",
+							  							   rn : "Stib_InspecaoRN",
+										   			  	 acao : "D",
+								  	             oid_Inspecao : dp.getNodeAttribute("oid_Inspecao")
+	  													});	
+						classroot.cad.doRequest();
+						classroot.carregando.startAni();
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+	
+        <simplelayout spacing="1" />
+
+		<view name="vGrid" x="10" height="${parent.height-75}" width="${parent.width-20}" >
+       		<grid name="lst" datapath="local:classroot.cadInsp:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+       			<gridtext sortable="false" editable="false" datapath="@oid_Inspecao" width="1" text="oid_Inspecao_Item" />
+       			<gridtext editable="false" resizable="false" datapath="@nm_Razao_Social" text="Cliente" 
+       					  oninit="this.setAttribute('text', ('E'==lang ? 'Cliente' : 'Cliente') ); this.setAttribute('width',500);"/>
+       			<gridtext editable="false" resizable="false" datapath="@dt_Inicio" text="Data" textalign="center"
+       					  oninit="this.setAttribute('text', ('E'==lang ? 'Fecha' : 'Data') ); this.setAttribute('width',111);"/>
+          		<method event="onselect" args="row">
+          			parent.parent.barBtn.btnExcluir.setAttribute('enabled',true);
+          			parent.parent.barBtn.btnGravar.setAttribute('enabled',true);
+             		dp=row.datapath; 
+         		</method>		  
+       		</grid>
+		</view>	
+		
+     	<view name="barBtn" x="10" layout="axis:x; spacing:2">
+       		<button name="btnFechar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+          		<handler name="onclick" >
+             		parent.parent.parent.parent.close();
+          		</handler>
+       		</button>
+       		<button name="btnGravar" width="100" oninit="this.setAttribute('text', ('E'==lang ? 'Reabrir' : 'Reabrir') );" enabled="false">
+          		<handler name="onclick">
+          			
+  					classroot.cad.setAttribute("src","../../ControlerServlet?");
+  					classroot.cad.setQueryString({tela : "tib104",
+													   ed : "Stib_InspecaoED",
+						  							   rn : "Stib_InspecaoRN",
+									   			  	 acao : "R",
+									   	     oid_Inspecao : dp.getNodeAttribute("oid_Inspecao"),
+							  	              oid_Cliente : dp.getNodeAttribute("oid_Cliente"),
+											  	dt_Inicio : dp.getNodeAttribute("dt_Inicio")
+  													});	
+					classroot.cad.doRequest();
+					classroot.carregando.startAni();
+              	</handler>
+       		</button>
+       		<button name="btnExcluir" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Excluir' : 'Excluir') );" enabled="false">
+          		<handler name="onclick">
+          			parent.parent.alertaExclui.mostra();
+              	</handler>
+       		</button>
+    	</view>
+ 	</view>
+    <!-- Reloginho -->
+    <loadingAni name="carregando" />
+
+	</class>   
+	
+   
+</library>

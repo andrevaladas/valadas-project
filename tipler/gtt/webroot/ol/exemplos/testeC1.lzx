@@ -1,0 +1,40 @@
+<canvas>
+  <window x="10" y="10"
+          width="200" height="144" >
+       <button name="um" width="100" onclick="responseText.setAttribute('visible', true)">Giovani</button>
+       <button name="dois" x="0" y="25" width="100" onclick="responseText2.setAttribute('visible', true)">Leandro</button>
+       <button name="tres" x="0" y="50" width="100" onclick="responseText3.setAttribute('visible', true)">Rodrigo</button>
+       <button name="quatro" x="0" y="75" width="100" onclick="responseText4.setAttribute('visible', true)">Reanan</button>
+      
+<text id="responseText" resize="true" visible="false" x="100" y="0"  datapath="dset:/employee/phone/text()"/>
+<text id="responseText2" resize="true" visible="false" x="100" y="25" datapath="dset2:/employee/phone/text()"/>
+<text id="responseText3" resize="true" visible="false" x="100" y="50" datapath="dset3:/employee/phone/text()"/>
+<text id="responseText4" resize="true" visible="false" x="100" y="75" datapath="dset4:/employee/phone/text()"/>
+
+  </window>
+
+     <dataset name="dset">
+    <employee>
+      <phone>9999-9999</phone>
+    </employee>
+  </dataset>
+
+     <dataset name="dset2">
+    <employee>
+      <phone>8888-8888</phone>
+    </employee>
+  </dataset>
+
+     <dataset name="dset3">
+    <employee>
+      <phone>7777-7777</phone>
+    </employee>
+  </dataset>
+
+     <dataset name="dset4">
+    <employee>
+      <phone>6666-6666</phone>
+    </employee>
+  </dataset>
+
+</canvas>

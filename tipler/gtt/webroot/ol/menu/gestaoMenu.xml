@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<menu>
+  <section name="Cadastros">
+	<topic name="Sistemas" 				src="../menu/mnu001C.lzx" />
+	<topic name="Perfis de usuarios" 	src="../menu/mnu002C.lzx" />
+	<topic name="Usuarios" 				src="../menu/mnu004C.lzx" />
+	<topic name="Menu sistemas" 		src="../menu/mnu003C.lzx" />
+  </section>
+</menu>

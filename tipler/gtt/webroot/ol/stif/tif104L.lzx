@@ -1,0 +1,942 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<!-- Includes -->
+	<script>
+		var lang="P";
+		var oidVeiculoInspecaoRef=null;
+		var dmPosicaoRef=null;
+		var nrEixoRef=null;
+		var dpPneuInspecao=null;
+		var parentWindow=null;
+		
+	</script>
+
+   	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	
+	<!-- Figuras -->
+	<resource name="imgVeicPneu">
+ 		<frame  src="../images/PNEUCA04.PNG" /> <!--1 ok -->
+ 		<frame  src="../images/PNEUCA08.PNG" /> <!--2 ok -->
+ 		<frame  src="../images/PNEUCA12.PNG" /> <!--3 ok -->
+ 		<frame  src="../images/PNEUCA16.PNG" /> <!--4 ok -->
+ 		<frame  src="../images/PNEUCA32.PNG" /> <!--5 ok -->
+ 		<frame  src="../images/PNEUCAS4.PNG" /> <!--6 ok -->
+ 		<frame  src="../images/PNEUCAS6.PNG" /> <!--7 ok -->
+ 		<frame  src="../images/PNEUCO04.PNG" /> <!--8 ok -->
+ 		<frame  src="../images/PNEUCO06.PNG" /> <!--9-->
+ 		<frame  src="../images/PNEUCO10.PNG" /> <!--10-->
+ 		<frame  src="../images/PNEUDO08.PNG" /> <!--11 ok -->
+ 		<frame  src="../images/PNEUON06.PNG" /> <!--12-->
+ 		<frame  src="../images/PNEUON08.PNG" /> <!--13-->
+ 		<frame  src="../images/PNEUON09.PNG" /> <!--14 ok -->
+ 		<frame  src="../images/PNEUON10.PNG" /> <!--15-->
+ 		<frame  src="../images/PNEUON12.PNG" /> <!--16-->
+ 		<frame  src="../images/PNEUON14.PNG" /> <!--17-->
+ 		<frame  src="../images/PNEURE02.PNG" /> <!--18-->
+ 		<frame  src="../images/PNEURE08.PNG" /> <!--19-->
+ 		<frame  src="../images/PNEURE12.PNG" />	<!--20-->
+	</resource>
+  		
+  	<resource name="setinha">
+  		<frame  src="../images/seta_laszlo.swf" />
+  	</resource>
+	
+	<!-- Datasets combos -->
+	<dataset name="dmVidaPneu">
+      	<item value="N">Novo</item>
+      	<item value="R1">R1</item>
+      	<item value="R2">R2</item>
+      	<item value="R3">R3</item>
+      	<item value="R4">R4</item>
+   	</dataset>
+   	<dataset name="sisTif104FabPneu" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Pneu" />
+  	<datapointer name="sisdpTif104FabPneu" xpath="local:sisTif104FabPneu:/" />
+
+	<dataset name="sisTif104FabBnd" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Banda" />
+  	<datapointer name="sisdpTif104FabBnd" xpath="local:sisTif104FabBnd:/" />
+	
+	<!-- Classe da Tela -->
+	<class name="tif104" extends="view" >
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/stcb.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<!-- Popula dados da tela -->
+	<method name="selfPopulate" args="oidVeiculoInspecao,dmTipoChassis,nrFrota,dmPosicao,nrEixo,ownerWindow" >
+		janela.carregando.startAni();
+
+		/** Seta valores globais */
+		oidVeiculoInspecaoRef = oidVeiculoInspecao;
+		dmPosicaoRef = dmPosicao;
+		nrEixoRef = nrEixo;
+		parentWindow = ownerWindow;
+		janela.tela.vVeiculo.caixa.dados.edits.nr_Frota.setText(nrFrota);
+		janela.tela.vVeiculo.caixa.dados.edits.dm_Posicao.setText(dmPosicao);
+
+		/** informa pneu selecionado */
+		janela.destacaPneu(dmTipoChassis, dmPosicao);
+
+		/** consulta dados do pneu em destaque */
+		dsPneuInspecao.setAttribute("src","../../ControlerServlet?");
+		dsPneuInspecao.setQueryString({
+						   tela : "tif104",
+							 ed : "Stif_Pneu_InspecaoED",
+				  			 rn : "Stif_Pneu_InspecaoRN",
+				  		   acao : "L",
+		   oid_Veiculo_Inspecao : oidVeiculoInspecao,
+		   			 dm_Posicao : dmPosicao
+		});
+		dsPneuInspecao.doRequest();
+	</method>
+
+	<!-- Válvulas "dm_tipo=2" -->
+	<dataset name="dsValculas" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=tif104&amp;ed=Stif_ProblemaED&amp;rn=Stif_ProblemaRN&amp;acao=L&amp;dm_tipo=2"
+      	ondata="var resultado = classroot.dsValculasdp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsValculasdp" xpath="local:dsValculas:/" />
+	<datapointer name="dsValculasdp1" xpath="local:dsValculas:/ret/item" />
+	<!-- Rodas "dm_tipo=3" -->
+	<dataset name="dsRodas" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=tif104&amp;ed=Stif_ProblemaED&amp;rn=Stif_ProblemaRN&amp;acao=L&amp;dm_tipo=3"
+      	ondata="var resultado = classroot.dsRodasdp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsRodasdp" xpath="local:dsRodas:/" />
+	<datapointer name="dsRodasdp1" xpath="local:dsRodas:/ret/item" />
+	<!-- Outros "dm_tipo=4" -->
+	<dataset name="dsOutros" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=tif104&amp;ed=Stif_ProblemaED&amp;rn=Stif_ProblemaRN&amp;acao=L&amp;dm_tipo=4"
+      	ondata="var resultado = classroot.dsOutrosdp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsOutrosdp" xpath="local:dsOutros:/" />
+	<datapointer name="dsOutrosdp1" xpath="local:dsOutros:/ret/item" />
+	<!-- Problemas Veículos "dm_tipo=5" -->
+	<dataset name="dsPneus" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?tela=tif104&amp;ed=Stif_ProblemaED&amp;rn=Stif_ProblemaRN&amp;acao=L&amp;dm_tipo=5"
+      	ondata="var resultado = classroot.dsPneusdp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsPneusdp" xpath="local:dsPneus:/" />
+	<datapointer name="dsPneusdp1" xpath="local:dsPneus:/ret/item" />
+
+	<!-- Dataset para consultar pneu inspecionado -->
+	<dataset name="dsPneuInspecao" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+      	ondata="var resultado = parent.dsPneuInspecaodp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	} else {
+              		var regs = classroot.dsPneuInspecaodp.xpathQuery('*/item/last()');
+	              	dpPneuInspecao = this.getPointer();
+	              	if (!regs==0) {
+	              		dpPneuInspecao.selectChild(2);
+	              		parent.janela.vButtons.updatePneuInspecao();
+	              		parent.janela.vButtons.btnExcluir.setAttribute('enabled', true);
+	              	} else {
+	              		parent.janela.vButtons.updateProblemas();
+	              		parent.janela.vButtons.btnExcluir.setAttribute('enabled', false);
+	              	}
+	         	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsPneuInspecaodp" xpath="local:dsPneuInspecao:/" />
+	<datapointer name="dsPneuInspecaodp1" xpath="local:dsPneuInspecao:/ret/item" />
+
+	<!-- Dataset para operações em pneu inspecao -->
+	<dataset name="dsPneuInspecaoExecute" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+      	ondata="var resultado = parent.dsPneuInspecaoExecutedp1.xpathQuery('@oknok'); 
+              	parent.janela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	} else {
+              		if (resultado=='IOK'){
+              			var oid = classroot.dsPneuInspecaoExecutedp1.xpathQuery('@oid');
+						dpPneuInspecao.setNodeAttribute('oid_Pneu_Inspecao',oid);
+              			parent.janela.vButtons.btnExcluir.setAttribute('enabled', true);
+						parent.janela.updatePneuDataParentWindow();
+              			parent.janela.janelaAvisoAndClose.mostra('Registro incluído com sucesso!');
+              		} else if (resultado=='AOK'){
+              			parent.janela.updatePneuDataParentWindow();
+              			parent.janela.janelaAvisoAndClose.mostra('Registro alterado com sucesso!');
+              		} else if (resultado=='DOK'){
+              			parent.janela.removePneuDataParentWindow();
+              			classroot.janela.janelaAvisoAndClose.mostra('Registro excluído com sucesso!');
+              		} else {
+              			parent.janela.janelaAviso.mostra(resultado);
+              		}
+	         	}"
+      	onerror="parent.janela.carregando.stopAni();"
+      	ontimeout="parent.janela.carregando.stopAni();
+  			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="dsPneuInspecaoExecutedp" xpath="local:dsPneuInspecaoExecute:/" />
+	<datapointer name="dsPneuInspecaoExecutedp1" xpath="local:dsPneuInspecaoExecute:/ret/item" />
+
+	<!-- Window -->
+	<view name="janela">
+		<method name="updatePneuDataParentWindow">
+			var leftForm = tela.vPneu.vData.vLeft.edits
+  			parentWindow.updateVeiculoInspecao(
+  				 dpPneuInspecao.getNodeAttribute('oid_Pneu_Inspecao')
+  				,dmPosicaoRef
+  				,leftForm.nr_Fogo.getValue()
+  				,leftForm.dm_Vida_Pneu.text);
+		</method>
+		<method name="removePneuDataParentWindow">
+			var leftForm = tela.vPneu.vData.vLeft.edits
+  			parentWindow.updateVeiculoInspecao(null,dmPosicaoRef,null,null);
+		</method>
+		
+	    <!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>
+		<alert name="janelaAvisoAndClose" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+			<method name="close">
+				parent.vButtons.btnFechar.click();
+				super.close();
+			</method>
+ 		</alert>
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.bringToFront();
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+		<!-- Janela de aviso de exclusao -->
+		<modaldialog name="alertaExclui" title="A v i s o !" width = "300" >
+			<simplelayout spacing="5" />
+			<text oninit="this.setAttribute('text', ('E'==lang ? 'Confirme exclusión?' : 'Confirma a exclusão do registro?') ); this.setAttribute('width',250);"/>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" oninit="this.setAttribute('text', ('E'==lang ? 'No' : 'Não') );" isdefault="true" />
+            	<button oninit="this.setAttribute('text', ('E'==lang ? 'Sí' : 'Sim') );" >
+               		<method event="onclick">
+	  					classroot.dsPneuInspecaoExecute.setAttribute("src","../../ControlerServlet?");
+	  					classroot.dsPneuInspecaoExecute.setQueryString({
+										 tela : "tif104",
+										   ed : "Stif_Pneu_InspecaoED",
+			  							   rn : "Stif_Pneu_InspecaoRN",
+						   			  	 acao : "D",
+				  	        oid_Pneu_Inspecao : dpPneuInspecao.getNodeAttribute("oid_Pneu_Inspecao")
+	  					});
+						classroot.dsPneuInspecaoExecute.doRequest();
+						classroot.janela.carregando.startAni();
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+		<!-- Título da tela -->
+		<titulo x="5" text="Inspeção da Posição" widthLine="$once{parent.parent.parent.width - 30}" corFrente="#FF9900" />
+
+		<view name="imagem" visible="false">
+		    <view name="setinha" resource="../images/seta_laszlo.swf" height="20" width="15" stretches="both"></view>
+		    <text name="descricao" x="23" text="" fgcolor="white" fontsize="8" fontstyle="bold"/>
+		</view>
+
+		<!-- View da tela -->
+		<view name="tela" x="5" y="25" layout="axis:x; spacing:3" options="lazyreplication;" >
+
+			<!-- Pneu Montado -->
+			<view name="vVeiculo" y="5" height="150" width="253" bgcolor="black">
+				<view name="caixa" y="1" x="1" height="123" width="251" bgcolor="#EAEAEA" layout="axis:y; spacing:0" >
+					<text height="21" align="center">Pneu Localizado</text>
+					<view bgcolor="black" height="1" width="251"></view> 
+					<!--Chassi + Scrol-->
+					<view name="imagem" bgcolor="#EAEAEA" layout="axis:x; spacing:0" >
+						<!--Imaagens Chassis-->
+	    				<view name="veic" resource="imgVeicPneu" x="1" y="1" height="100" width="251" stretches="both"></view>
+					</view>
+					<view bgcolor="black" height="1" width="251"></view> 
+					<view name="dados" bgcolor="#EAEAEA" height="24" width="251" layout="axis:x; spacing:3">
+						<view width="60" y="2" align="right" layout="axis:x; spacing:3">
+							<text width="10" text=""/>
+							<text height="21" width="110" align="right">Veículo:</text>
+							<text height="21" align="right">Posição:</text>								
+						</view>
+						<cpoEdits name="edits" y="2" width="190" height="50" align="left" layout="axis:x; spacing:3">
+							<text name="nr_Frota" width="110" height="21" fgcolor="green" text="12345"/>
+							<text name="dm_Posicao" height="21" fgcolor="green" text="XXX"/>
+						</cpoEdits>
+					</view>
+				</view>	
+			</view>
+
+			<!-- Dados do Pneu -->
+			<view name="vPneu" y="5" width="512" height="${parent.vVeiculo.height}">
+				<frame3d x="1" y="1" width="$once{parent.width}" height="$once{parent.height}" caption="Inspeção do Pneu" bgcolor="#EAEAEA"/>
+				<view name="vData" x="1" y="20">
+					<view name="vLeft" x="80" width="$once{parent.parent.width - 2}" height="$once{parent.parent.height - 2}" layout="axis:x; spacing:3">
+						<!-- Labels -->
+						<view align="right" layout="axis:y; spacing:5">
+							<text height="21" align="right">Nr Fogo:</text>
+							<text height="21" align="right">Vida:</text>
+							<text height="21" align="right">mm Sulco:</text>
+							<text height="21" align="right">Pressão:</text>
+						</view>
+						<!-- Campos -->
+						<cpoEdits name="edits" layout="spacing:5">
+							<edittext name="nr_Fogo" maxlength="10" width="80" height="21"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							<datacombobox name="dm_Vida_Pneu" width="80" height="21" itemdatapath="dmVidaPneu:/item" shownitems="5" defaulttext="---------" />
+							<edittext name="nr_Mm_Sulco" maxlength="4" width="80" height="21"
+								oninit="parent.pattern(this,'dec',1)" onblur="parent.format(this,'dec',1);" />
+							<edittext name="nr_Pressao" maxlength="10" width="80" height="21"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							<text xoffset="75" yoffset="5" name="labelPressaoAferida" visible="false" height="21" fgcolor="red">A pressão não pode ser aferida</text>
+						</cpoEdits>
+					</view>
+					<view name="vRight" x="215" width="$once{parent.parent.width - 2}" height="$once{parent.parent.height - 2}" layout="axis:x; spacing:3">
+						<!-- Labels -->
+						<view width="80" align="right" layout="axis:y; spacing:5">
+							<text height="21" align="right">Dimensão:</text>
+							<text height="21" align="right">Fabricante do pneu:</text>
+							<text height="21" align="right">Modelo:</text>
+							<text height="21" align="right">Fabricante banda:</text>
+							<text height="21" align="right">Banda aplicada:</text>
+						</view>
+						<!-- Campos -->
+						<cpoEdits name="edits" layout="spacing:5">
+							<lookup
+								name="oid_Pneu_Dimensao"
+								cdProperty="cd_Pneu_Dimensao" widthCdProperty="80"
+								dsProperty="nm_Pneu_Dimensao"
+								showDsProperty="false"
+								callService="Pneu_Dimensao" oninit="parent.pattern(this,'txt')">
+									<relatedText name="nm_Pneu_Dimensao" width="100" height="21" fgcolor="green"/>
+							</lookup>
+							<datacombobox name="oid_Fabricante_Pneu" width="200" height="21" shownitems="10" itemdatapath="sisTif104FabPneu:/cad/item" defaulttext="Escolha ...">
+								<handler name="onselect">
+									parent.oid_Modelo_Pneu.resetLookupValues();
+									parent.oid_Modelo_Pneu.setCriteria('oid_Fabricante_Pneu',this.value);
+									parent.oid_Modelo_Pneu.setAttribute('enabled', true);
+								</handler>
+							</datacombobox>
+						  	<lookup
+						  		enabled="false"
+						  		name="oid_Modelo_Pneu" 
+								cdProperty="CD_Modelo_Pneu" widthCdProperty="80"
+								dsProperty="NM_Modelo_Pneu"
+								showDsProperty="false"
+								callService="Modelo_Pneu" oninit="parent.pattern(this,'txt')">
+								<relatedText name="nm_Tipo_Pneu" width="100" height="21" fgcolor="green"/>
+								<propertyMapping modelProperty="oid_Fabricante_Pneu"/>
+							</lookup>
+							
+							<datacombobox name="oid_Fabricante_Banda" width="200" height="21" shownitems="10" itemdatapath="sisTif104FabBnd:/cad/item" defaulttext="Escolha ...">
+								<handler name="onselect">
+									parent.oid_Banda.resetLookupValues();
+									parent.oid_Banda.setCriteria('oid_Fabricante_Banda',this.value);
+									parent.oid_Banda.setAttribute('enabled', true);
+								</handler>
+							</datacombobox>
+							<lookup
+								enabled="false"
+								name="oid_Banda" 
+								cdProperty="cd_Banda" widthCdProperty="80" 
+								dsProperty="nm_Banda"
+								showDsProperty="false"
+								callService="Banda" oninit="parent.pattern(this,'txt')"  >
+								<relatedText name="nm_Banda" width="300" height="21" fgcolor="green" />
+								<propertyMapping modelProperty="oid_Fabricante_Banda"/>
+							</lookup>
+						</cpoEdits>		
+					</view>	
+				</view>
+			</view>
+		</view>
+
+		<!-- Lista de Problemas -->
+        <baseEdits name="vProblemas" x="5" y="${parent.tela.height+30}" width="${parent.tela.width}" height="330" bgcolor="white">
+			<method name="validatePressao" args="dp,clicked">
+				<![CDATA[
+				/** verifica se problema permite alterar a pressão do pneu */
+				var labelPressaoAferida = parent.tela.vPneu.vData.vLeft.edits.labelPressaoAferida;
+				if (clicked || !labelPressaoAferida.visible) {
+					var pressaoField = parent.tela.vPneu.vData.vLeft.edits.nr_Pressao;
+					if (dp.getNodeAttribute("dm_problema") == "V") {
+						var checkItem = dp.getNodeAttribute("checkItem");
+				   		if (checkItem == true || checkItem == 'true') {
+							pressaoField.setText("0");
+							pressaoField.setAttribute("enabled", false);
+							labelPressaoAferida.setVisible(true);
+						} else {
+					   		pressaoField.setAttribute("enabled", true);
+							labelPressaoAferida.setVisible(false);
+					   	}
+					}
+				}
+			   	]]>
+			</method>
+	
+        	<!-- Válvulas -->
+        	<grid name="vGridValvulas" datapath="local:classroot.dsValculas:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="${(parent.height/2)-5}" width="${(parent.width/2)-5}" multiselect="false" rowheight="16">
+        		<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
+        		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+	           	<gridcolumn sortable="false" width="17" >
+					<checkbox datapath="@checkItem">
+						<handler name="ondata">
+							parent.parent.parent.validatePressao(this.datapath, false);
+		       			</handler>
+						<handler name="onclick">
+	 						this.datapath.updateData();
+	 						parent.parent.parent.validatePressao(this.datapath, true);
+	 					</handler>
+					</checkbox>
+				</gridcolumn>
+       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Inspeção das Válvulas" width="${parent.width-35}"/>
+       		</grid>
+			<!-- Outras -->
+        	<grid name="vGridOutras" x="${parent.width/2}" datapath="local:classroot.dsOutros:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="${(parent.height/2)-5}" width="${(parent.width/2)}" multiselect="false" rowheight="16">
+       			<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
+        		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+	           	<gridcolumn sortable="false" width="17" >
+					<checkbox datapath="@checkItem">
+						<handler name="ondata">
+							parent.parent.parent.validatePressao(this.datapath, false);
+		       			</handler>
+						<handler name="onclick">
+	 						this.datapath.updateData();
+	 						parent.parent.parent.validatePressao(this.datapath, true);
+	 					</handler>
+					</checkbox>
+				</gridcolumn>
+       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Outras Inspeção" width="${parent.width-35}"/>
+       		</grid>
+
+       		<!-- Rodas -->
+        	<grid name="vGridRodas" y="${parent.height/2}" datapath="local:classroot.dsRodas:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="150" width="${(parent.width/2)-5}" multiselect="false" rowheight="16">
+       			<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
+        		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+	           	<gridcolumn sortable="false" width="17" >
+					<checkbox datapath="@checkItem">
+						<handler name="ondata">
+							parent.parent.parent.validatePressao(this.datapath, false);
+		       			</handler>
+						<handler name="onclick">
+	 						this.datapath.updateData();
+	 						parent.parent.parent.validatePressao(this.datapath, true);
+	 					</handler>
+					</checkbox>
+				</gridcolumn>
+       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Inspeção das Rodas" width="${parent.width-35}"/>
+       		</grid>
+       		<!-- Pneus -->
+        	<grid name="vGridPneus" x="${parent.width/2}" y="${parent.height/2}" datapath="local:classroot.dsPneus:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="${parent.height/2}" width="${(parent.width/2)}" multiselect="false" rowheight="16">
+       			<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
+        		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+	           	<gridcolumn sortable="false" width="17" >
+					<checkbox datapath="@checkItem">
+						<handler name="ondata">
+							parent.parent.parent.validatePressao(this.datapath, false);
+		       			</handler>
+						<handler name="onclick">
+	 						this.datapath.updateData();
+	 						parent.parent.parent.validatePressao(this.datapath, true);
+	 					</handler>
+					</checkbox>
+				</gridcolumn>
+       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Inspeção dos Pneus" width="${parent.width-35}"/>
+       		</grid>
+        </baseEdits>
+
+		<!-- View para botões -->
+		<view name="vButtons" x="10" y="${parent.vProblemas.y + parent.vProblemas.height + 10}" layout="axis:x; spacing:2">
+       		<button name="btnFechar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+          		<handler name="onclick" >
+          			parent.parent.parent.parent.close();
+          		</handler>
+          		<method name="click" >
+          			parent.parent.parent.parent.close();
+          		</method>
+       		</button>
+       		<button name="btnGravar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Gravar' : 'Gravar') );">
+          		<handler name="onclick">
+          			/** Valida form */
+          			if (parent.validate()) {
+          				var leftForm = parent.parent.tela.vPneu.vData.vLeft.edits;
+	          			var rightForm = parent.parent.tela.vPneu.vData.vRight.edits;
+
+	          			/** Valida se dataset possui OID do registro */
+          				if (dpPneuInspecao.getNodeAttribute("oid_Pneu_Inspecao") == null) {
+          					/** INSERT */
+		          			classroot.dsPneuInspecaoExecute.setAttribute("src","../../ControlerServlet?");
+		  					classroot.dsPneuInspecaoExecute.setQueryString({
+	  										tela : "tif104",
+										      ed : "Stif_Pneu_InspecaoED",
+			  							      rn : "Stif_Pneu_InspecaoRN",
+						   			  	    acao : "I",
+						    oid_Veiculo_Inspecao : oidVeiculoInspecaoRef,
+						    		  dm_Posicao : dmPosicaoRef,
+						    		     nr_Eixo : nrEixoRef,
+						      		  	 nr_Fogo : leftForm.nr_Fogo.getText(),
+						      		dm_Vida_Pneu : leftForm.dm_Vida_Pneu.getValue(),
+						      		  nr_Mm_Sulco: leftForm.nr_Mm_Sulco.getText(),
+						     		  nr_Pressao : leftForm.nr_Pressao.getText(), 
+						       oid_Pneu_Dimensao : rightForm.oid_Pneu_Dimensao.getValue(), 
+					  		 oid_Fabricante_Pneu : rightForm.oid_Fabricante_Pneu.getValue(), 
+						         oid_Modelo_Pneu : rightForm.oid_Modelo_Pneu.getValue(), 
+						    oid_Fabricante_Banda : rightForm.oid_Fabricante_Banda.getValue(), 
+						         	   oid_Banda : rightForm.oid_Banda.getValue(), 
+						      		       array : parent.buildArrayProblemas()
+		  					});
+						} else {
+							/** UPDATE */
+							classroot.dsPneuInspecaoExecute.setAttribute("src","../../ControlerServlet?");
+		  					classroot.dsPneuInspecaoExecute.setQueryString({
+		  									tela : "tif104",
+											  ed : "Stif_Pneu_InspecaoED",
+				  							  rn : "Stif_Pneu_InspecaoRN",
+										  	acao : "A",
+							   oid_Pneu_Inspecao : dpPneuInspecao.getNodeAttribute("oid_Pneu_Inspecao"),
+							oid_Veiculo_Inspecao : oidVeiculoInspecaoRef,
+							    		 nr_Fogo : leftForm.nr_Fogo.getText(),
+						      		dm_Vida_Pneu : leftForm.dm_Vida_Pneu.getValue(),
+						      		  nr_Mm_Sulco: leftForm.nr_Mm_Sulco.getText(),
+						     		  nr_Pressao : leftForm.nr_Pressao.getText(), 
+						       oid_Pneu_Dimensao : rightForm.oid_Pneu_Dimensao.getValue(), 
+					  		 oid_Fabricante_Pneu : rightForm.oid_Fabricante_Pneu.getValue(), 
+						         oid_Modelo_Pneu : rightForm.oid_Modelo_Pneu.getValue(), 
+						    oid_Fabricante_Banda : rightForm.oid_Fabricante_Banda.getValue(), 
+						         	   oid_Banda : rightForm.oid_Banda.getValue(), 
+						      		       array : parent.buildArrayProblemas()
+		  					});
+						}
+		  				classroot.dsPneuInspecaoExecute.doRequest();
+						parent.parent.carregando.startAni();
+	          		}
+              	</handler>
+       		</button>
+       		<button name="btnExcluir" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Excluir' : 'Excluir') );" enabled="false">
+          		<handler name="onclick">
+          			parent.parent.alertaExclui.mostra();
+              	</handler>
+       		</button>
+       		<!-- Valida dados da tela -->
+          	<method name="validate">
+          		<![CDATA[
+          		var leftForm = parent.tela.vPneu.vData.vLeft.edits;
+          		var rightForm = parent.tela.vPneu.vData.vRight.edits;
+          		if (Number(leftForm.nr_Fogo.getText() != '' ? leftForm.nr_Fogo.getText() : '0') < 1) { 
+        			parent.janelaErro.mostra('Preencha o Nr Fogo!');
+        			return false;
+     			} else
+     			if (leftForm.dm_Vida_Pneu.getValue() == null ) { 
+            		parent.janelaErro.mostra('Informe a Vida do Pneu!');
+            		return false;
+         		} else
+         		if (leftForm.util.comparaFracionario('0,1','>',leftForm.nr_Mm_Sulco.getText())) { 
+        			parent.janelaErro.mostra('Preencha o mm Sulco!');
+        			return false;
+     			} else
+     			if (!leftForm.labelPressaoAferida.visible && Number(leftForm.nr_Pressao.getText() != '' ? leftForm.nr_Pressao.getText() : '0') < 1) { 
+        			parent.janelaErro.mostra('Preencha a Pressão do Pneu!');
+        			return false;
+     			} else
+     			if (rightForm.requerido(rightForm.oid_Pneu_Dimensao.getValue())) { 
+        			parent.janelaErro.mostra('Preencha a Dimensão do Pneu!');
+        			return false;
+     			} else
+     			if (rightForm.oid_Fabricante_Pneu.getValue() == null ) { 
+            		parent.janelaErro.mostra('Informe o Frabricante do Pneu!');
+            		return false;
+         		} else
+         		if (rightForm.requerido(rightForm.oid_Modelo_Pneu.getValue())) { 
+        			parent.janelaErro.mostra('Preencha o Modelo do Pneu!');
+        			return false;
+     			} else
+     			if (rightForm.oid_Fabricante_Banda.getValue() == null ) { 
+            		parent.janelaErro.mostra('Informe o Frabricante da Banda!');
+            		return false;
+         		} else
+         		if (rightForm.requerido(rightForm.oid_Banda.getValue())) { 
+        			parent.janelaErro.mostra('Preencha a Banda Aplicada!');
+        			return false;
+     			}
+          		return true;
+          		]]>
+          	</method>
+          	<method name="buildArrayProblemas">
+          		var array = "Stif_Problema_PneuED##";
+          		//Válvulas
+				array+=buildProblema(classroot.dsValculas.getPointer());
+				//Rodas
+				array+=buildProblema(classroot.dsRodas.getPointer());
+				//Outros
+				array+=buildProblema(classroot.dsOutros.getPointer());
+				//Pneus
+				array+=buildProblema(classroot.dsPneus.getPointer());
+				return array;
+          	</method>
+          	<method name="buildProblema" args="dp">
+          		var array = "";
+          		var hasChild = dp.selectChild(2);
+			   	while (hasChild) {
+			   		var checkItem = dp.getNodeAttribute("checkItem");
+			   		if (checkItem == true || checkItem == 'true') {
+				    	array +="oid_Stif_Problema=" + dp.getNodeAttribute("oid_stif_problema") + "#";
+				    	array +="#"
+			   		}
+			   		hasChild=dp.selectNext();
+	     	 	}
+	     	 	return array;
+          	</method>
+          	<method name="updatePneuInspecao">
+				<![CDATA[
+				/** atualiza dados do pneu inspecionado */
+				var leftForm = parent.tela.vPneu.vData.vLeft.edits;
+          		var rightForm = parent.tela.vPneu.vData.vRight.edits;
+
+				leftForm.nr_Fogo.setText(dpPneuInspecao.getNodeAttribute("nr_Fogo"));
+				leftForm.dm_Vida_Pneu.setValue(dpPneuInspecao.getNodeAttribute("dm_Vida_Pneu"));
+				leftForm.nr_Mm_Sulco.setText(dpPneuInspecao.getNodeAttribute("nr_Mm_Sulco"));
+				leftForm.nr_Pressao.setText(dpPneuInspecao.getNodeAttribute("nr_Pressao")); 
+				rightForm.oid_Pneu_Dimensao.setValue(dpPneuInspecao.getNodeAttribute("oid_Pneu_Dimensao")); 
+				rightForm.oid_Fabricante_Pneu.setValue(dpPneuInspecao.getNodeAttribute("oid_Fabricante_Pneu")); 
+				rightForm.oid_Modelo_Pneu.setAttribute('enabled', true);
+				rightForm.oid_Modelo_Pneu.setValue(dpPneuInspecao.getNodeAttribute("oid_Modelo_Pneu")); 
+				rightForm.oid_Fabricante_Banda.setValue(dpPneuInspecao.getNodeAttribute("oid_Fabricante_Banda")); 
+				rightForm.oid_Banda.setAttribute('enabled', true);
+				rightForm.oid_Banda.setValue(dpPneuInspecao.getNodeAttribute("oid_Banda"));
+
+				/** Problemas */
+				updateProblemas(dpPneuInspecao);
+				]]>
+			</method>
+			<method name="updateProblemas" args="dp">
+				<![CDATA[
+				var oidPneuInspecao = -99999;//valor default para buscar todos
+				if (dp != null) {
+					oidPneuInspecao = dp.getNodeAttribute("oid_Pneu_Inspecao");
+				}
+
+				//Válculas
+				classroot.dsValculas.setSrc(classroot.dsValculas.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
+				classroot.dsValculas.doRequest();
+				//Rodas
+				classroot.dsRodas.setSrc(classroot.dsRodas.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
+				classroot.dsRodas.doRequest();
+				//Outros
+				classroot.dsOutros.setSrc(classroot.dsOutros.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
+				classroot.dsOutros.doRequest();
+				//Pneus
+				classroot.dsPneus.setSrc(classroot.dsPneus.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
+				classroot.dsPneus.doRequest();
+				]]>
+          	</method>
+          	
+       		<text y="5" name="msg_Stamp" width="370" height="21" datapath="@msg_Stamp" />
+    	</view>
+
+  		<!-- Indica o Pneu Correspondente -->
+  		<method name="destacaPneu" args="chassis,posicao">
+  			<![CDATA[
+  			//Informa o chassis do veículo
+  			tela.vVeiculo.caixa.imagem.veic.setResourceNumber(Number(chassis));
+
+  			var x = 0, y = 0;
+  			imagem.descricao.setText(posicao);
+  			imagem.setAttribute('visible',true);
+  			imagem.bringToFront();
+  			if ("1"==chassis){
+  				if ("L1EE"==posicao) {x=225;y=41;} else
+  				if ("L1EI"==posicao) {x=225;y=54;} else
+  				if ("L1DI"==posicao) {x=225;y=110;}else
+  				if ("L1DE"==posicao) {x=225;y=122;}
+  			}
+  			if ("2"==chassis){
+  				if ("L1EE"==posicao) {x=265;y=41;} else
+  				if ("L1EI"==posicao) {x=265;y=54;} else
+  				if ("L1DI"==posicao) {x=265;y=110;}else
+  				if ("L1DE"==posicao) {x=265;y=122;}else
+  				if ("L2EE"==posicao) {x=225;y=41;} else
+  				if ("L2EI"==posicao) {x=225;y=54;} else
+  				if ("L2DI"==posicao) {x=225;y=110;}else
+  				if ("L2DE"==posicao) {x=225;y=122;}
+  			}
+  			if ("3"==chassis){
+  				if ("L1EE"==posicao) {x=305;y=41;} else
+  				if ("L1EI"==posicao) {x=305;y=54;} else
+  				if ("L1DI"==posicao) {x=305;y=110;}else
+  				if ("L1DE"==posicao) {x=305;y=122;}else
+  				if ("L2EE"==posicao) {x=265;y=41;} else
+  				if ("L2EI"==posicao) {x=265;y=54;} else
+  				if ("L2DI"==posicao) {x=265;y=110;}else
+  				if ("L2DE"==posicao) {x=265;y=122;}else
+  				if ("L3EE"==posicao) {x=225;y=41;} else
+  				if ("L3EI"==posicao) {x=225;y=54;} else
+  				if ("L3DI"==posicao) {x=225;y=110;}else
+  				if ("L3DE"==posicao) {x=225;y=122;} 
+  			}
+  			if ("4"==chassis){
+  				if ("L1EE"==posicao) {x=343;y=41;} else
+  				if ("L1EI"==posicao) {x=343;y=54;} else
+  				if ("L1DI"==posicao) {x=343;y=110;}else
+  				if ("L1DE"==posicao) {x=343;y=122;}else
+  				if ("L2EE"==posicao) {x=305;y=41;} else
+  				if ("L2EI"==posicao) {x=305;y=54;} else
+  				if ("L2DI"==posicao) {x=305;y=110;}else
+  				if ("L2DE"==posicao) {x=305;y=122;}else
+  				if ("L3EE"==posicao) {x=265;y=41;} else
+  				if ("L3EI"==posicao) {x=265;y=54;} else
+  				if ("L3DI"==posicao) {x=265;y=110;}else
+  				if ("L3DE"==posicao) {x=265;y=122;}else
+  				if ("L4EE"==posicao) {x=225;y=41;} else
+  				if ("L4EI"==posicao) {x=225;y=54;} else
+  				if ("L4DI"==posicao) {x=225;y=110;}else
+  				if ("L4DE"==posicao) {x=225;y=122;} 
+  			}
+  			if ("5"==chassis){
+  				if ("L1EE"==posicao) {x=223;y=89;} else
+  				if ("L1EI"==posicao) {x=223;y=103;}else
+  				if ("L1DI"==posicao) {x=223;y=114;}else
+  				if ("L1DE"==posicao) {x=223;y=125;}else
+  				if ("L3EE"==posicao) {x=265;y=89;} else
+  				if ("L3EI"==posicao) {x=265;y=103;}else
+  				if ("L3DI"==posicao) {x=265;y=114;}else
+  				if ("L3DE"==posicao) {x=265;y=125;}else
+  				if ("L5EE"==posicao) {x=308;y=89;} else
+  				if ("L5EI"==posicao) {x=308;y=103;}else
+  				if ("L5DI"==posicao) {x=308;y=114;}else
+  				if ("L5DE"==posicao) {x=308;y=125;}else
+  				if ("L7EE"==posicao) {x=350;y=89;} else
+  				if ("L7EI"==posicao) {x=350;y=103;}else
+  				if ("L7DI"==posicao) {x=350;y=114;}else
+  				if ("L7DE"==posicao) {x=350;y=125;}else	
+  				if ("L2EE"==posicao) {x=223;y=39;} else
+  				if ("L2EI"==posicao) {x=223;y=51;} else
+  				if ("L2DI"==posicao) {x=223;y=62;} else
+  				if ("L2DE"==posicao) {x=223;y=73;} else
+  				if ("L4EE"==posicao) {x=265;y=39;} else
+  				if ("L4EI"==posicao) {x=265;y=51;} else
+  				if ("L4DI"==posicao) {x=265;y=110;}else
+  				if ("L4DE"==posicao) {x=265;y=73;} else
+  				if ("L6EE"==posicao) {x=308;y=39;} else
+  				if ("L6EI"==posicao) {x=308;y=51;} else
+  				if ("L6DI"==posicao) {x=308;y=62;} else
+  				if ("L6DE"==posicao) {x=308;y=73;} else
+  				if ("L8EE"==posicao) {x=350;y=39;} else
+  				if ("L8EI"==posicao) {x=350;y=51;} else
+  				if ("L8DI"==posicao) {x=350;y=62;} else
+  				if ("L8DE"==posicao) {x=350;y=73;} 
+  			}
+  			if ("6"==chassis){
+  				if ("L2EE"==posicao) {x=225;y=41;} else
+  				if ("L2DE"==posicao) {x=225;y=102;}else
+  				if ("L1EE"==posicao) {x=265;y=41;} else
+  				if ("L1DE"==posicao) {x=265;y=102;}
+  			}
+  			if ("7"==chassis){
+  				if ("L3EE"==posicao) {x=227;y=41;} else
+  				if ("L3DE"==posicao) {x=227;y=122;}else
+  				if ("L2EE"==posicao) {x=265;y=41;} else
+  				if ("L2DE"==posicao) {x=265;y=122;}else
+  				if ("L1EE"==posicao) {x=305;y=41;} else
+  				if ("L1DE"==posicao) {x=305;y=122;}
+  			}
+  			if ("8"==chassis){ 
+  				if ("DE"==posicao) {x=365;y=47;} else
+  				if ("TEE"==posicao) {x=242;y=47;}else
+  				if ("DD"==posicao) {x=365;y=114;}else
+  				if ("TDE"==posicao) {x=242;y=114;}
+  			}
+  			if ("9"==chassis){ 
+  				if ("DE"==posicao) {x=390;y=47;} else
+  				if ("TEE"==posicao) {x=244;y=42;}else
+  				if ("TEI"==posicao) {x=244;y=53;}else
+  				if ("DD"==posicao) {x=390;y=114;}else
+  				if ("TDE"==posicao) {x=244;y=121;}else
+  				if ("TDI"==posicao) {x=244;y=110;}
+  			}
+  			if ("10"==chassis){ 
+  				if ("DE"==posicao) {x=390;y=47;}else
+  				if ("DD"==posicao) {x=390;y=114;} else
+  				if ("TEE"==posicao) {x=264;y=42;} else
+  				if ("TEI"==posicao) {x=264;y=53;} else
+  				if ("TDE"==posicao) {x=264;y=121;} else
+  				if ("TDI"==posicao) {x=264;y=110;}else
+  				if ("TKEE"==posicao) {x=224;y=42;} else
+  				if ("TKEI"==posicao) {x=224;y=53;} else
+  				if ("TKDE"==posicao) {x=224;y=121;} else
+  				if ("TKDI"==posicao) {x=224;y=110;}
+  			}
+  			if ("11"==chassis){ 
+  				if ("L1EE"==posicao) {x=264;y=42;} else
+  				if ("L1EI"==posicao) {x=264;y=53;} else
+  				if ("L1DE"==posicao) {x=264;y=121;} else
+  				if ("L1DI"==posicao) {x=264;y=110;}else
+  				if ("L2EE"==posicao) {x=224;y=42;} else
+  				if ("L2EI"==posicao) {x=224;y=53;} else
+  				if ("L2DE"==posicao) {x=224;y=121;} else
+  				if ("L2DI"==posicao) {x=224;y=110;}
+  			}
+  			if ("12"==chassis){ 
+  				if ("DE"==posicao) {x=395;y=47;}else
+  				if ("DD"==posicao) {x=395;y=114;} else
+  				if ("TEE"==posicao) {x=290;y=42;} else
+  				if ("TDE"==posicao) {x=290;y=121;} else
+  				if ("TKEE"==posicao) {x=252;y=42;} else
+  				if ("TKDE"==posicao) {x=252;y=121;} 
+  			}
+  			if ("13"==chassis){ 
+  				if ("DE"==posicao) {x=390;y=47;}else
+  				if ("DD"==posicao) {x=390;y=114;} else
+  				if ("TEE"==posicao) {x=263;y=42;} else
+  				if ("TEI"==posicao) {x=263;y=53;} else
+  				if ("TDE"==posicao) {x=263;y=121;} else
+  				if ("TDI"==posicao) {x=263;y=110;}else
+  				if ("TKEE"==posicao) {x=224;y=42;} else
+  				if ("TKDE"==posicao) {x=224;y=121;} 
+  			}
+  			if ("14"==chassis){ 
+  				if ("DE"==posicao) {x=397;y=47;}else
+  				if ("DD"==posicao) {x=397;y=114;} else
+  				if ("TEE"==posicao) {x=253;y=42;} else
+  				if ("TEI"==posicao) {x=253;y=53;} else
+  				if ("TDE"==posicao) {x=253;y=121;} else
+  				if ("TDI"==posicao) {x=253;y=110;}else
+  				if ("TKEE"==posicao) {x=290;y=42;} else
+  				if ("TKDE"==posicao) {x=290;y=121;} 
+  			}
+  			if ("15"==chassis){ 
+  				if ("DE"==posicao) {x=395;y=47;}else
+  				if ("DD"==posicao) {x=395;y=114;} else
+  				if ("D2E"==posicao) {x=355;y=47;}else
+  				if ("D2D"==posicao) {x=355;y=114;} else
+  				if ("TEE"==posicao) {x=224;y=42;} else
+  				if ("TEI"==posicao) {x=224;y=53;} else
+  				if ("TDE"==posicao) {x=224;y=121;} else
+  				if ("TDI"==posicao) {x=224;y=110;}else
+  				if ("TKEE"==posicao) {x=263;y=42;} else
+  				if ("TKDE"==posicao) {x=263;y=121;} 
+  			}
+  			if ("16"==chassis){ 
+  				if ("DE"==posicao) {x=407;y=47;}else
+  				if ("DD"==posicao) {x=407;y=114;} else
+  				if ("D2E"==posicao) {x=367;y=47;}else
+  				if ("D2D"==posicao) {x=367;y=114;} else
+  				if ("TEE"==posicao) {x=251;y=42;} else
+  				if ("TEI"==posicao) {x=251;y=53;} else
+  				if ("TDE"==posicao) {x=251;y=121;} else
+  				if ("TDI"==posicao) {x=251;y=110;}else
+  				if ("TKEE"==posicao) {x=289;y=42;} else
+  				if ("TKEI"==posicao) {x=289;y=53;} else
+  				if ("TKDE"==posicao) {x=289;y=121;} else
+  				if ("TKDI"==posicao) {x=289;y=110;} 
+  			}
+  			if ("17"==chassis){ 
+  				if ("DE"==posicao) {x=387;y=47;}else
+  				if ("DD"==posicao) {x=387;y=114;} else
+  				if ("D2E"==posicao) {x=367;y=47;}else
+  				if ("D2D"==posicao) {x=367;y=114;} else
+  				if ("L1EE"==posicao) {x=217;y=42;} else
+  				if ("L1EI"==posicao) {x=217;y=53;} else
+  				if ("L1DE"==posicao) {x=217;y=110;} else
+  				if ("L1DI"==posicao) {x=217;y=121;}else
+  				if ("L2EE"==posicao) {x=257;y=42;} else
+  				if ("L2EI"==posicao) {x=257;y=53;} else
+  				if ("L2DE"==posicao) {x=257;y=110;} else
+  				if ("L2DI"==posicao) {x=257;y=121;}else
+  				if ("TEE"==posicao) {x=297;y=42;} else
+  				if ("TEI"==posicao) {x=297;y=53;} else
+  				if ("TDE"==posicao) {x=297;y=110;} else
+  				if ("TDI"==posicao) {x=297;y=121;} 
+  			}
+  			if ("18"==chassis){ 
+  				if ("L1EE"==posicao) {x=244;y=47;} else
+  				if ("L1DE"==posicao) {x=244;y=115;}
+  			}
+  			if ("19"==chassis){ 
+  				if ("L1EE"==posicao) {x=320;y=42;} else
+  				if ("L1EI"==posicao) {x=320;y=53;} else
+  				if ("L1DE"==posicao) {x=320;y=121;} else
+  				if ("L1DI"==posicao) {x=320;y=110;}else
+  				if ("L2EE"==posicao) {x=224;y=42;} else
+  				if ("L2EI"==posicao) {x=224;y=53;} else
+  				if ("L2DE"==posicao) {x=224;y=121;} else
+  				if ("L2DI"==posicao) {x=224;y=110;}
+  			}
+  			if ("20"==chassis){
+  				if ("L1EE"==posicao) {x=360;y=42;} else
+  				if ("L1EI"==posicao) {x=360;y=53;} else
+  				if ("L1DE"==posicao) {x=360;y=121;} else
+  				if ("L1DI"==posicao) {x=360;y=110;}else
+  				if ("L2EE"==posicao) {x=264;y=42;} else
+  				if ("L2EI"==posicao) {x=264;y=53;} else
+  				if ("L2DE"==posicao) {x=264;y=121;} else
+  				if ("L2DI"==posicao) {x=264;y=110;} else
+  				if ("L3EE"==posicao) {x=224;y=42;} else
+  				if ("L3EI"==posicao) {x=224;y=53;} else
+  				if ("L3DE"==posicao) {x=224;y=121;} else
+  				if ("L3DI"==posicao) {x=224;y=110;}
+  			}
+  			imagem.setAttribute('x',x-220);
+  			imagem.setAttribute('y',y+16);
+  			]]>
+  		</method>
+
+		<!-- Reloginho -->
+      	<loadingAni name="carregando" />
+	</view>
+	</class>
+</library>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+		var dp=null;
+	</script>
+
+   	<!-- Classe da Tela -->
+	<class name="tas103" extends="view" width="${parent.width}" height="${parent.height}" >
+
+	<!-- Dataset Busca os itens da inspeção -->
+	<dataset name="cadInsp" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?acao=L&amp;ed=Stas_AnaliseED&amp;rn=Stas_AnaliseRN"
+      	ondata="var resultado = classroot.cadInspdp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="cadInspdp" xpath="local:cadInsp:/" />
+	<datapointer name="cadInspdp1" xpath="local:cadInsp:/ret/item" />
+
+	<!-- Dataset para excluir inspeção -->
+	<dataset name="cadExc" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?"
+      	ondata="var resultado = classroot.cadExcdp1.xpathQuery('@oknok'); 
+              	parent.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+              		if (resultado=='DOK'){
+              			classroot.tela.janelaAviso.mostra('Análise excluída com sucesso!');
+              			parent.carregando.startAni();
+              			parent.cadInsp.doRequest();
+              		} else {
+              			classroot.tela.janelaAviso.mostra(resultado);
+              		}	
+	         	}"
+      	onerror="parent.carregando.stopAni();"
+      	ontimeout="parent.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="cadExcdp" xpath="local:cadExc:/" />
+	<datapointer name="cadExcdp1" xpath="local:cadExc:/ret/item" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Análise de sucata em andamento" widthLine="${parent.width-30}" corFrente="#FF9900" oninit="this.setAttribute('text', ('E'==lang ? 'Análise de scrap en marcha   ' : 'Análise de sucata em andamento') );"/>
+
+	<!-- View da tela -->
+	<view name="tela" y="30" width="${parent.width}" height="${parent.height-30}">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg"> 
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+	
+	
+		<!-- Janela de aviso de estorno - Cadastro -->
+		<modaldialog name="alertaExclui" title="A v i s o !" width = "300" >
+			<simplelayout spacing="5" />
+			<text  oninit="this.setAttribute('text', ('E'==lang ? 'Confirme exclusión de la análise?' : 'Confirma a exclusão da análise') ); this.setAttribute('width',250);"/>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" oninit="this.setAttribute('text', ('E'==lang ? 'No' : 'Não') );" isdefault="true" />
+            	<button oninit="this.setAttribute('text', ('E'==lang ? 'Sí' : 'Sim') );" >
+               		<method event="onclick">
+	  					classroot.cadExc.setAttribute("src","../../ControlerServlet?");
+	  					classroot.cadExc.setQueryString({tela : "tas103",
+														   ed : "Stas_AnaliseED",
+							  							   rn : "Stas_AnaliseRN",
+										   			  	 acao : "D",
+								  	             oid_Analise : dp.getNodeAttribute("oid_Analise")
+	  													});	
+						classroot.cadExc.doRequest();
+						classroot.carregando.startAni();
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+	
+        <simplelayout spacing="1" />
+
+		<view name="vGrid" x="10" height="${parent.height-75}" width="${parent.width-20}" >
+       		<grid name="lst" datapath="local:classroot.cadInsp:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+				height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+       			<gridtext sortable="false" editable="false" datapath="@oid_Analise" width="1" text="oid_Analise" />
+       			<gridtext editable="false" resizable="false" datapath="@nm_Razao_Social" text="Cliente" 
+       					  oninit="this.setAttribute('text', ('E'==lang ? 'Cliente' : 'Cliente') ); this.setAttribute('width',500);"/>
+       			<gridtext editable="false" resizable="false" datapath="@dt_Inicio" text="Data" textalign="center"
+       					  oninit="this.setAttribute('text', ('E'==lang ? 'Fecha' : 'Data') ); this.setAttribute('width',111);"/>
+          		<method event="onselect" args="row">
+          			parent.parent.barBtn.btnExcluir.setAttribute('enabled',true);
+          			parent.parent.barBtn.btnGravar.setAttribute('enabled',true);
+             		dp=row.datapath; 
+         		</method>		  
+       		</grid>
+		</view>	
+		
+     	<view name="barBtn" x="10" layout="axis:x; spacing:2">
+       		<button name="btnFechar" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Cerrar' : 'Fechar') );">
+          		<handler name="onclick" >
+             		parent.parent.parent.parent.close();
+          		</handler>
+       		</button>
+       		<button name="btnGravar" width="100" oninit="this.setAttribute('text', ('E'==lang ? 'Incluir datos' : 'Incluir dados') );" enabled="false">
+          		<handler name="onclick">
+          			var wTas102 = canvas.wTas102;
+					wTas102.tas102.tela.fCabecalho.nm_Razao_Social.setAttribute("text",dp.getNodeAttribute("nm_Razao_Social"));
+					wTas102.tas102.tela.fCabecalho.dt_Inicio.setAttribute("text",dp.getNodeAttribute("dt_Inicio"));
+					wTas102.tas102.tela.tab.tabReg.corReg.fReg.edits.oid_Analise.setAttribute("text",dp.getNodeAttribute("oid_Analise"));
+		  			wTas102.open();
+		  			wTas102.tas102.selfPopulate(dp.getNodeAttribute("oid_Analise"));
+          			parent.parent.parent.parent.close();
+              	</handler>
+       		</button>
+       		<button name="btnExcluir" width="70" oninit="this.setAttribute('text', ('E'==lang ? 'Excluir' : 'Excluir') );" enabled="false">
+          		<handler name="onclick">
+          			parent.parent.alertaExclui.mostra();
+              	</handler>
+       		</button>
+    	</view>
+ 	</view>
+    <!-- Reloginho -->
+    <loadingAni name="carregando" />
+
+	</class>   
+	
+</library>

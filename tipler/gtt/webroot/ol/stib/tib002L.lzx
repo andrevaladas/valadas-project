@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Tela de cadastro de parametros STIB
+	Tabela = Parametros STIB
+-->		
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+  	</script>
+  	
+	<!-- Classes locais -->
+   	<!-- Classe da Tela -->
+	<class name="tib002" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet?acao=C&amp;ed=Stib_ParametroED&amp;rn=Stib_ParametroRN"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+         		}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+	<datapointer name="caddp2" xpath="local:cad:/cad/item" />
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'AOK') {
+               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+    			} else
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro parâmetros STIB" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<tabs name="tab" x="5" y="5" height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Parâmetros
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+						<cpoEditsXY name="edits" datapath="local:classroot.cad:/cad/item[1]">
+							
+							<edittext name="tela" visible="false" text="tib001" />
+							<edittext name="acao" visible="false" text="A" />
+							<edittext name="ed" visible="false" text="Stib_ParametroED" />
+							<edittext name="rn" visible="false" text="Stib_ParametoRN" />
+							
+							<frame3d name="frame1"  y="5" x="50" width="160" height="30" caption="" >
+								<text height="21" y="5" x="10" text="Nota atribuida" />
+							</frame3d>	
+							<frame3d name="frame2"  y="5" x="215" width="164" height="30" caption="" >
+								<text height="21" y="5" x="45" text="% de Acerto" />
+							</frame3d>	
+							
+							<text  y="50" x="50" height="21" text="NECESSITA MELHORAR" />
+							<text  y="50" x="215" height="21" text="de:" />
+							<edittext y="50" x="240" name="nr_Percentual_Faixa1_De" maxlength="10" width="50" height="21" datapath="@nr_Percentual_Faixa1_De"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							<text  y="50" x="300" height="21" text="até:" />
+							<edittext y="50" x="330" name="nr_Percentual_Faixa1_Ate" maxlength="10" width="50" height="21" datapath="@nr_Percentual_Faixa1_Ate"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							
+							<text  y="74" x="50" height="21" text="BOM" />
+							<text  y="74" x="215" height="21" text="de:" />
+							<edittext y="74" x="240" name="nr_Percentual_Faixa2_De" maxlength="10" width="50" height="21" datapath="@nr_Percentual_Faixa2_De"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							<text  y="74" x="300" height="21" text="até:" />
+							<edittext y="74" x="330" name="nr_Percentual_Faixa2_Ate" maxlength="10" width="50" height="21" datapath="@nr_Percentual_Faixa2_Ate"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							
+							<text  y="98" x="50" height="21" text="MUITO BOM" />
+							<text  y="98" x="215" height="21" text="de:" />
+							<edittext y="98" x="240" name="nr_Percentual_Faixa3_De" maxlength="10" width="50" height="21" datapath="@nr_Percentual_Faixa3_De"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							<text  y="98" x="300" height="21" text="até:" />
+							<edittext y="98" x="330" name="nr_Percentual_Faixa3_Ate" maxlength="10" width="50" height="21" datapath="@nr_Percentual_Faixa3_Ate"
+								oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+						</cpoEditsXY>
+
+               		</view>
+            	</view>
+            	<view name="barCad" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFechar" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnGravar" width="70" >
+               			Gravar
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+		      				var x=parent.parent.corCad.campos.edits;
+							classroot.atu.setAttribute("src","../../ControlerServlet?");
+			    			classroot.atu.setQueryString({tela : "tib002",
+														  ed : "Stib_ParametroED",
+														  rn : "Stib_ParametroRN",
+														  acao : "A",
+														  nm_Parametro : "STIB-Parametro",
+														  nr_Percentual_Faixa1_De 	: x.nr_Percentual_Faixa1_De.getText(),
+														  nr_Percentual_Faixa1_Ate 	: x.nr_Percentual_Faixa1_Ate.getText(),
+  														  nr_Percentual_Faixa2_De 	: x.nr_Percentual_Faixa2_De.getText(),
+														  nr_Percentual_Faixa2_Ate 	: x.nr_Percentual_Faixa2_Ate.getText(),
+														  nr_Percentual_Faixa3_De 	: x.nr_Percentual_Faixa3_De.getText(),
+														  nr_Percentual_Faixa3_Ate 	: x.nr_Percentual_Faixa3_Ate.getText()
+														  });
+							classroot.atu.doRequest();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+         	<!-- Lista -->
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

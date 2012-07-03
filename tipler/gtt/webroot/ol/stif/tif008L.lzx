@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Tela de Cadastro de Veiculos
+	 Tabela = Veiculos
+-->	 
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	
+	<!-- Variáveis globais -->
+  	<script>
+  		var pos=1;
+  	</script>
+  	
+  	<dataset name="dm_Tipo_Veiculo">
+      <item value="1">CAMINHÃO TOCO</item>
+      <item value="2">CAMINHÃO TRUCK</item>
+      <item value="3">CAMINHONETE</item>
+      <item value="4">CARRETA</item>
+      <item value="5">CAVALO TRUCADO</item>
+      <item value="6">CAVALO SIMPLES</item>
+      <item value="7">ÔNIBUS</item>
+      <item value="8">MICRO ÔNIBUS</item>
+      <item value="9">PASSEIO</item>
+   </dataset>
+   <dataset name="dm_Tipo_Piso">
+      <item value="1">ASFALTO</item>
+      <item value="2">MISTO</item>
+      <item value="3">TERRA</item>
+      <item value="4">CANTEIRO DE OBRAS</item>
+      <item value="5">INDUSTRIAL</item>
+   </dataset>
+   <dataset name="dm_Tipo_Severidade">
+      <item value="1">INICIAL</item>
+      <item value="2">BAIXA</item>
+      <item value="3">MÉDIA</item>
+      <item value="4">ALTA</item>
+   </dataset>
+
+	<resource name="imgVeic">					<!--dm_Tipo_Chassis-->
+ 		<frame  src="../images/PNEUCA04.PNG" /> <!--1 ok -->
+ 		<frame  src="../images/PNEUCA08.PNG" /> <!--2 ok -->
+ 		<frame  src="../images/PNEUCA12.PNG" /> <!--3 ok -->
+ 		<frame  src="../images/PNEUCA16.PNG" /> <!--4 ok -->
+ 		<frame  src="../images/PNEUCA32.PNG" /> <!--5 ok -->
+ 		<frame  src="../images/PNEUCAS4.PNG" /> <!--6 ok -->
+ 		<frame  src="../images/PNEUCAS6.PNG" /> <!--7 ok -->
+ 		<frame  src="../images/PNEUCO04.PNG" /> <!--8 ok -->
+ 		<frame  src="../images/PNEUCO06.PNG" /> <!--9-->
+ 		<frame  src="../images/PNEUCO10.PNG" /> <!--10-->
+ 		<frame  src="../images/PNEUDO08.PNG" /> <!--11 ok -->
+ 		<frame  src="../images/PNEUON06.PNG" /> <!--12-->
+ 		<frame  src="../images/PNEUON08.PNG" /> <!--13-->
+ 		<frame  src="../images/PNEUON09.PNG" /> <!--14 ok -->
+ 		<frame  src="../images/PNEUON10.PNG" /> <!--15-->
+ 		<frame  src="../images/PNEUON12.PNG" /> <!--16-->
+ 		<frame  src="../images/PNEUON14.PNG" /> <!--17-->
+ 		<frame  src="../images/PNEURE02.PNG" /> <!--18-->
+ 		<frame  src="../images/PNEURE08.PNG" /> <!--19-->
+ 		<frame  src="../images/PNEURE12.PNG" />	<!--20-->
+	</resource>
+
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpoTif008" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+		<form name="fCampos">
+			<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="110" align="right" layout="axis:y; spacing:3">
+					<text height="21" align="right">Veículo:</text>
+					<text height="21" align="right">Placas:</text>
+					<text height="21" align="right">Cliente:</text>
+					<text height="21" align="right">Tipo:</text>
+					<text height="21" align="right">Marca:</text>	
+					<text height="21" align="right">Modelo:</text>
+					<text height="21" align="right">Ano Fabricação:</text>
+					<text height="21" align="right">Piso:</text>
+					<text height="21" align="right">Severidade:</text>
+					<text height="21" align="right">Rota:</text>
+				</view>
+				<cpoEditsXY name="edits" >
+					<edittext name="tela" visible="false" text="tif008" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="VeiculoED" />
+					<edittext name="rn" visible="false" text="VeiculoRN" />
+					<edittext name="oid_Veiculo" visible="false" datapath="@oid_Veiculo" />
+
+					<edittext y="0" name="nr_Frota" maxlength="10" width="80" height="21" datapath="@nr_Frota" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="24" name="nr_Placa"  maxlength="8" width="80" height="21" datapath="@nr_Placa" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<lookup y="48" height="21" name="oid_Cliente" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" isDataPath="true"
+							widthCdProperty="110" widthDsProperty="270"	callService="Empresa" exactActionService="CU">
+						<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="U"/>
+					</lookup>
+
+					<datacombobox y="72" name="dm_Tipo_Veiculo" width="200" height="21" datapath="@dm_Tipo_Veiculo" itemdatapath="dm_Tipo_Veiculo:/item" defaulttext="Escolha o Tipo..." />
+					<edittext y="96" name="nm_Marca_Veiculo" enabled="true" maxlength="50" width="200" height="21" datapath="@nm_Marca_Veiculo" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="120" name="nm_Modelo_Veiculo" enabled="true" maxlength="80" width="200" height="21" datapath="@nm_Modelo_Veiculo" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="144" name="nr_Ano_Fabricacao" maxlength="10" width="50" height="21" datapath="@nr_Ano_Fabricacao" 
+						oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+					<text y="144" x="70" height="21">Ano Modelo:</text>
+					<edittext y="144" x="150" name="nr_Ano_Modelo" maxlength="10" width="50" height="21" datapath="@nr_Ano_Modelo" 
+						oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+
+					<datacombobox y="168" name="dm_Tipo_Piso" width="200" height="21" datapath="@dm_Tipo_Piso" itemdatapath="dm_Tipo_Piso:/item" defaulttext="Escolha o Piso..." />
+					<datacombobox y="192" name="dm_Tipo_Severidade" width="200" height="21" datapath="@dm_Tipo_Severidade" itemdatapath="dm_Tipo_Severidade:/item" defaulttext="Escolha a Severidade..." />
+					<edittext y="216" name="nm_Rota" maxlength="50" width="390" height="21" datapath="@nm_Rota" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+
+					<!--View da Configuração de Pneu-->
+					<view name="borda" y="80" x="214" bgcolor="black" height="125" width="254" visible="false">
+
+						<view name="caixa" y="1" x="1" height="123" width="252" bgcolor="#EAEAEA" layout="axis:y; spacing:0">
+							<!--Text escondido-->
+							<edittext name="dm_Tipo_Chassis" visible="false" text="1" datapath="@dm_Tipo_Chassis" />
+							<text height="21" align="center">Configuração de Pneu</text>
+							<!--Chassi + Scrol-->
+							<view name="imagem" bgcolor="#EAEAEA" layout="axis:x; spacing:0" >
+								<!--Imaagens Chassis-->
+			    				<view name="veic" resource="imgVeic" x="1" y="1" height="100" width="250" stretches="both">
+			    					<method event="onclick">
+								    	<![CDATA[            
+								        pos++;
+								        if (pos>20) pos=1;
+								        parent.parent.dm_Tipo_Chassis.setAttribute('text',pos);
+								        parent.veic.setResourceNumber(pos);
+								        ]]>
+								    </method>
+			    				</view>			
+								<!-- SCROLL -->
+							    <view xoffset="22" y="1" height="101" width="22" bgcolor="black">
+								    <view x="1" y="1" height="99" width="20" layout="axis:y; spacing:0" bgcolor="white">
+								        <button width="22" height="20">
+								            <view resource="../images/up.png" y="4" x="2" />
+								            <method event="onclick">
+								                <![CDATA[            
+								                pos--;
+								                if (pos<1) pos=1;
+								                parent.parent.parent.parent.dm_Tipo_Chassis.setAttribute('text',pos);
+								                parent.parent.parent.veic.setResourceNumber(pos);
+								                ]]>
+								            </method>
+								        </button>
+								        <view width="20" height="60" bgcolor="#EAEAEA">
+								        	<method event="onclick">
+								    			<![CDATA[            
+								        		pos++;
+										        if (pos>21)     pos=1;
+										        parent.parent.parent.parent.dm_Tipo_Chassis.setAttribute('text',pos);
+								                parent.parent.parent.veic.setResourceNumber(pos);
+								        		]]>
+								    		</method>
+								        </view>
+								        <button width="22" height="20">
+								            <view resource="../images/down.png" y="6" x="3" />
+								            <method event="onclick">
+								                <![CDATA[            
+								                pos++;
+								                if (pos>21)     pos=21;
+								                parent.parent.parent.parent.dm_Tipo_Chassis.setAttribute('text',pos);
+								                parent.parent.parent.veic.setResourceNumber(pos);
+								                ]]>
+								            </method>
+								        </button>
+								    </view> 
+								</view> 
+							</view>
+						</view>
+					</view>
+					
+					<text y="240" name="msg_Stamp" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />
+				</cpoEditsXY>
+				<view width="40"></view>
+  
+			</view>
+			
+      		<!-- Validação -->
+      		<method name="valida" >
+      			var alerta = parent.parent.parent.parent.parent.parent.janelaErro;
+         		if ( vCampos.edits.nr_Frota.getText() == '' ) { 
+            		alerta.mostra('Preencha o campo Veículo!');
+            		return false;
+         		} else
+         		if ( vCampos.edits.nr_Placa.getText() == '' ) { 
+            		alerta.mostra('Preencha o campo Placa do Veículo!');
+            		return false;
+         		} else
+         		if ( vCampos.edits.oid_Cliente.getValue() == '') { 
+            		alerta.mostra('Escolha o Cliente do Veículo!');
+            		return false;
+         		} else
+         		if ( vCampos.edits.dm_Tipo_Veiculo.value == null ) { 
+            		alerta.mostra('Escolha o Tipo do Veículo!');
+            		return false;
+         		} else
+         		if ( vCampos.edits.nm_Marca_Veiculo.getText() == '' ) { 
+            		alerta.mostra('Preencha o campo Marca do Veículo!');
+            		return false;
+         		} else
+         		if ( vCampos.edits.nm_Modelo_Veiculo.getText() == '' ) { 
+            		alerta.mostra('Preencha o campo Modelo do Veículo!');
+            		return false;
+         		} else
+         		if ( vCampos.edits.nr_Ano_Fabricacao.getText() == '' ) { 
+            		alerta.mostra('Preencha o Ano de Fabricação do Veículo !');
+            		return false;
+         		} else
+         		if ( vCampos.edits.nr_Ano_Modelo.getText() == '' ) { 
+            		alerta.mostra('Preencha o Ano de Modelo do Veículo !');
+            		return false;
+         		} else
+         		if ( vCampos.edits.dm_Tipo_Piso.value == null ) { 
+            		alerta.mostra('Escolha a Tipo de Piso do Veículo !');
+            		return false;
+         		} else
+         		if ( vCampos.edits.dm_Tipo_Severidade.value == null ) { 
+            		alerta.mostra('Escolha a Tipo de Severidade do Veículo !');
+            		return false;
+         		} else
+         		if ( vCampos.edits.nm_Rota.getText() == '' ) { 
+            		alerta.mostra('Preencha o Tipo de Roda do Veículo !');
+            		return false;
+         		}
+         		return true;
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			vCampos.edits.borda.setAttribute('visible',true);
+           		pos = parent.parent.updCad.datapath.xpathQuery('@dm_Tipo_Chassis') * 1;
+           		vCampos.edits.borda.caixa.imagem.veic.setResourceNumber( pos );
+      		</method>
+      		<method name="preInclui">
+      			vCampos.edits.borda.setAttribute('visible',true);
+      		</method>
+      		<method name="posInclui">
+      			vCampos.edits.borda.setAttribute('visible',false);
+      			var regs = parent.parent.updCad.classroot.caddp.xpathQuery('*/item/last()');
+              	if ( !regs==0 ) 
+      				vCampos.edits.borda.setAttribute('visible',true);
+      		</method>
+      		<method name="preAltera">
+      		</method>
+      		<method name="preGravar">
+      		</method>
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="tif008" extends="view" >
+         
+	<!-- Datasets -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok');
+      			parent.tela.carregando.stopAni();
+				if (resultado == 'LOGON') {
+					parent.logon();
+      			} else {
+	      			var regs = classroot.caddp.xpathQuery('*/item/last()');
+	          		parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+	              	}  else {
+          				parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+          				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	              	}
+              	}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  		/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+	
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.atudp.xpathQuery('@oknok');
+				if (resultado == 'LOGON') {
+					parent.logon();
+      			} else {
+					if (resultado == 'AOK') {
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+						parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!');
+					} else
+					if (resultado == 'DOK') {
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode();
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+						var regs = classroot.caddp.xpathQuery('*/item/last()');
+						if ( regs == null ) parent.tela.tab.tabCad.barCad.btnNovoCad.click();
+						parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs);
+						parent.tela.janelaAviso.mostra('Registro excluido com sucesso!');
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();"
+		ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  		/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+	
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.newdp.xpathQuery('@oknok');
+				var oid = classroot.newdp.xpathQuery('@oid');
+				if (resultado == 'LOGON') {
+					parent.logon();
+      			} else {
+					if (resultado == 'IOK') {
+						parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Veiculo.setAttribute('text',oid);
+						parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();
+						var end = classroot.caddp.xpathQuery('*/item/last()');
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+						classroot.caddp.selectChild();
+						classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+						classroot.caddp.setAttribute('xpath','local:cad:/');
+						parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+						parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+
+						var x = parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits;
+						x.dm_Tipo_Veiculo.selectItemAt(-1);
+						x.dm_Tipo_Piso.selectItemAt(-1);
+						x.dm_Tipo_Severidade.selectItemAt(-1);
+						x.borda.caixa.imagem.veic.setResourceNumber(1);
+						x.borda.caixa.dm_Tipo_Chassis.setAttribute('text',1);
+						pos=1;
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/nalthus.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+	
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Veículos" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" width="${parent.parent.parent.width-30}" height="${parent.parent.parent.height-80}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.parent.parent.parent.width-25}" height="${parent.parent.parent.parent.parent.height-150}">
+            		<form name="formSel">
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right">Veículo:</text>
+								<text height="21" align="right">Placas:</text>
+								<text height="21" align="right">Marca:</text>
+								<text height="21" align="right">Modelo:</text>
+								<text height="21" align="right">Tipo:</text>
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="tif008" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="VeiculoED" />
+								<edittext name="rn" visible="false" text="VeiculoRN" />
+								<edittext name="nr_Frota" maxlength="60" width="80" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="nr_Placa" maxlength="60" width="80" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="nm_Marca_Veiculo" maxlength="60" width="200" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<edittext name="nm_Modelo_Veiculo" maxlength="60" width="200" height="21"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<datacombobox name="dm_Tipo_Veiculo" width="200" height="21" itemdatapath="dm_Tipo_Veiculo:/item" defaulttext="TODOS"/>
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                  			parent.parent.parent.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.borda.setAttribute('visible',true);
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  	</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="${parent.parent.parent.parent.parent.width-25}" height="${parent.parent.parent.parent.parent.height-150}">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpoTif008 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</cpoTif008>
+                  		<!-- View campos para inclusão -->
+                  		<cpoTif008 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpoTif008>
+               		</view>
+            	</view>
+            	<botoesCad name="barCad" tela="tif008" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.parent.parent.parent.width-25}" height="${parent.parent.parent.parent.parent.height-150}">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-08}" width="${parent.width-20}" multiselect="false" rowheight="16">
+                  		<gridtext editable="false" datapath="@nr_Frota" text="Veículo" width="80"/>
+                  		<gridtext editable="false" datapath="@nr_Placa" text="Placa" width="80"/>
+                  		<gridtext editable="false" datapath="@nm_Marca_Veiculo" text="Marca" width="120"/>
+                  		<gridtext editable="false" datapath="@nm_Modelo_Veiculo" text="Modelo" width="120"/>
+                  		<gridtext editable="false" textalign="right" datapath="@nr_Ano_Fabricacao" text="Ano Fabricação" width="100"/>
+                  		<gridtext editable="false" textalign="right" datapath="@nr_Ano_Modelo" text="Ano Modelo" width="100"/>
+                  		<gridtext editable="false" datapath="@nm_Rota" text="Rota" width="200"/>
+                  		<method event="onselect" args="row">
+                  			parent.parent.parent.tabCad.corCad.campos.updCad.fCampos.vCampos.edits.borda.setAttribute('visible',true);
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2" >
+            		<handler name="oninit" >
+            			parent.parent.parent.carregando.stopAni();
+            			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+            		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+               			Relatório
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=pns13";
+							chamada += "&amp;"+"ed=VeiculoED";
+							chamada += "&amp;"+"rn=VeiculoRN"; 
+							chamada += "&amp;"+"rel=1";
+							chamada += "&amp;"+ parent.parent.parent.tabSel.corSel.formSel.vSel.edits.getRequestValues();
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();"/>
+   	</view>
+	</class>   
+</library>

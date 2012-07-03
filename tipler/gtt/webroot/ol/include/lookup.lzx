@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+	<include href="../../lps/components/lz/edittext.lzx" />
+	<include href="../../lps/components/lz/datacombobox.lzx" />
+	<!-- Resources -->
+  	<resource name="lupa" src="../images/lupa.png"/>
+
+	<!--Campos da Lookup -->
+	<class name="lookup" extends="view" >
+	  	<attribute name="label" type="text" value=""/>
+	  	<attribute name="popupLabel" type="text" value=""/>
+	  	<attribute name="popupCdLabel" type="text" value=""/>
+	  	
+      	<attribute name="idProperty" type="text" value="${this.name}"/>
+      	<attribute name="cdProperty" type="text" required="true"/>
+      	<attribute name="dsProperty" type="text" required="true" value="${cdProperty}"/>
+      	<attribute name="showDsProperty" type="boolean" value="true"/>
+      	<attribute name="showPicker" type="boolean" value="true"/>
+      	<attribute name="widthCdProperty" type="number" required="true"/>
+      	<attribute name="widthDsProperty" type="number" required="false" value="0"/>
+      	<attribute name="yLabel" type="number" value="0"/>
+      	<attribute name="xLabel" type="number" value="0"/>
+      	<attribute name="callService" type="text" required="true"/>
+      	<attribute name="actionService" type="text" value="lookup"/>
+      	<attribute name="exactActionService" type="text" value="${actionService}"/>
+      	<attribute name="isDataPath" type="boolean" value="false"/>
+      	<!--- @keywords private -->
+      	<attribute name="rowDataPath"/>
+      	<attribute name="enabled" type="boolean" value="true"/>
+      	<!--
+      	@call: ondataLookup
+      	@description: Evento executado ao popular Lookup.
+      	@example:
+      	  <lookup>
+      		 <method name="ondataLookup">
+			 	...source here...
+			 </method>
+		  </lookup> -->
+      	<event name="ondataLookupEvent"/>
+      	<!--
+      	@call: onresetLookup
+      	@description: Evento executado ao resetar Lookup.
+      	@example:
+      	  <lookup>
+      		 <method name="onresetLookup">
+			 	...source here...
+			 </method>
+		  </lookup> -->
+      	<event name="onresetLookupEvent"/>
+
+      	<handler name="oninit">
+      		//Name
+      		if(this.getAttribute('name') == null) {
+      			this.setName(this.idProperty);
+      		}
+      		//DataPath
+      		if(this.getAttribute('isDataPath') == true) {
+      			this.setDatapath('@'+this.name);
+      			this.lookup_cdProperty.setAttribute('datapath', '@'+this.cdProperty);
+      			this.lookup_dsProperty.setAttribute('datapath', '@'+this.dsProperty);
+      		}
+      		//Relateds
+      		this.__verifyRelatedFields();
+      		//Events
+      		this.del = new LzDelegate(this, "ondataLookup");
+      		this.del.register(this, "ondataLookupEvent");
+
+      		this.del = new LzDelegate(this, "onresetLookup");
+      		this.del.register(this, "onresetLookupEvent");
+      		
+      	</handler>
+      	<handler name="ondata" args="id">
+      		<![CDATA[
+	      		if(id != null && id > 0) {
+	      			this.__findById(id);
+	      		} else this.resetLookupValues();
+      		]]>
+      	</handler>
+
+		<!-- Métodos para manipular objeos vinculados a Lookup -->
+		<!-- Verifica e "alinha" quando necessário campos vinculados a Lookup -->
+		<method name="__verifyRelatedFields">
+			<![CDATA[
+			/** Calcula tamanho total do componente, levando em consideracao os visivel na tela */
+			var nextPosition = (this.lookup_dsProperty.x + (!this.showDsProperty ? 0 : this.widthDsProperty));
+      		var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if((elem instanceof relatedText) || (elem instanceof relatedEditText)) {
+					/** Alinha os campo, caso os mesmos nao possuam um alinhamento próprio */
+					if(elem.getAttribute('x') == 0) {
+						elem.setAttribute('x',nextPosition);
+						nextPosition += elem.getAttribute('width');
+					}
+					elem.setVisible(elem.getAttribute('visible'));
+				}
+			}
+			]]>
+		</method>
+		<!-- Busca parametros para filtrar consultas -->
+		<method name="__getCriteriaValues">
+			<![CDATA[
+			var params = "";
+      		var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if(elem instanceof propertyMapping) {
+					//Dentro do contexto javascript deve-se passar "&" ao invés de "&amp;"  
+					params += "&"+elem.modelProperty+"="+elem.criteriaProperty;
+				}
+			}
+			return params;
+			]]>
+		</method>
+		<!-- Popula dados do objeto Lookup -->
+		<method name="__populateLookupValues" args="dp">
+	      	lookup_idProperty.setText(dp.getNodeAttribute(this.idProperty));
+		    lookup_cdProperty.setText(dp.getNodeAttribute(this.cdProperty));
+		    lookup_previousValue.setText(dp.getNodeAttribute(this.cdProperty));
+			lookup_dsProperty.setText(dp.getNodeAttribute(this.dsProperty));
+			this.__populateRelatedFields(dp);
+
+			this.ondataLookup_handler();
+	  	</method>
+	  	<!-- Popula dados de campos referenciados -->
+		<method name="__populateRelatedFields" args="dp">
+			<![CDATA[
+      		var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if((elem instanceof relatedText) || (elem instanceof relatedEditText)) {
+					elem.setText(dp.getNodeAttribute(elem.getAttribute('name')));
+				} else if(elem instanceof propertyMapping && elem.relatedProperty != null) {
+					var elementValue = dp.getNodeAttribute(elem.modelProperty);
+					//Trata retorno para dataComboBox
+					if(elem.relatedProperty instanceof datacombobox) {
+						elem.relatedProperty.setValue(elementValue);
+					} else {
+						elem.relatedProperty.setText(elementValue);
+					}
+				}
+			}
+			]]>
+		</method>
+		<!-- Reseta dados de campos referenciados -->
+		<method name="__resetRelatedFields">
+			<![CDATA[
+      		var nodes = this.subnodes;
+			for (var i = 0; i < nodes.length; i++) {
+				var elem = nodes[i];
+				if((elem instanceof relatedText) || (elem instanceof relatedEditText)) {
+					elem.clearText();
+				} else if(elem instanceof propertyMapping && elem.relatedProperty != null) {
+					//Trata retorno para dataComboBox
+					if(elem.relatedProperty instanceof datacombobox) {
+						elem.relatedProperty.selectItemAt(-1);
+					} else {
+						elem.relatedProperty.clearText();
+					}
+				}
+			}
+			]]>
+		</method>
+		<!-- Call onBlur Lookup Event -->
+		<method name="ondataLookup_handler">
+			if(this.ondataLookupEvent != null) {
+				this.ondataLookupEvent.sendEvent();
+			}
+	  	</method>
+		<method name="onresetLookup_handler">
+			if(this.onresetLookupEvent != null) {
+				this.onresetLookupEvent.sendEvent();
+			}
+	  	</method>
+
+		<method name="getLookupDatapointer">
+			var dp = this.__dsLookup.getPointer();
+			if (this.rowDataPath != null) {
+				dp = this.rowDataPath;
+			} else dp.selectChild(2);
+			return dp;
+		</method>
+		
+		
+		<!--- @keywords private -->
+		<dataset name="__dsLookup" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+	  		src="../../ControlerServlet?"
+	  		ondata="var errorMsg = parent.__dsLookupdp1.xpathQuery('@oknok');
+				if (errorMsg == 'LOGON') {
+					parent.logon();
+	  			} else if (errorMsg != null) {
+	              	parent.resetLookupValues();
+	              	globalJanelaAviso.mostra(errorMsg);
+	            } else {
+	      			var regs = parent.__dsLookupdp.xpathQuery('*/last()');
+	          		var rowCount = (regs == null ? 0 : regs);
+	          		if(rowCount == 1) {
+	          			var dp = this.getPointer();
+	          			dp.selectChild(2);
+	          			parent.__populateLookupValues(dp);
+	              	} else if(rowCount > 1) {
+	              		if(this.parent.showPicker) {
+							popupList.openPopup(parent, true);
+						} else {
+							parent.resetLookupValues();
+	              			globalJanelaAviso.mostra('Registro não encontrado!');
+						}
+	              	} else {
+	              		parent.resetLookupValues();
+	              		globalJanelaAviso.mostra('Registro não encontrado!');
+	              	}
+	          	}"
+		  	onerror="globalClock.stopAni();" 
+		  	ontimeout="globalClock.stopAni();
+		  			   globalJanelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+		/>
+		<!--- @keywords private -->
+		<datapointer name="__dsLookupdp" xpath="local:__dsLookup:/cad" />
+		<!--- @keywords private -->
+		<datapointer name="__dsLookupdp1" xpath="local:__dsLookup:/ret/item" />
+
+      	<edittext
+      		visible="false"
+      		name="lookup_idProperty"
+      		submitname="${this.parent.name}"
+      		datapath="${'@'+this.parent.idProperty}"/>
+      	<!--- @keywords private -->
+      	<edittext
+      		visible="false"
+      		name="lookup_previousValue"/>
+      	<text
+      		y="${this.parent.yLabel}" 
+	      	x="${this.parent.xLabel}"
+	      	name="lookupLabel" 
+	      	text="${this.parent.label}"
+	      	visible="${this.parent.label.length > 0}"
+	      	resize="true" />
+      	<edittext
+      		y="${this.parent.yLabel}" 
+	      	x="${(this.parent.label.length > 0 ? (this.parent.xLabel+this.parent.lookupLabel.width+3) : 0)}"
+	      	name="lookup_cdProperty" 
+	      	width="${this.parent.widthCdProperty}"
+	      	visible="${this.parent.visible}"
+	      	enabled="${this.parent.enabled}"
+	      	height="21">
+	      	<method event="onblur">
+	      		//Valida para não fazer requests inconsistentes
+	      		if(this.getValue() != this.parent.lookup_previousValue.getText()) {
+		      		if (this.getValue() != '') {
+		      			parent.__executeOnblurSearch(this.getValue());
+		      		} else parent.resetLookupValues();
+	      		}
+	      	</method>
+	      	<method event="onkeydown" args="p">
+	      		if (p==115) 
+	      			if (this.parent.enabled)
+	      				popupList.openPopup(parent, false);
+	      	</method>
+      	</edittext>
+      	<view
+      		y="${this.parent.yLabel+2}" 
+	      	x="${this.parent.lookup_dsProperty.x - 16}"
+	      	name="_lupa" 
+	    	resource="lupa"
+	    	width="15"
+	    	height="15"
+	    	onclick="if (this.parent.enabled) popupList.openPopup(parent, false)"
+	    	visible="${this.parent.showPicker}"/>
+	  	<edittext
+		   	enabled="false"
+		   	y="${this.parent.yLabel-1}"
+		   	x="${(this.parent.xLabel+this.parent.lookupLabel.width+(this.parent.label.length > 0 ? 7 : 0))+this.parent.widthCdProperty+(this.parent.showPicker ? 13 : -3)}"
+	      	name="lookup_dsProperty" 
+	      	width="${this.parent.widthDsProperty}"
+	      	visible="${this.parent.showDsProperty}"
+	      	height="23"/>
+
+      	<method name="__findById" args="idPropertyValue">
+			if(idPropertyValue > 0) {
+		  		var source = "../../ControlerServlet?acao="+exactActionService;
+		  		source += "&amp;ed="+callService+"ED";
+		  		source += "&amp;rn="+callService+"RN";
+		  		source += "&amp;"+idProperty+"="+idPropertyValue;
+		  		source += __getCriteriaValues();
+		  		//Reseta dataPath da grid
+				this.setAttribute('rowDataPath', null);
+	      		__dsLookup.setSrc(source);
+	      		__dsLookup.doRequest();
+		}
+		</method>
+
+		<method name="__executeOnblurSearch" args="cdPropertyValue">
+      		var source = "../../ControlerServlet?acao="+exactActionService;
+      		source += "&amp;ed="+callService+"ED";
+      		source += "&amp;rn="+callService+"RN";
+      		source += "&amp;"+cdProperty+"="+cdPropertyValue;
+      		source += __getCriteriaValues();
+      		//Reseta dataPath da grid
+      		this.setAttribute('rowDataPath', null);
+      		__dsLookup.setSrc(source);
+      		__dsLookup.doRequest();
+      	</method>
+      	
+	  	<method name="getValue">
+      		return this.getText();
+	  	</method>
+	  	<method name="getText">
+      		return lookup_idProperty.getText();
+	  	</method>
+	  	<method name="setValue" args="id">
+      		this.__findById(id);
+	  	</method>
+	  	<method name="setText" args="id">
+      		this.__findById(id);
+	  	</method>
+	  	<method name="resetLookupValues">
+	      	lookup_idProperty.clearText();
+		    lookup_cdProperty.clearText();
+			lookup_dsProperty.clearText();
+			lookup_previousValue.clearText();
+			this.__resetRelatedFields();
+
+			this.onresetLookup_handler();
+	  	</method>
+	  	<method name="getPropertyText">
+      		return lookup_cdProperty.getText();
+	  	</method>
+	  	<method name="getDescriptionText">
+      		return lookup_dsProperty.getText();
+	  	</method>
+	  	<method name="setCriteria" args="pModelProperty,pCriteriaProperty">
+			<![CDATA[
+				var nodes = this.subnodes;
+				for (var i = 0; i < nodes.length; i++) {
+					var elem = nodes[i];
+					if(elem instanceof propertyMapping) {
+						if (elem.modelProperty==pModelProperty) { 
+							elem.criteriaProperty=pCriteriaProperty;
+						}	
+					}
+				}
+			]]>
+		</method>
+
+	  	<method name="logon">
+			LzBrowser.loadURL('javascript:window.open("' + "../../principal/nalthus.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+		</method>
+	</class>
+
+	<!-- DataSet's da Listagem -->
+	<dataset name="__sisPopupList" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet?"
+		ondata="globalClock.stopAni();
+  			var resultado = parent.__sisPopupListdp1.xpathQuery('@oknok');
+  			
+          	if (resultado=='LOGON'){
+          		parent.globalLogon();
+          	} else if (resultado!= null) {
+              	globalJanelaAviso.mostra(resultado);
+			}"
+  		onerror="globalClock.stopAni();" 
+  		ontimeout="globalClock.stopAni();
+  			   globalJanelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+	/>
+	<datapointer name="__sisPopupListdp" xpath="__sisPopupList:/" />
+	<datapointer name="__sisPopupListdp1" xpath="__sisPopupList:/ret/item" />
+
+   	<!-- Listagem da lookup -->
+	<modaldialog name="popupList" title="Lookup Listagem" width="560" bgcolor="#EAEAEA">
+    	<simplelayout spacing="7"/>
+      	<attribute name="lookupRef"/>
+      	<method name="openPopup" args="lkp,callRequest">
+      		/** Guarda a referencia da lookup que esta chamando a listagem
+      		 *  Seta os datapath dos campos da grid */
+      		this.setAttribute('lookupRef', lkp);
+			this.__lookupList.grid_cdProperty.setAttribute('datapath', '@'+lkp.cdProperty);
+  			this.__lookupList.grid_dsProperty.setAttribute('datapath', '@'+lkp.dsProperty);
+  			parent.__sisPopupList.setChildNodes([]);
+  			parent.__sisPopupList.data=[];
+			
+  			/** Seta título da listagem */
+  			if(this.lookupRef.popupLabel.length > 0) {
+  				this.setAttribute('title', this.lookupRef.popupLabel);
+  			}
+  			
+  			if(this.lookupRef.popupCdLabel.length > 0) {
+  				this._lookupCad._labels.cdLabel.setAttribute('text', this.lookupRef.popupCdLabel);
+  				Debug.write(this.lookupRef.popupCdLabel.width)
+  			}
+
+
+  			/** Seta na listagem, valor do campo de filtro da tela */
+  			this._lookupCad._fields.cdProperty.setText(this.lookupRef.lookup_cdProperty.getText());
+			/** Limpa o campo descrição */
+  			this._lookupCad._fields.dsProperty.clearText();
+  			
+  			/** Faz request para carregar listagem ao abrir */
+  			if(callRequest){
+  				this._lookupButtons._callLookupRequest();
+  			}
+  			this.open();
+  			/* TODO: André Valadas 
+  			 * Encontrar funcao que recarregue o componente, 
+  			 * pois o primeiro registro da Grid nao esta reconhecendo seu datapath
+  			 * quando o mesmo eh setado dinamicamente...*/		  
+  			this.__lookupList.init();
+  			this.bringToFront();
+  		</method>
+
+    	<view name="_lookupCad" width="450" layout="axis:x; spacing:5" >
+    		<view name="_labels" width="80" layout="axis:y; spacing:3" align="right" >
+        		<text name="cdLabel" text="Código:" align="right" height="21" />
+        		<text text="Descrição:" align="right" height="21" />
+    		</view>
+    		<view name="_fields" layout="axis:y; spacing:3">
+				<edittext name="cdProperty" maxlength="100" width="150" height="21"/>
+				<edittext name="dsProperty" maxlength="200" width="300" height="21" oninit="this.setPattern('[A-Z0-9/\\-+.,ÃÕÁÉÍÓÚÄËÏÖÜÊÇ ()]*');"/>
+			</view>
+    	</view>
+    	<!-- Barra de Botões -->
+        <view name="_lookupButtons" layout="axis:x; spacing:3">
+        	<!-- Botão cancela -->
+            <button name="_btnCancelar" onclick="parent.parent.close()">Cancela</button>
+            <!-- Botão consultar --> 
+            <button name="_btnConsultar" width="80" isdefault="true">Consultar
+            	<handler name="onclick">
+					parent._callLookupRequest();
+            	</handler>
+            </button>
+
+            <method name="_callLookupRequest">
+			    var src = "../../ControlerServlet?";
+    			src += "acao="+parent.lookupRef.actionService+"&amp;";
+    			src += "ed="+parent.lookupRef.callService+"ED&amp;";
+    			src += "rn="+parent.lookupRef.callService+"RN&amp;";
+    			src += parent.lookupRef.cdProperty+"="+parent._lookupCad._fields.cdProperty.getText()+"&amp;";
+    			src += parent.lookupRef.dsProperty+"="+parent._lookupCad._fields.dsProperty.getText();
+    			src += parent.lookupRef.__getCriteriaValues();
+        		globalClock.startAni();
+				__sisPopupList.setSrc(src);
+				__sisPopupList.doRequest();
+			</method>
+        </view>
+        <grid name="__lookupList" datapath="__sisPopupList:/" y="1" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+	    	height="150" width="520" rowheight="16">
+	        <gridtext editable="false" name="grid_cdProperty" datapath="@" width="150">Código</gridtext>
+	        <gridtext editable="false" name="grid_dsProperty" datapath="@" width="370">Descrição</gridtext>
+			<method event="onselect" args="row">
+	        	parent.lookupRef.rowDataPath = row.datapath;
+           		parent.lookupRef.__populateLookupValues(row.datapath);
+           		parent.parent.popupList.close();
+     		</method>
+        </grid>
+	</modaldialog>
+
+	<!-- Classe de campos Text com related automatico -->
+	<class name="relatedText" extends="text" height="21"/>
+	<!-- Classe de campos EditText com related automatico -->
+	<class name="relatedEditText" extends="edittext" height="21"  enabled="false"/>
+
+	<!-- Classe de filtro e retorno da lookup -->
+	<class name="propertyMapping">
+		<!-- objeto esperado no bean -->
+		<attribute name="modelProperty" type="text" value=""/>
+		<!-- objeto de filtro adicional da pesquisa -->
+	  	<attribute name="criteriaProperty" type="text" value=""/>
+	  	<!-- objeto related do retorno da pesquisa -->
+      	<attribute name="relatedProperty"/>
+	</class>
+
+	<class name="clockAnimator" extends="view" visible="false" 
+   	   x="${(this.parent.width-30)/2-30}" y="${(this.parent.height-60)/2-30}" width="30" height="30">
+      <view name="loadingswf" resource="../include/explore_loading.swf" play="false" />
+      <method name="startAni">this.bringToFront(); this.loadingswf.play(); this.setVisible(true);</method>
+      <method name="stopAni">this.setVisible(false); this.loadingswf.stop();</method>
+   	</class>
+   	<clockAnimator id="globalClock" name="carregando"/>
+   	<!-- Janela de aviso -->
+	<alert id="globalJanelaAviso" name="janelaAviso" title="A v i s o !" width="300" x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}">
+		Aviso Padrão!
+		<method name="mostra" args="msg">
+			this.setAttribute('text', msg); 
+			this.open();
+		</method>
+ 	</alert>
+ 	<method name="globalLogon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/nalthus.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+</library>

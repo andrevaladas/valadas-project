@@ -1,0 +1,31 @@
+<library>
+ 	<class name="fileUpload">
+		<handler name="oninit" args="invoker">
+			<![CDATA[
+			fr = new flash.net.FileReference();
+			fr.addListener(invoker);
+			]]>
+		</handler>
+
+		<method name="browse">
+			<![CDATA[
+			var allTypes = new Array();
+			var imageTypes = new Object();
+			imageTypes.description = "Images (*.jpg, *.jpeg, *.gif, *.png)";
+			imageTypes.extension = "*.jpg; *.jpeg; *.gif; *.png";
+			allTypes.push(imageTypes);
+			fr.browse(allTypes);	
+			]]>
+		</method>
+
+		<method name="getName">
+			<![CDATA[return fr.name;]]>
+		</method>
+
+		<method name="upload" args="url">
+			<![CDATA[ 
+			fr.upload(url); 
+			]]>
+		</method>
+ 	</class>
+</library>

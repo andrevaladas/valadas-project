@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	Tela de cadastro de Opcoes de menu do Sistema
+-->		
+<library>
+	<!-- Variáveis globais -->
+  	<script>
+  	</script>
+  	
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" />
+	<include href="../include/domain.lzx" />  
+	
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpoGtt011" extends="view" visible="false" align="left" layout="axis:y; spacing:3" >
+		<!-- Campo escondido para colocar o nome do sistema oriundo do combo no dataset da lista quando da inclusão -->
+   		<form name="fCampos">
+			<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view name="label" width="110" align="right">
+					<text y="0" height="21" align="right">CNPJ/CPF:</text>
+					<text y="24" height="21" align="right">Razão Social:</text>
+					<text y="48" height="21" align="right">Endereço:</text>
+					<text y="72" height="21" align="right">Bairro:</text>
+					<text y="96" height="21" align="right">Cidade:</text>
+					<text y="120" height="21" align="right">Estado:</text>
+					<text y="144" height="21" align="right">Telefone:</text>
+					<text y="168" height="21" align="right">Fax:</text>
+					<text y="192" height="21" align="right">E-Mail:</text>
+					<text y="216" height="21" align="right">Tipo de frota:</text>
+					<text y="240" height="21" align="right" >Concessionária:</text>
+				</view>
+				<cpoEditsXY name="edits" >
+					<edittext name="tela" visible="false" text="gtt011" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="EmpresaED" />
+					<edittext name="rn" visible="false" text="EmpresaRN" />
+					<edittext name="dm_Tipo_Empresa" visible="false" text="U" />
+					<edittext name="oid_Empresa" visible="false" datapath="@oid_Empresa" />
+					<edittext name="oid_Empresa_Gambiarra" visible="false" datapath="@oid_Empresa" />
+					
+					<edittext y="0" name="nr_Cnpj" width="110" height="21" maxlength="14" datapath="@nr_Cnpj" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="24" name="nm_Razao_Social" width="370" height="21" maxlength="100" datapath="@nm_Razao_Social" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="48" name="nm_Endereco" width="370" height="21" maxlength="100" datapath="@nm_Endereco" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="72" name="nm_Bairro" width="300" height="21" maxlength="100" datapath="@nm_Bairro" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="96" name="nm_Cidade" width="300" height="21" maxlength="100" datapath="@nm_Cidade" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<datacombobox y="120" name="cd_Estado"  width="150" height="21" datapath="@cd_Estado" itemdatapath="dm_UF:/item" />	
+					<text y="120" x="184" height="21" >CEP:</text>					
+					<edittext y="120" x="220"  name="nr_Cep" width="80" height="21" maxlength="9" datapath="@nr_Cep" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />			
+					<edittext y="144" name="nr_Telefone" width="300" height="21" maxlength="100" datapath="@nr_Telefone" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="168" name="nr_Fax" width="300" height="21" maxlength="100" datapath="@nr_Fax" 
+						oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+					<edittext y="192" name="nm_Email" width="300" height="21" maxlength="100" datapath="@nm_Email"  />
+					<datacombobox y="216" name="dm_Tipo_Frota"  width="300" height="21" datapath="@dm_Tipo_Frota" itemdatapath="dm_Tipo_Frota:/item" />
+					<text y="240" name="nm_Concessionaria" width="370" datapath="@nm_Concessionaria"  />
+
+					<text y="264" name="msg_Stamp" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />	
+				</cpoEditsXY>		
+			</view>		   		
+			<!-- Validação -->
+      		<method name="valida" >
+      			<![CDATA[
+         		var retorno = true; 
+         		var objJanelaErro = parent.parent.parent.parent.parent.parent.janelaErro;
+         		if ( vCampos.edits.requerido(vCampos.edits.nr_Cnpj.getText()) ) { 
+            		objJanelaErro.mostra('Preencha o campo CNPJ/CPF!');
+            		retorno = false; 
+         		} else         		
+         		if ( vCampos.edits.requerido(vCampos.edits.nm_Razao_Social.getText()) ) { 
+            		objJanelaErro.mostra('Preencha o campo Razão Social!');
+            		retorno = false; 
+         		} else
+         		if (vCampos.edits.requerido(vCampos.edits.dm_Tipo_Frota.getValue())) { 
+            		objJanelaErro.mostra('Informe o campo Tipo de frota!');
+            		return false;
+         		} else
+         		if (vCampos.edits.cd_Estado.value!='AR' && vCampos.edits.cd_Estado.value!='UY') {
+	     	   		if (vCampos.edits.nr_Cnpj.getText().length>11) {
+		         		if ( vCampos.edits.util.validaCNPJ(vCampos.edits.nr_Cnpj.getText()) ) { 
+		            		objJanelaErro.mostra('CNPJ/CPF inválido!');
+		            		retorno = false; 
+		         		}          		
+	         		} else {
+		         		if ( vCampos.edits.util.validaCPF(vCampos.edits.nr_Cnpj.getText()) ) { 
+		            		objJanelaErro.mostra('CNPJ/CPF inválido!');
+		            		retorno = false; 
+		         		}
+	         		}	
+         		}
+         		return retorno;
+         		]]>
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			// Aqui coloque ações que necessitam ser feitas após a reposição do registro principal
+      		</method>
+      		<method name="preInclui">
+      			// Aqui coloque ações que necessitam ser feitas antes do modo de inclusão
+      		</method>
+      		<method name="posInclui">
+      			// Aqui coloque ações que necessitam ser feitas depois do modo de inclusão
+      		</method>
+      		<method name="preAltera">
+      			// Aqui coloque ações que necessitam ser feitas antes da alteração
+      		</method>
+      		<method name="preGravar">
+      			// Aqui coloque ações que necessitam ser feitas antes de gravar a inclusão
+      		</method>
+      		<method name="preExclui">
+      			// Aqui coloque ações que necessitam ser feitas antes do modo de inclusão
+      		</method>
+
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="gtt011" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	parent.tela.carregando.stopAni();
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = classroot.caddp.xpathQuery('*/item/last()');
+          			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+              	if ( !regs==0 ) {
+              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+              		parent.tela.tab.tabCad.setAttribute('selected',true);
+              		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+              	}  else {
+          				parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+          				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+      			}	
+              	}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  		/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'AOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+    			} else
+	      			if (resultado == 'DOK') {
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode(); 
+	               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+	         			var regs = classroot.caddp.xpathQuery('*/item/last()');
+	         			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs );
+	               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+	    			} else {
+	      				parent.tela.janelaAviso.mostra(resultado);       				
+	    			}
+	    			}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  		/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.newdp.xpathQuery('@oknok');
+      			var oid = classroot.newdp.xpathQuery('@oid');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'IOK') {
+      				parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Empresa.setAttribute('text',oid);
+    	  			parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();  
+    	  			var end = classroot.caddp.xpathQuery('*/item/last()');	    			
+					parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+					classroot.caddp.selectChild();
+					classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+					classroot.caddp.setAttribute('xpath','local:cad:/');
+					parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+					parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+      			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Clientes" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" height="${parent.parent.parent.height-78}" width="${parent.parent.parent.width-30}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+            		<form name="formSel">
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view name="label" width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="CNPJ/CPF:" />
+								<text height="21" align="right" text="Razão Social:" />
+								<text name="concessionaria" height="21" align="right" text="Concessionária:" visible="true"/>
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="gtt011" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="EmpresaED" />
+								<edittext name="rn" visible="false" text="EmpresaRN" />
+								<edittext name="dm_Tipo_Empresa" visible="false" text="U" />
+								<edittext name="nr_Cnpj" width="110" height="21" maxlength="14"
+									oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />			
+								<edittext name="nm_Razao_Social" width="370" height="21"
+										oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" />
+								<lookup y="216" name="oid_Empresa_Gambiarra" idProperty="oid_Empresa" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+									widthCdProperty="110" widthDsProperty="200"	callService="Empresa" exactActionService="C" visible="true">
+									<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="C"/>
+								</lookup>						
+										
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  	</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpoGtt011 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+                  				parent.updCad.fCampos.vCampos.edits.nr_Cnpj.setAttribute('enable',false);
+              				</handler>
+                  		</cpoGtt011>
+                  		<!-- View campos para inclusão -->
+                  		<cpoGtt011 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpoGtt011>
+               		</view>
+            	</view>
+            	<botoesCad name="barCad" tela="gtt011" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.width-8}" height="${parent.parent.height-71}">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+                  		<gridtext editable="false" datapath="@nr_Cnpj" text="CNPJ/CPF" width="105"/>
+                  		<gridtext editable="false" datapath="@nm_Razao_Social" text="Razao Social" width="320"/>
+                  		<gridtext editable="false" datapath="@nr_Telefone" text="Telefone" width="103"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="315" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        			var up = parent.parent.tabCad.corCad.campos.updCad.fCampos.vCampos;
+        				var nw = parent.parent.tabCad.corCad.campos.newCad.fCampos.vCampos;
+	        		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+           			Relatório
+           			<handler name="onclick">
+	      				parent.parent.parent.parent.carregando.startAni();
+	      				var x = parent.parent.parent.tabSel.corSel.formSel.vSel;
+						var chamada = "../include/relatorio.jsp?" ;
+						chamada += "tela=pns6";
+						chamada += "&amp;"+"ed=EmpresaED";
+						chamada += "&amp;"+"rn=EmpresaRN"; 
+						chamada += "&amp;"+"rel=1"; 
+						chamada += "&amp;"+"dm_Tipo_Empresa=U";
+						chamada += "&amp;"+"oid_Empresa_Gambiarra="+x.edits.oid_Empresa_Gambiarra.getText();
+						chamada += "&amp;"+"nr_Cnpj="+x.edits.nr_Cnpj.getText();
+						chamada += "&amp;"+"nm_Razao_Social="+ x.edits.nm_Razao_Social.getText(); 
+						LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+						parent.parent.parent.parent.carregando.stopAni();
+           			</handler>
+           		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

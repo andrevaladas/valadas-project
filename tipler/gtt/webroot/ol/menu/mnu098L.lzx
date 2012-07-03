@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	Tela de Troca de senha
+-->		
+<library>
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->
+  	<script>
+    </script>
+
+   	<!-- Classe da Tela -->
+	<class name="mnu098" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.caddp1.xpathQuery('@oknok');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+					if (resultado == 'TSOK') {
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Senha.setText(parent.tela.tabCad.corCad.vCampos.edits.nm_Senha_Novo.getText());
+						parent.tela.janelaAviso.mostra('Senha trocada com sucesso!');
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/ret/item" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+	
+	<!-- Consulta empresa -->
+	<dataset name="Usu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.Usudp.xpathQuery('@oid_Usuario');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+	      			if ( resultado > 0 ) {
+						parent.tela.tabCad.corCad.vCampos.edits.oid_Usuario.setText(classroot.Usudp.xpathQuery('@oid_Usuario'));
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Senha.setText(classroot.Usudp.xpathQuery('@nm_Senha'));
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Usuario.setText(classroot.Usudp.xpathQuery('@nm_Usuario'));
+					} else {
+						parent.tela.tabCad.corCad.vCampos.edits.oid_Usuario.setText('');
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Senha.setText('');
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Usuario.setText('Usuário não encontrado');
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Senha_Novo.setText('');
+						parent.tela.tabCad.corCad.vCampos.edits.nm_Senha_Novo_Repete.setText('');
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="Usudp" xpath="local:Usu:/cad/item" />
+	
+
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Troca Senha" widthLine="272" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !"  width="230">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="230">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+      		    		
+         <view name="tabCad"  >
+	    	<simplelayout spacing="1" />
+			<view name="corCad"  x="0" width="295" height="150" layout="axis:y; spacing:10" >
+           		<view name="vCampos" width="295" align="left" layout="axis:x; spacing:1">
+					<!-- Labels -->
+					<cpoEdits width="105" align="right" layout="axis:y; spacing:3">
+						<text height="21" align="right">Usuário:</text>
+						<text height="21" align="right">Senha Atual:</text>
+						<text height="21" align="right">Nova Senha:</text>
+						<text height="21" align="right">Repita:</text>
+					</cpoEdits>
+					<!-- Campos -->
+					<cpoEdits name="edits" bgcolor="#FAFAFA" 	oninit="parent.parent.buscaUsuario();" >
+						<edittext name="tela" visible="false" 	text="pns099" />
+						<edittext name="acao" visible="false" 	text="TS" />
+						<edittext name="ed" visible="false" 	text="UsuarioED" />
+						<edittext name="rn" visible="false" 	text="UsuarioRN" />
+						<edittext name="oid_Usuario" 			visible="false" />
+						<edittext name="nm_Senha" 				visible="false" />
+						<text 	  name="nm_Usuario" 			height="21" />					
+						<edittext name="nm_Senha_Confirma" 		visible="true" width="120" height="21" maxlength="8" password="true" />
+						<edittext name="nm_Senha_Novo" 			visible="true" width="120" height="21" maxlength="8" password="true" />
+						<edittext name="nm_Senha_Novo_Repete" 	visible="true" width="120" height="21" maxlength="8" password="true" />
+					</cpoEdits>		
+				</view>	
+				<method name="buscaUsuario">
+					parent.parent.carregando.startAni();
+	          		var src = "../../ControlerServlet?"; 
+						src += "tela=mnu098"+"&amp;"; 
+				        src += "ed=UsuarioED"+"&amp;"; 
+				        src += "rn=UsuarioRN"+"&amp;"; 
+				        src += "acao=C"+"&amp;"; 
+				    	parent.parent.parent.Usu.setSrc(src);
+						parent.parent.parent.Usu.doRequest();
+				</method>
+				
+				<!-- Validação -->
+				<method name="valida" >
+	 				var retorno = true;
+	 				var x = vCampos.edits;
+	 			  	if ( x.requerido(x.nm_Senha_Confirma.getText()) ) { 
+	    				parent.parent.janelaErro.mostra('Informe a senha atual!');
+	    				retorno = false; 
+		 			} else         	
+	 			  	if ( x.nm_Senha_Confirma.getText() != x.nm_Senha.getText() ) {
+	    				parent.parent.janelaErro.mostra('Senha atual inválida!');
+	    				retorno = false; 
+		 			} else         		
+	 			  	if ( x.requerido(x.nm_Senha_Novo.getText()) ) { 
+		    			parent.parent.janelaErro.mostra('Informe a nova senha!');
+		    			retorno = false; 
+		 			} else         		
+	 			  	if ( x.requerido(x.nm_Senha_Novo_Repete.getText()) ) { 
+		    		  parent.parent.janelaErro.mostra('Confirme a nova senha!');
+		    		  retorno = false; 
+		 			} else         		
+	 			  	if ( x.nm_Senha_Novo.getText() !=  x.nm_Senha_Novo_Repete.getText() ) { 
+		    		  parent.parent.janelaErro.mostra('Nova senha não confirmada!');
+		    		  retorno = false; 
+		 			}
+     			 	return retorno;
+	  			</method>
+	      	
+	    		<view name="barCad" x="5" layout="axis:x; spacing:2">
+	       		<button name="btnFechar" width="70">
+	          		Fechar
+	          		<handler name="onclick" >
+	             		parent.parent.parent.parent.parent.parent.close();
+	          		</handler>
+	       		</button>
+	       		<button name="btnAlterar" width="70">
+	          		Alterar
+	          		<handler name="onclick">
+	          			if (parent.parent.parent.corCad.valida()){
+	          				parent.parent.parent.parent.carregando.startAni();
+	          				var x = parent.parent.parent.corCad.vCampos.edits;
+	          				var src = "../../ControlerServlet?"; 
+			            	src += "tela=mnu098"+"&amp;"; 
+			            	src += "ed=UsuarioED"+"&amp;"; 
+			            	src += "rn=UsuarioRN"+"&amp;"; 
+			            	src += "acao=TS"+"&amp;";
+			            	src += "oid_Usuario="+x.oid_Usuario.getText()+"&amp;";
+							src += "nm_Senha="+x.nm_Senha_Novo.getText().toUpperCase()+"&amp;";
+							Debug.write(src);
+							classroot.cad.setSrc(src);
+							classroot.cad.doRequest();
+	          			}	
+	
+					</handler>
+	       		</button>
+	    	</view>
+	    	</view>
+		</view>
+      	<!-- Relogio -->
+      	<loadingAni name="carregando" />
+   	</view>
+	</class>   
+</library>

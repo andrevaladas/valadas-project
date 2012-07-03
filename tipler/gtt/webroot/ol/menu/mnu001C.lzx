@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="false" >
+   <include href="mnu001L.lzx" />
+   <!-- Splash -->
+   <splash persistent="false">
+      <view center="true" resource="../include/explore_loading.swf" />
+   </splash>
+   <window title="mnu001" bgcolor="#FAFAFA" height="${295+80}" width="${555+30}"   x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+      <mnu001 name="mnu001" />
+   </window>
+</canvas>
+

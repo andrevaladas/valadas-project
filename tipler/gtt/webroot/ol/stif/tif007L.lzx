@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- Tela de Cadastro de Veiculos
+	 Tabela = Veiculos
+-->	 
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpotif007" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+		<form name="fCampos">
+			<view name="vCampos" width="100" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view name="leftRow" width="100" align="right" layout="axis:y; spacing:3">
+					<text height="21" align="right">Pressão padrão:</text>
+					<text height="21" align="right">150 lbs:</text>
+					<text height="21" align="right">145 lbs:</text>
+					<text height="21" align="right">140 lbs:</text>
+					<text height="21" align="right">135 lbs:</text>
+					<text height="21" align="right">130 lbs:</text>
+					<text height="21" align="right">125 lbs:</text>
+					<text height="21" align="right">120 lbs:</text>
+					<text height="21" align="right">115 lbs:</text>
+					<text height="21" align="right">110 lbs:</text>
+				</view>
+				<cpoEditsXY name="edits" >
+					<view name="leftRowPercents" y="24" x="65" layout="axis:y; spacing:3">
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+					</view>
+					
+					<view name="centerRow" y="24" x="165" layout="axis:y; spacing:3">
+						<text height="21" align="right">105 lbs:</text>
+						<text height="21" align="right">100 lbs:</text>
+						<text height="21" align="right">95 lbs:</text>
+						<text height="21" align="right">90 lbs:</text>
+						<text height="21" align="right">85 lbs:</text>
+						<text height="21" align="right">80 lbs:</text>
+						<text height="21" align="right">75 lbs:</text>
+						<text height="21" align="right">70 lbs:</text>
+						<text height="21" align="right">65 lbs:</text>
+					</view>
+					<view name="centerRowPercents" y="24" x="235" layout="axis:y; spacing:3">
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+					</view>
+
+					<view name="rightRow" y="24" x="335" layout="axis:y; spacing:3">
+						<text height="21" align="right">60 lbs:</text>
+						<text height="21" align="right">55 lbs:</text>
+						<text height="21" align="right">50 lbs:</text>
+						<text height="21" align="right">45 lbs:</text>
+						<text height="21" align="right">40 lbs:</text>
+						<text height="21" align="right">35 lbs:</text>
+						<text height="21" align="right">30 lbs:</text>
+						<text height="21" align="right">25 lbs:</text>
+						<text height="21" align="right">20 lbs:</text>
+					</view>
+					<view name="rightRowPercents" y="24" x="405" layout="axis:y; spacing:3">
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+						<text height="21" align="left">%</text>
+					</view>
+
+					<edittext name="tela" visible="false" text="tif007" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="Stif_Perda_PercentualED" />
+					<edittext name="rn" visible="false" text="Stif_Perda_PercentualRN" />
+					<edittext name="oid_Perda_Percentual" visible="false" datapath="@oid_Perda_Percentual" />
+
+					<!-- leftRow -->
+					<edittext y="0" name="pc_perda_padrao" maxlength="6" width="60" height="21" datapath="@pc_perda_padrao" 
+						oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+					<edittext y="24" name="pc_perda_150" maxlength="6" width="60" height="21" datapath="@pc_perda_150" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="48" name="pc_perda_145" maxlength="6" width="60" height="21" datapath="@pc_perda_145" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="72" name="pc_perda_140" maxlength="6" width="60" height="21" datapath="@pc_perda_140" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="96" name="pc_perda_135" maxlength="6" width="60" height="21" datapath="@pc_perda_135" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="120" name="pc_perda_130" maxlength="6" width="60" height="21" datapath="@pc_perda_130" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />	
+					<edittext y="144" name="pc_perda_125" maxlength="6" width="60" height="21" datapath="@pc_perda_125" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="168" name="pc_perda_120" maxlength="6" width="60" height="21" datapath="@pc_perda_120" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="192" name="pc_perda_115" maxlength="6" width="60" height="21" datapath="@pc_perda_115" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="216" name="pc_perda_110" maxlength="6" width="60" height="21" datapath="@pc_perda_110" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+
+					<!-- centerRow -->
+					<edittext y="24" x="170" name="pc_perda_105" maxlength="6" width="60" height="21" datapath="@pc_perda_105" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="48" x="170" name="pc_perda_100" maxlength="6" width="60" height="21" datapath="@pc_perda_100" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="72" x="170" name="pc_perda_95" maxlength="6" width="60" height="21" datapath="@pc_perda_95" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="96" x="170" name="pc_perda_90" maxlength="6" width="60" height="21" datapath="@pc_perda_90" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="120" x="170" name="pc_perda_85" maxlength="6" width="60" height="21" datapath="@pc_perda_85" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />	
+					<edittext y="144" x="170" name="pc_perda_80" maxlength="6" width="60" height="21" datapath="@pc_perda_80" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="168" x="170" name="pc_perda_75" maxlength="6" width="60" height="21" datapath="@pc_perda_75" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="192" x="170" name="pc_perda_70" maxlength="6" width="60" height="21" datapath="@pc_perda_70" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="216" x="170" name="pc_perda_65" maxlength="6" width="60" height="21" datapath="@pc_perda_65" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+
+					<!-- rightRow -->
+					<edittext y="24" x="340" name="pc_perda_60" maxlength="6" width="60" height="21" datapath="@pc_perda_60" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="48" x="340" name="pc_perda_55" maxlength="6" width="60" height="21" datapath="@pc_perda_55" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="72" x="340" name="pc_perda_50" maxlength="6" width="60" height="21" datapath="@pc_perda_50" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="96" x="340" name="pc_perda_45" maxlength="6" width="60" height="21" datapath="@pc_perda_45" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="120" x="340" name="pc_perda_40" maxlength="6" width="60" height="21" datapath="@pc_perda_40" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />	
+					<edittext y="144" x="340" name="pc_perda_35" maxlength="6" width="60" height="21" datapath="@pc_perda_35" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="168" x="340" name="pc_perda_30" maxlength="6" width="60" height="21" datapath="@pc_perda_30" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="192" x="340" name="pc_perda_25" maxlength="6" width="60" height="21" datapath="@pc_perda_25" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+					<edittext y="216" x="340" name="pc_perda_20" maxlength="6" width="60" height="21" datapath="@pc_perda_20" 
+						oninit="parent.pattern(this,'dec',2)" onblur="parent.format(this,'dec',2);" />
+
+					<text y="240" name="msg_Stamp" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />
+				</cpoEditsXY>
+				<view width="40"></view>
+			</view>
+			
+      		<!-- Validação -->
+      		<method name="valida" >
+      			var alerta = parent.parent.parent.parent.parent.parent.janelaErro;
+         		if ( vCampos.edits.pc_perda_padrao.getText() == '' ) { 
+            		alerta.mostra('Preencha o campo Pressão padrão!');
+            		return false;
+         		}
+         		return true;
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      		</method>
+      		<method name="preInclui">
+      		</method>
+      		<method name="posInclui">
+      		</method>
+      		<method name="preAltera">
+      		</method>
+      		<method name="preGravar">
+      		</method>
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="tif007" extends="view" >
+         
+	<!-- Datasets -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+   		src="../../ControlerServlet"
+      	ondata="var resultado = classroot.caddp1.xpathQuery('@oknok');
+      			parent.tela.carregando.stopAni();
+				if (resultado == 'LOGON') {
+					parent.logon();
+      			} else {
+	      			var regs = classroot.caddp.xpathQuery('*/item/last()');
+	          		parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.fCampos.reposiciona();
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+	              	}  else {
+          				parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+          				parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	              	}
+              	}"
+      	onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  		/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+	
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.atudp.xpathQuery('@oknok');
+				if (resultado == 'LOGON') {
+					parent.logon();
+      			} else {
+					if (resultado == 'AOK') {
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+						parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!');
+					} else
+					if (resultado == 'DOK') {
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode();
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+						var regs = classroot.caddp.xpathQuery('*/item/last()');
+						if ( regs == null ) parent.tela.tab.tabCad.barCad.btnNovoCad.click();
+						parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs);
+						parent.tela.janelaAviso.mostra('Registro excluido com sucesso!');
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();"
+		ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+  		/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+	
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.newdp.xpathQuery('@oknok');
+				var oid = classroot.newdp.xpathQuery('@oid');
+				if (resultado == 'LOGON') {
+					parent.logon();
+      			} else {
+					if (resultado == 'IOK') {
+						parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Perda_Percentual.setAttribute('text',oid);
+						parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();
+						var end = classroot.caddp.xpathQuery('*/item/last()');
+						parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+						classroot.caddp.selectChild();
+						classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+						classroot.caddp.setAttribute('xpath','local:cad:/');
+						parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+						parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/nalthus.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+	
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro Perda com Pressão não Conforme" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" width="${parent.parent.parent.width-30}" height="${parent.parent.parent.height-80}">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="${parent.parent.parent.parent.parent.width-25}" height="${parent.parent.parent.parent.parent.height-150}">
+            		<form name="formSel">
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right">Pressão padrão:</text>
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits" >
+								<edittext name="tela" visible="false" text="tif007" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="Stif_Perda_PercentualED" />
+								<edittext name="rn" visible="false" text="Stif_Perda_PercentualRN" />
+								<edittext name="pc_perda_padrao" maxlength="6" width="50" height="21"
+									oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" />
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  	</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="${parent.parent.parent.parent.parent.width-25}" height="${parent.parent.parent.parent.parent.height-150}">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpotif007 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</cpotif007>
+                  		<!-- View campos para inclusão -->
+                  		<cpotif007 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpotif007>
+               		</view>
+            	</view>
+            	<botoesCad name="barCad" tela="tif007" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="${parent.parent.parent.parent.parent.width-25}" height="${parent.parent.parent.parent.parent.height-150}">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-08}" width="${parent.width-20}" multiselect="false" rowheight="16">
+                  		<gridtext editable="false" datapath="@pc_perda_padrao" text="Pressão padrão %" textalign="right" width="120"/>
+                  		<gridtext editable="false" datapath="@pc_perda_150" text="150 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_145" text="145 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_140" text="140 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_135" text="135 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_130" text="130 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_125" text="125 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_120" text="120 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_115" text="115 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_110" text="110 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_105" text="105 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_100" text="100 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_95" text="95 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_90" text="90 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_85" text="85 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_80" text="80 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_75" text="75 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_70" text="70 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_65" text="65 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_60" text="60 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_55" text="55 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_50" text="50 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_45" text="45 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_40" text="40 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_35" text="35 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_30" text="30 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_25" text="25 lbs" textalign="right" width="60"/>
+                  		<gridtext editable="false" datapath="@pc_perda_20" text="20 lbs" textalign="right" width="60"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2" >
+            		<handler name="oninit" >
+            			parent.parent.parent.carregando.stopAni();
+            			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+            		</handler>
+               		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+               			Relatório
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=tif007";
+							chamada += "&amp;"+"ed=Stif_Perda_PercentualED";
+							chamada += "&amp;"+"rn=Stif_Perda_PercentualRN"; 
+							chamada += "&amp;"+"rel=1";
+							chamada += "&amp;"+ parent.parent.parent.tabSel.corSel.formSel.vSel.edits.getRequestValues();
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();"/>
+   	</view>
+	</class>   
+</library>

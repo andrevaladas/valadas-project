@@ -1,0 +1,124 @@
+HTML, BODY { 
+    color: #666666;
+    font-family: verdana, arial, sansserif; 
+    font-style: normal;
+	font-size: 8pt;
+}
+
+P, TD, LI { 
+    color: color: #666666; 
+    font-family: verdana, arial, sansserif;
+    font-style: normal;
+	font-size: 8pt;
+}
+
+TEXTAREA {
+        border: 1px solid #e1e1e1;
+        color: #333333;
+        font-family: verdana, arial, sansserif;
+        background-color: #F7F8F9;
+        font-size: 8pt;
+        horizontal-align: center;
+        buttons-face-color: #999999
+}
+
+a:link {text-decoration: none; color:#666666; }
+a:visited {text-decoration: none; color:#666666; }
+a:active {text-decoration: none; color:#666666; }
+a:hover {text-decoration: underline; color:#666666; }
+
+
+.space { letter-spacing: -1px }
+
+H06, H07, H08, H09, H10, H12, H14, H16, H18 { font-family: Verdana, Arial, sansserif;	}
+
+.H06 { font-size: 6pt; }
+.H07 { font-size: 7pt; }
+.H08 { font-size: 8pt; }
+.H09 { font-size: 9pt; }
+.H10 { font-size: 10pt; }
+.H12 { font-size: 12pt; }
+.H14 { font-size: 14pt; }
+.H16 { font-size: 16pt; }
+.H18 { font-size: 18pt; }
+
+
+		
+.borda_tabela {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background-color: #F5F5F5;
+	border: 1px solid #FFFFFF;
+}
+
+
+.form_busca {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	color: #909090;
+	background-color: #FFFFFF;
+	border: 1px solid #999999;
+}
+.destaque_home {
+	font-family: Arial;
+	font-size: 15px;
+	font-weight: bold;
+	color: #006699;
+}
+
+.destaque_dicas_laranja {
+	font-family: Arial;
+	font-size: 15px;
+	font-weight: bold;
+	color: #FF7D0E;
+}
+
+
+.texto_laranja {
+	font-family: Verdana;
+	font-size: 11px;
+	font-weight: bold;
+	color: #FF7D0E;
+}
+
+
+.borda_foto_destaque {
+	border: 1px solid #CCCCCC;
+}
+.textos_internos {
+	font-size: 8pt;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #7B7B7B;
+}
+.tit_concecionario {
+	font-size: 12pt;
+	font-family: Arial;
+	font-weight: bold;
+	color: #666666;
+}
+.tit_concecionario_laranja {
+	font-size: 12pt;
+	font-family: Arial;
+	font-weight: bold;
+	color: #FF7D0E;
+}
+.tit_concecionario_branco {
+	font-size: 10pt;
+	font-family: Arial;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+
+.navegacao_branco {
+	font-size: 8pt;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	color: #FFFFFF;
+}
+
+.navegacao_branco:visited { color: #FFFFFF; }
+.navegacao_branco:hover { text-decoration: underline; }
+
+.tabela_largura_profundidade {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	background-color: #F9E9D9;
+	border: 2px solid #F2C9A6;
+}

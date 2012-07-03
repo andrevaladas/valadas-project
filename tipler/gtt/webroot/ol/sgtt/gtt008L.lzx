@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+	<!-- Variáveis globais -->	
+  	<script>
+  	</script>
+	<!-- Classes locais -->
+	<!-- Classe para instanciar campos nas view de editar e incluir novo.  -->
+	<class name="cpoGtt008" extends="view" visible="false" align="left" layout="axis:y; spacing:3">
+   		<form name="fCampos">
+			<view name="vCampos" width="150" align="left" layout="axis:x; spacing:5">
+				<!-- Labels -->
+				<view width="150" align="right" layout="axis:none">
+					<text y="0" height="21" align="right">% desgaste de:</text>
+					<text y="24" height="21" align="right">% ind. para reforma:</text>
+					<text y="48" height="21" align="right">% ind. carcaça 1º reforma:</text>
+					<text y="72" height="21" align="right">% ind. carcaça 2º reforma:</text>
+					<text y="96" height="21" align="right">%ind. carcaça 3º reforma:</text>
+				</view>
+				<cpoEdits name="edits" layout="axis:none" >
+					<edittext name="tela" visible="false" text="gtt008" />
+					<edittext name="acao" visible="false" text="X" />
+					<edittext name="ed" visible="false" text="Percentual_ReposicaoED" />
+					<edittext name="rn" visible="false" text="Percentual_ReposicaoRN" />
+					<edittext name="oid_Percentual_Reposicao" visible="false" datapath="@oid_Percentual_Reposicao" />
+					<edittext y="0" name="nr_Perc_Desgaste_De" maxlength="5" width="50" height="21" datapath="@nr_Perc_Desgaste_De" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+					<text y="0" x="62" height="21" >% até:</text>	
+					<edittext y="0" x="110" name="nr_Perc_Desgaste_Ate" maxlength="5" width="50" height="21" datapath="@nr_Perc_Desgaste_Ate" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+					<edittext y="24" name="nr_Perc_Reforma" maxlength="5" width="50" height="21" datapath="@nr_Perc_Reforma" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+					<edittext y="48" name="nr_Perc_Carcaca_Vida_1" maxlength="5" width="50" height="21" datapath="@nr_Perc_Carcaca_Vida_1" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+					<edittext y="72" name="nr_Perc_Carcaca_Vida_2" maxlength="5" width="50" height="21" datapath="@nr_Perc_Carcaca_Vida_2" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+					<edittext y="96" name="nr_Perc_Carcaca_Vida_3" maxlength="5" width="50" height="21" datapath="@nr_Perc_Carcaca_Vida_3" 
+						oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />	
+						
+					<text y="120" name="msg_Stamp" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />		
+				</cpoEdits>
+			</view>
+      		<!-- Validação -->
+      		<method name="valida" >
+      			<![CDATA[
+      			var jErro = parent.parent.parent.parent.parent.parent.janelaErro;
+         		var retorno = true; 
+				if ( vCampos.edits.util.requerido(vCampos.edits.nr_Perc_Desgaste_De.getText()) ) { 
+    		  		jErro.mostra('Informe o campo % desgaste de !');
+        		  	retorno = false;
+     			} else
+				if ( vCampos.edits.util.requerido(vCampos.edits.nr_Perc_Desgaste_Ate.getText()) ) { 
+    		  		jErro.mostra('Informe o campo % desgaste até !');
+        		  	retorno = false;
+     			} else
+				if ( vCampos.edits.util.requerido(vCampos.edits.nr_Perc_Reforma.getText()) ) { 
+    		  		jErro.mostra('Informe o campo % ind. para reforma !');
+        		  	retorno = false;
+     			} else
+				if ( vCampos.edits.util.requerido(vCampos.edits.nr_Perc_Carcaca_Vida_1.getText()) ) { 
+    		  		jErro.mostra('Informe o campo % ind. carcaça 1º reforma !');
+        		  	retorno = false;
+     			} else
+				if ( vCampos.edits.util.requerido(vCampos.edits.nr_Perc_Carcaca_Vida_2.getText()) ) { 
+    		  		jErro.mostra('Informe o campo % ind. carcaça 2º reforma !');
+        		  	retorno = false;
+     			} else
+				if ( vCampos.edits.util.requerido(vCampos.edits.nr_Perc_Carcaca_Vida_3.getText()) ) { 
+    		  		jErro.mostra('Informe o campo % ind. carcaça 3º reforma !');
+        		  	retorno = false;
+     			} else 
+				if ( vCampos.edits.util.comparaFracionario(vCampos.edits.nr_Perc_Desgaste_De.getText(),"<","0,1") ) { 
+    		  		jErro.mostra('Informe o campo % desgaste de !');
+        		  	retorno = false;
+     			} else
+				if ( vCampos.edits.util.comparaFracionario(vCampos.edits.nr_Perc_Desgaste_Ate.getText(),"<","0,1") ) { 
+    		  		jErro.mostra('Informe o campo % desgaste até !');
+        		  	retorno = false;
+     			} 
+         		return retorno;
+         		]]>
+      		</method>
+      		<!-- Métodos adicionais -->
+      		<method name="reposiciona">
+      			// Aqui coloque ações que necessitam ser feitas após a reposição do registro principal
+      		</method>
+      		<method name="preInclui">
+      			// Aqui coloque ações que necessitam ser feitas antes do modo de inclusão
+      		</method>
+      		<method name="posInclui">
+      			// Aqui coloque ações que necessitam ser feitas depois do modo de inclusão
+      		</method>
+      		<method name="preAltera">
+      			// Aqui coloque ações que necessitam ser feitas antes da alteração
+      		</method>
+      		<method name="preGravar">
+      			// Aqui coloque ações que necessitam ser feitas antes de gravar a inclusão
+      		</method>
+      		<submit name="xMit" />
+		</form>
+	</class>
+   
+   	<!-- Classe da Tela -->
+	<class name="gtt008" extends="view" >
+         
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.caddp1.xpathQuery('@oknok'); 
+              	if (resultado=='LOGON'){
+              		parent.logon();
+              	}else {
+					var regs = classroot.caddp.xpathQuery('*/item/last()');
+          			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs ); 
+	              	if ( !regs==0 ) {
+	              		parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',true);
+	              		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]'); 
+	              		parent.tela.tab.tabCad.setAttribute('selected',true);
+	              	} else {
+						parent.tela.tab.tabLis.barLis.btnRelatoLis.setAttribute('enabled',false);
+		          		parent.tela.janelaAviso.mostra('Nenhum registro encontrado para esta seleção!'); 	
+	      			}		
+	              }	
+	         	"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/" />
+	<datapointer name="caddp1" xpath="local:cad:/ret/item" />
+
+	<!-- Atualizar/Deletar -->
+	<dataset name="atu" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.atudp.xpathQuery('@oknok');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{      			
+      			if (resultado == 'AOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.updateData();
+               		parent.tela.janelaAviso.mostra('Registro atualizado com sucesso!'); 
+    			} else
+      			if (resultado == 'DOK') {
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.deleteNode(); 
+               		parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[1]');
+         			var regs = classroot.caddp.xpathQuery('*/item/last()');
+         			if ( regs == null ) parent.tela.tab.tabCad.barCad.btnNovoCad.click(); 
+         			parent.tela.tab.tabCad.barCad.atuTxtDataControl(regs == null ? '0' : regs );
+               		parent.tela.janelaAviso.mostra('Registro excluído com sucesso!'); 
+    			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+      	/>
+	<datapointer name="atudp" xpath="local:atu:/ret/item" />
+
+	<!-- Incluir -->
+	<dataset name="new" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ControlerServlet"
+      	ondata="parent.tela.carregando.stopAni();
+      			var resultado = classroot.newdp.xpathQuery('@oknok');
+      			var oid = classroot.newdp.xpathQuery('@oid');
+      			if (resultado=='LOGON'){
+              		parent.logon();
+              	}else{
+      			if (resultado == 'IOK') {
+      				parent.tela.tab.tabCad.corCad.campos.newCad.fCampos.vCampos.edits.oid_Percentual_Reposicao.setAttribute('text',oid);
+    	  			parent.tela.tab.tabCad.corCad.campos.newCad.datapath.updateData();  
+    	  			var end = classroot.caddp.xpathQuery('*/item/last()');	    			
+					parent.tela.tab.tabCad.corCad.campos.updCad.datapath.setXPath('local:classroot.cad:/cad/item[' + end + ']');
+					classroot.caddp.selectChild();
+					classroot.caddp.addNodeFromPointer(parent.tela.tab.tabCad.corCad.campos.newCad.datapath);
+					classroot.caddp.setAttribute('xpath','local:cad:/');
+					parent.tela.tab.tabCad.corCad.campos.newCad.setDatapath('new:/cad/item');
+					parent.tela.janelaAviso.mostra('Registro incluido com sucesso!');
+      			} else {
+      				parent.tela.janelaAviso.mostra(resultado); 
+    			}
+    			}"
+      	onerror="parent.tela.carregando.stopAni();"
+      	ontimeout="parent.tela.carregando.stopAni();
+  			   	   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
+      	/>
+	<datapointer name="newdp" xpath="local:new:/ret/item" />
+	
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+   
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cadastro de Percentuais de reposição" widthLine="535" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "300" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !"  width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+		<!-- Janela de aviso de exclusão - Cadastro -->
+		<modaldialog name="alertaExclusao" title="A v i s o !" >
+			<simplelayout spacing="5" />
+			<text>Confirma a exclusão do registro?</text>
+			<view align="right" layout="axis:x; spacing:20">
+				<button onclick="parent.parent.close()" isdefault="true">Não</button>
+            	<button>
+               		Sim
+               		<method event="onclick">
+               			parent.parent.parent.tab.tabCad.barCad.btnApagarCad.exclui(); 
+               			parent.parent.close();
+               		</method>
+            	</button>
+         	</view>
+         	<method name="mostra" args="msg">
+         		this.open();
+         	</method>
+      	</modaldialog>
+
+      	<view x="0" y="3" resource="../images/falsosTabs.gif" /> <!-- Falsos tabs para o modo de inclusao -->
+      	<tabs name="tab" x="5" y="5" height="265" width="535">
+         	<!-- Seleção -->
+         	<tabpane name="tabSel">
+            	Seleção
+            	<simplelayout spacing="1" />
+            	<view name="corSel" width="540" height="195">
+            		<form name="formSel">
+	               		<view name="vSel" width="110" align="left" layout="axis:x; spacing:5">
+							<!-- Labels -->
+							<view width="110" align="right" layout="axis:y; spacing:3">
+								<text height="21" align="right" text="Percentual:" />
+							</view>
+							<!-- Campos -->
+							<cpoEdits name="edits">
+								<edittext name="tela" visible="false" text="gtt008" />
+								<edittext name="acao" visible="false" text="L" />
+								<edittext name="ed" visible="false" text="Percentual_ReposicaoED" />
+								<edittext name="rn" visible="false" text="Percentual_ReposicaoRN" />
+								<edittext name="nr_Perc_Busca" maxlength="5" width="50" height="21"
+									oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',1);" onfocus="parent.deformat(this,'dec');" />		  
+							</cpoEdits>
+						</view>
+						<submit name="filtra" datapath="local:classroot.cad:/" />
+           			</form>
+            	</view>
+            	<view name="barSel" x="1" y="300" layout="axis:x; spacing:2">
+               		<button name="btnFecharSel" width="70">
+                  		Fechar
+                  		<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnSelectSel" width="70" enabled="false">
+                  		Selecionar
+                  		<handler name="onclick">
+                     		parent.parent.parent.parent.carregando.startAni(); 
+                     		local:classroot.cad.setSrc("../../ControlerServlet"); 
+                     		parent.parent.corSel.formSel.filtra.submit();
+	                  		</handler>
+               		</button>
+            	</view>
+     		</tabpane>
+         	<!-- Cadastro -->
+         	<tabpane name="tabCad">
+            	Cadastro
+            	<simplelayout spacing="1" />
+            	<view name="corCad" width="540" height="195">
+               		<view name="campos" width="110" align="left" layout="axis:x; spacing:5">
+                  		<!-- View para update -->
+                  		<cpoGtt008 name="updCad" visible="true" datapath="local:classroot.cad:/cad/item[1]" >
+                  			<handler name="oninit">
+                  				parent.updCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.atu:/');
+              				</handler>
+                  		</cpoGtt008>
+                  		<!-- View campos para inclusão -->
+                  		<cpoGtt008 name="newCad" visible="false" datapath="new:/cad/item" >
+                  			<handler name="oninit">
+                  				parent.newCad.fCampos.xMit.setAttribute('datapath','local:classroot.classroot.new:/');
+              				</handler>
+                  		</cpoGtt008>
+               		</view>
+            	</view>
+            	<botoesCad name="barCad" tela="gtt008" oninit="this.atuTxtDataControl(0);" />
+         	</tabpane>
+         	<!-- Lista -->
+         	<tabpane name="tabLis">
+            	Lista
+            	<simplelayout spacing="1" />
+            	<view name="corLis" width="540" height="195">
+               		<simplelayout spacing="2" />
+               		<grid name="lst" datapath="local:classroot.cad:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+						height="${parent.height-12}" width="${parent.width-20}" multiselect="false" rowheight="16">
+                  		<gridtext editable="false" resizable="false" textalign="right" datapath="@nr_Perc_Desgaste_De" text="De" width="85"/>
+                  		<gridtext editable="false" resizable="false" textalign="right" datapath="@nr_Perc_Desgaste_Ate" text="Até" width="85"/>
+                  		<gridtext editable="false" resizable="false" textalign="right" datapath="@nr_Perc_Reforma" text="Reforma" width="85"/>
+                  		<gridtext editable="false" resizable="false" textalign="right" datapath="@nr_Perc_Carcaca_Vida_1" text="Reforma 1" width="85"/>
+                  		<gridtext editable="false" resizable="false" textalign="right" datapath="@nr_Perc_Carcaca_Vida_2" text="Reforma 2" width="85"/>
+                  		<gridtext editable="false" resizable="false" textalign="right" datapath="@nr_Perc_Carcaca_Vida_3" text="Reforma 3" width="85"/>
+                  		<method event="onselect" args="row">
+                     		parent.parent.parent.tabCad.corCad.campos.updCad.datapath.setPointer(row.datapath.p); 
+                     		parent.parent.parent.tabCad.setAttribute('selected',true);
+                 		</method>
+               		</grid>
+            	</view>
+            	<view name="barLis" x="1" y="300" layout="axis:x; spacing:2">
+	        		<handler name="oninit" >
+	        			parent.parent.parent.carregando.stopAni();
+	        			parent.parent.tabSel.barSel.btnSelectSel.setAttribute("enabled",true);
+	        		</handler>
+            		<button name="btnFecharLis" width="70">
+                  		Fechar
+              			<handler name="onclick" >
+                     		parent.parent.parent.parent.parent.parent.close();
+                  		</handler>
+               		</button>
+               		<button name="btnRelatoLis" width="70" enabled="false">
+               			Relatório
+               			<handler name="onclick">
+		      				parent.parent.parent.parent.carregando.startAni();
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=gtt008";
+							chamada += "&amp;"+"ed=Percentual_ReposicaoED";
+							chamada += "&amp;"+"rn=Percentual_ReposicaoRN"; 
+							chamada += "&amp;"+"rel=1"; 
+							chamada += "&amp;"+"nr_Perc_Busca="+ parent.parent.parent.tabSel.corSel.formSel.vSel.edits.nr_Perc_Busca.getText(); 
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.parent.carregando.stopAni();
+               			</handler>
+               		</button>
+        		</view>
+         	</tabpane>
+      	</tabs>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" oninit="this.startAni();" />
+   	</view>
+
+	</class>   
+   
+</library>

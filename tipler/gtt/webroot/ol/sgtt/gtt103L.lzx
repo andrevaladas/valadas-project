@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+  	
+   	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+	
+   	<!-- Classe da Tela -->
+	<class name="gtt103" extends="view" >
+		
+	<simplelayout spacing="1" />
+	<!-- Título da tela -->
+	<titulo name="tit101" x="5" text="Lançamento ajuste conta corrente" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+	
+	<!-- View da tela -->
+	<view name="tela" >
+		<!-- Classe de utilidades -->
+		<utils name="util" />
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "400" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+		
+		<!-- Dataset  -->
+   		<dataset name="cadGar" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   			src="../../ControlerServlet?"	 
+			ondata="parent.carregando.stopAni();
+	      			var resultado = parent.dpGar.xpathQuery('@oknok');
+	              	if (resultado=='LOGON'){
+	              		parent.logon();
+	              	}else{	      			
+		              	if (resultado == 'IOK') {
+		              		var oid = parent.dpGar.xpathQuery('@oid');
+		          			var x = parent.corSel.formSel.vCampos;
+		          			x.edits.oid_Concessionaria.resetLookupValues();
+		          			x.edits.dt_Movimento_Conta_Corrente.clearText();
+		          			x.edits.vl_Movimento_Conta_Corrente.clearText();
+		          			x.edits.dm_Debito_Credito.selectItemAt(-1);
+							x.edits.tx_Descricao.clearText();
+							parent.janelaAviso.mostra('Lançamento incluído com sucesso!');
+		              	} else {
+							parent.janelaAviso.mostra(resultado);
+		              	}
+	              	}
+	              	"
+	      	onerror="parent.carregando.stopAni();" 
+	      	ontimeout="parent.carregando.stopAni();
+      			   	   parent.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+   			/>
+   		<datapointer name="dpGar" xpath="local:cadGar:/ret/item" />
+
+		<method name="logon">
+			LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+		</method>
+
+		<simplelayout spacing="1" />
+		
+    	<view name="corSel"  x="5" width="${parent.parent.width-10}" height="170" >
+    		<form name="formSel" >
+           		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+					<!-- Labels -->
+					<view name="labels" width="120" align="right" layout="axis:nome">
+						<text height="21" align="right" y="0" >CNPJ Concessionária:</text>
+						<text height="21" align="right" y="24">Data:</text>
+						<text height="21" align="right" y="48">Débito/Crédito:</text>
+						<text height="21" align="right" y="72">Valor R$:</text>
+						<text height="21" align="right" y="96">Descrição:</text>
+					</view>
+					<!-- Campos -->
+					<cpoEdits name="edits" layout="axis:none">
+						<edittext name="tela" 				visible="false" text="gtt103" />
+						<edittext name="acao" 				visible="false" text="I" />
+						<edittext name="ed" 				visible="false" text="Movimento_Conta_CorrenteED" />
+						<edittext name="rn" 				visible="false" text="Movimento_Conta_CorrenteRN" />
+						<edittext name="dm_Bloqueado" 		visible="false" text="N" />
+						<edittext name="dm_Tipo_Movimento" 	visible="false" text="A" />
+						
+						<lookup visible="true" x="1" y="0" 
+								name="oid_Concessionaria" 
+								idProperty="oid_Empresa" 
+								cdProperty="nr_Cnpj" 
+								dsProperty="nm_Razao_Social" 
+							widthCdProperty="110" 
+							widthDsProperty="300"	
+							callService="Empresa" 
+							exactActionService="C" 
+							popupLabel="Busca Concessionárias"
+							
+							>
+							<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="C"/>
+						</lookup>	
+												
+						<edittext visible="true" x="1" y="24" name="dt_Movimento_Conta_Corrente" maxlength="8" width="80" height="21"
+							oninit="parent.pattern(this,'dat')" onblur="parent.format(this,'dat',4);" onfocus="parent.deformat(this,'dat');" />	
+							
+						<datacombobox visible="true" x="1" y="48"	name="dm_Debito_Credito" width="100" height="21" itemdatapath="dmDebCre:/item" defaulttext="Escolha..." />
+						
+						<edittext visible="true" x="1" y="72" name="vl_Movimento_Conta_Corrente" width="90" height="21" maxlength="12"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+
+						<edittext visible="true" x="1" y="96"  name="tx_Descricao" multiline="true" width="300" height="40"
+			  				oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" onfocus="parent.deformat(this,'txt');" />
+					</cpoEdits>	
+					
+					
+		      		<method name="valida" >
+		      			<![CDATA[
+		      			var jErro = parent.parent.parent.janelaErro;
+	         			var retorno = true;
+	         			if (edits.requerido(edits.oid_Concessionaria.getText())) {
+	         				jErro.mostra('Informe a concessionária!');
+	            			retorno = false; 
+	         			} else
+	         			if (edits.requerido(edits.dt_Movimento_Conta_Corrente.getText())) {
+	         				jErro.mostra('Informe a data do lançamento!');
+	            			retorno = false; 
+	         			} else	         			
+	         			if (!edits.validaData(edits.dt_Movimento_Conta_Corrente)) {
+	         				jErro.mostra('Data do lançamento inválida!');
+	            			retorno = false; 
+	         			} else
+	         			if (edits.dm_Debito_Credito.value==null) {
+	         				jErro.mostra('Escolha Débito/Crédito!');
+	            			retorno = false; 
+	         			} else 
+	         			if (edits.requerido(edits.vl_Movimento_Conta_Corrente.getText())) {
+	         				jErro.mostra('Informe o campo valor do lançamento!');
+	            			retorno = false; 
+	         			} else
+	         			if ( edits.util.comparaFracionario(edits.vl_Movimento_Conta_Corrente.getText(),"<","0,01") ) { 
+		            		  jErro.mostra('Informe o campo valor do lançamento!');
+		            		  retorno = false;
+	         			} else
+	         			if (edits.requerido(edits.tx_Descricao.getText())) {
+	         				jErro.mostra('Informe a descrição do lançamento!');
+	            			retorno = false;} 
+	         			
+	         			return retorno;
+		         		]]>
+		      		</method>
+				</view>
+				<submit name="xMit" data="${parent.parent.parent.cadGar}" />
+   			</form>
+    	</view>
+    	<view name="barSel" x="10" layout="axis:x; spacing:2">
+       		<button name="btnFechar" width="70">
+          		Fechar
+          		<handler name="onclick" >
+             		parent.parent.parent.parent.close()
+          		</handler>
+       		</button>
+       		<button name="btnGravar" width="70" enabled="true">
+       			Gravar
+          		<handler name="onclick">
+          			if (parent.parent.corSel.formSel.vCampos.valida()){
+          				parent.parent.carregando.startAni();
+          				parent.parent.corSel.formSel.xMit.submit();
+          			}
+          		</handler>
+       		</button>
+    	
+      	</view>
+      		
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" />
+	</view>
+	</class>
+</library>

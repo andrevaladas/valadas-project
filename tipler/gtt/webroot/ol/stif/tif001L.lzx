@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- 
+	Tela de Última Recapagem
+-->		
+<library>
+	<!-- Includes -->
+	<include href="../include/botoesCadastro.lzx" />
+	<include href="../include/objetosDeTela.lzx" /> 
+  
+   	<!-- Classe da Tela -->
+	<class name="tif001" extends="view" >
+
+	<!-- Datasets  -->
+	<!-- Lista dos Registros -->
+	<dataset name="cad" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.caddp.xpathQuery('@oknok');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+					if (resultado == 'IOK') {
+						parent.tela.janelaAviso.mostra('Parametros cadastrados com sucesso!');
+					} else 	if (resultado == 'AOK') {
+						parent.tela.janelaAviso.mostra('Registro alterado com sucesso!');
+					} else {
+						parent.tela.janelaAviso.mostra(resultado);
+					}
+					}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="caddp" xpath="local:cad:/ret/item" />
+	<datapointer name="caddp1" xpath="local:cad:/cad/item" />
+
+	<method name="logon">
+		LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+	</method>
+
+	<!-- Consulta Percentuais -->
+	<dataset name="list" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+		src="../../ControlerServlet"
+		ondata="parent.tela.carregando.stopAni();
+				var resultado = classroot.listdp.xpathQuery('@oid_stif_parametro');
+				if (resultado == 'LOGON') {
+					parent.logon();
+				} else {
+	      			if ( resultado > 0 ) {
+						parent.tela.tabCad.corCad.barCad.btnAlterar.setAttribute('visible',true);
+						parent.tela.tabCad.corCad.barCad.btnGravar.setAttribute('visible',false);
+						parent.tela.tabCad.corCad.formCad.vCampos.edits.populateDatapathValues(classroot.listdp);
+						parent.tela.tabCad.corCad.barCad.msg_Stamp.setText(classroot.listdp.xpathQuery('@msg_Stamp'));
+					} else {
+						parent.tela.tabCad.corCad.barCad.btnAlterar.setAttribute('visible',false);
+						parent.tela.tabCad.corCad.barCad.btnGravar.setAttribute('visible',true);
+						parent.tela.tabCad.corCad.formCad.vCampos.edits.resetElements();
+						parent.tela.tabCad.corCad.barCad.msg_Stamp.setText('');
+					}
+				}"
+		onerror="parent.tela.carregando.stopAni();" 
+      	ontimeout="parent.tela.carregando.stopAni();
+      			   parent.tela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"      	
+      	/>
+	<datapointer name="listdp" xpath="local:list:/cad/item" />
+
+	<simplelayout spacing="1" />
+
+	<!-- Título da tela -->
+	<titulo x="5" text="Cotação de Pneus" widthLine="430" corFrente="#FF9900" />
+
+	<!-- View da tela -->
+	<view name="tela">	
+
+		<!-- Janelas de avisos e de erros -->
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width="300">
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width="300">
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+				this.open();
+			</method>
+		</alert>
+
+         <view name="tabCad"  >
+        	<simplelayout spacing="1" />
+        	<view name="corCad" x="0" width="460" height="200" layout="axis:y; spacing:1" >
+	    		<form name="formCad" >
+	           		<view name="vCampos" width="460" align="left" layout="axis:x; spacing:1">
+						<!-- Labels -->
+						<view width="200" align="right" layout="axis:y; spacing:3">
+							<text height="21" align="right">Pneu Novo:</text>
+							<text height="21" align="right">Pneu R1:</text>
+							<text height="21" align="right">Pneu R2:</text>
+							<text height="21" align="right">Pneu R3:</text>
+							<text height="21" align="right">Pneu R4:</text>
+						</view>
+						<!-- Campos -->
+						<cpoEdits name="edits" bgcolor="#FAFAFA" oninit="parent.parent.carregaParametro();" >
+							<edittext name="tela" visible="false" text="tif001" />
+							<edittext name="acao" visible="false" text="I" />
+							<edittext name="ed" visible="false" text="Stif_ParametroED" />
+							<edittext name="rn" visible="false" text="Stif_ParametroRN" />
+							<edittext name="oid_stif_parametro" visible="false" text="1" />
+							<edittext name="vl_pneu_novo" visible="true" width="80" height="21" maxlength="6" datapath="@vl_pneu_novo" 
+								oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+							<edittext name="vl_pneu_r1" visible="true" width="80" height="21" maxlength="6" datapath="@vl_pneu_r1" 
+								oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+							<edittext name="vl_pneu_r2" visible="true" width="80" height="21" maxlength="6" datapath="@vl_pneu_r2" 
+								oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+							<edittext name="vl_pneu_r3" visible="true" width="80" height="21" maxlength="6" datapath="@vl_pneu_r3" 
+								oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+							<edittext name="vl_pneu_r4" visible="true" width="80" height="21" maxlength="6" datapath="@vl_pneu_r4" 
+								oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+						</cpoEdits>		
+					</view>	
+					<method name="carregaParametro">
+						parent.parent.parent.carregando.startAni();
+		          		var src = "../../ControlerServlet?"; 
+							src += "tela=tif001"+"&amp;"; 
+					        src += "ed=Stif_ParametroED"+"&amp;"; 
+					        src += "rn=Stif_ParametroRN"+"&amp;"; 
+					        src += "acao=C"+"&amp;"; 
+					        src += "oid_stif_parametro=1&amp;";
+					    	parent.parent.parent.parent.list.setSrc(src);
+							parent.parent.parent.parent.list.doRequest();
+					</method>
+					<!-- Validação -->
+					<method name="valida" >
+         			  	return true;
+	      			</method>
+    			</form>
+	    		<view name="barCad" x="5" layout="axis:x; spacing:2">
+	       		<button name="btnFechar" width="70">
+	          		Fechar
+	          		<handler name="onclick" >
+	             		parent.parent.parent.parent.parent.parent.close();
+	          		</handler>
+	       		</button>
+	       		<button name="btnGravar" width="70" visible="true">
+	          		Gravar
+	          		<handler name="onclick">
+	          			if (parent.parent.parent.corCad.formCad.valida()){
+	          				parent.parent.parent.parent.carregando.startAni();
+	          				var src = "../../ControlerServlet?"; 
+			            	src += "tela=tif001"+"&amp;"; 
+			            	src += "ed=Stif_ParametroED"+"&amp;"; 
+			            	src += "rn=Stif_ParametroRN"+"&amp;"; 
+			            	src += "acao=I"+"&amp;"; 
+			            	src += "oid_stif_parametro=1&amp;";
+			            	src += parent.parent.parent.corCad.formCad.vCampos.edits.getRequestValues();
+							parent.parent.parent.parent.parent.cad.setSrc(src);
+							parent.parent.parent.parent.parent.cad.doRequest();
+	          			}	
+	              	</handler>
+	       		</button>
+	       		<button name="btnAlterar" width="70" visible="false">
+	          		Alterar
+	          		<handler name="oninit">
+	          			parent.btnAlterar.setAttribute('enabled',true);
+	          		</handler>
+	          		<handler name="onclick">
+	          			if (parent.parent.parent.corCad.formCad.valida()){
+	          				parent.parent.parent.parent.carregando.startAni();
+	          				var src = "../../ControlerServlet?"; 
+			            	src += "tela=tif001"+"&amp;"; 
+			            	src += "ed=Stif_ParametroED"+"&amp;"; 
+			            	src += "rn=Stif_ParametroRN"+"&amp;"; 
+			            	src += "acao=AC"+"&amp;";
+			            	src += "oid_stif_parametro=1&amp;";
+			            	src += parent.parent.parent.corCad.formCad.vCampos.edits.getRequestValues();
+			            	Debug.write(src);
+							parent.parent.parent.parent.parent.cad.setSrc(src);
+							parent.parent.parent.parent.parent.cad.doRequest();
+	          			}
+					</handler>
+	       		</button>
+	       		<text name="msg_Stamp" visible="true" maxlength="80" width="370" height="21" datapath="@msg_Stamp" />
+	    	</view>
+	    	</view>
+      		<submit name="xMit" />
+         </view>
+      	<!-- Relogio -->
+      	<loadingAni name="carregando" />
+   	</view>
+	</class>   
+</library>

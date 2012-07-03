@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<library>
+  	
+  	<dataset name="sisGtt101FabPneu" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Fabricante_Pneu" />
+  	<datapointer name="sisdpGtt101FabPneu" xpath="local:sisGtt101FabPneu:/" />
+
+  	<dataset name="sisGtt101BanDim" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false" 
+		 src="../../ComboServlet?combo=Banda_Dimensao&amp;oid_Banda=0" 
+		 ondata="telasisGtt101.carregando.stopAni();
+		         telasisGtt101.corSel.formSel.vCampos.edits.oid_Banda_Dimensao.selectItemAt(-1);"
+	 />
+  	<datapointer name="sisdpGtt101BanDim" xpath="local:sisGtt101BanDim:/" />
+   
+   	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />
+	
+   	<!-- Classe da Tela -->
+	<class name="gtt101" extends="view" >
+		
+	<simplelayout spacing="1" />
+	<!-- Título da tela -->
+	<titulo name="tit101" x="5" text="Registro de Garantia de Recapagem" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+	
+	<!-- View da tela -->
+	<view name="tela" id="telasisGtt101" >
+		<!-- Classe de utilidades -->
+		<utils name="util" />
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "400" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+			<handler name="onresult">
+				if (result==true) { 
+					parent.barSel.btnSelectSel.setAttribute('enabled',true);
+				} 
+			</handler>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+		
+		<!-- Dataset  -->
+   		<dataset name="cadGar" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   			src="../../ControlerServlet?"	 
+			ondata="parent.carregando.stopAni();
+	      			var resultado = parent.dpGar.xpathQuery('@oknok');
+		    		if (resultado=='LOGON'){
+		          		parent.logon();
+		          	}else{
+		              	if (resultado == 'IOK') {
+		              		var oid = parent.dpGar.xpathQuery('@oid');
+		          			parent.barSel.btnSelectSel.setAttribute('enabled',false);
+		          			var x = parent.corSel.formSel.vCampos;
+		          			x.edits.oid_Cliente.resetLookupValues();
+	  			     		x.edits.nr_Nota_Fiscal.clearText();
+	  			     		x.edits.oid_Fabricante_Pneu.value=null;
+		          			x.edits.oid_Fabricante_Pneu.init();
+		          			x.edits.oid_Modelo_Pneu.resetLookupValues();
+		          			x.edits.nr_Fogo.clearText();
+		          			x.edits.nr_Dot.clearText();
+		          			x.edits.dm_Tipo_Pneu.value=null;
+		          			x.edits.dm_Tipo_Pneu.init();
+		          			x.edits.nr_Vida.value=null;
+		          			x.edits.nr_Vida.init();
+		          			x.edits.oid_Banda.resetLookupValues();
+							x.edits.vl_Servico.clearText();
+							x.edits.oid_Banda_Dimensao.selectItemAt(-1);
+							parent.impCertificado();
+		              	} else {
+							parent.janelaAviso.mostra(resultado);
+		              	}
+	              	}	
+	              	"
+	      	onerror="parent.carregando.stopAni();" 
+	      	ontimeout="parent.carregando.stopAni();
+      			   	   parent.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+   			/>
+   		<datapointer name="dpGar" xpath="local:cadGar:/ret/item" />
+
+		<method name="impCertificado">
+			if (corSel.formSel.vCampos.edits.acao.getText()=="I")	
+				janelaAviso.mostra('Garantia incluida com sucesso! Aguarde geração do certificado!');
+			else
+				janelaAviso.mostra('Garantia alterada com sucesso! Aguarde geração do novo certificado!');
+			var oid = dpGar.xpathQuery('@oid');
+			var chamada = "../include/relatorio.jsp?" ;
+			chamada += "tela=gtt101";
+			chamada += "&amp;"+"ed=Recapagem_GarantidaED";
+			chamada += "&amp;"+"rn=Recapagem_GarantidaRN"; 
+			chamada += "&amp;"+"rel=1";
+			chamada += "&amp;"+"oid_Recapagem_Garantida="+oid;
+			LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+			carregando.stopAni();
+		</method>
+
+		<method name="logon">
+			LzBrowser.loadURL('javascript:window.open("' + "../../principal/gtt.jsp?DM_LASZLO=SIM" + '","content"); void(0);' );
+		</method>
+
+		<simplelayout spacing="1" />
+		
+    	<view name="corSel"  x="5" width="${parent.parent.width-10}" height="289" >
+    		<form name="formSel" >
+           		<view name="vCampos" width="110" align="left" layout="axis:x; spacing:5">
+					<!-- Labels -->
+					<view name="labels" width="120" align="right" layout="axis:nome">
+						<text height="21" align="right" y="0" >Cliente:</text>
+						<text height="21" align="right" y="24">Nota Fiscal:</text>
+						<text height="21" align="right" y="48">Fabricante pneu:</text>
+						<text height="21" align="right" y="72">Modelo Pneu:</text>
+						<text height="21" align="right" y="96">Tipo pneu:</text>
+						<text height="21" align="right" y="120">Nº série/fogo:</text>
+						<text height="21" align="right" y="144">DOT:</text>
+						<text height="21" align="right" y="168">Reforma:</text>
+						<text height="21" align="right" y="192">Banda utilizada:</text>
+						<text height="21" align="right" y="216">Dimensão:</text>
+						<text height="21" align="right" y="240">Valor do serviço:</text>						
+					</view>
+					<!-- Campos -->
+					<cpoEditsXY name="edits" layout="axis:none">
+						<edittext name="tela" visible="false" text="gtt101" />
+						<edittext name="acao" visible="false" text="I" />
+						<edittext name="ed" visible="false" text="Recapagem_GarantidaED" />
+						<edittext name="rn" visible="false" text="Recapagem_GarantidaRN" />
+						<edittext name="oid_Empresa" visible="false" />
+						<edittext name="oid_Recapagem_Garantida" visible="false" />
+						
+						<lookup visible="true" x="1" y="0" name="oid_Cliente" cdProperty="nr_Cnpj" dsProperty="nm_Razao_Social" 
+							widthCdProperty="110" widthDsProperty="300"	callService="Empresa" exactActionService="CU" >
+							<propertyMapping modelProperty="dm_Tipo_Empresa" criteriaProperty="U"/>
+						</lookup>
+						
+						<edittext visible="true" x="1" y="24" name="nr_Nota_Fiscal" width="80" height="21" maxlength="7"  
+							oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" onfocus="parent.deformat(this,'int');" />
+							
+						<datacombobox x="1" y="48" name="oid_Fabricante_Pneu" width="200" height="21" itemdatapath="sisGtt101FabPneu:/cad/item"  defaulttext="Escolha o fabricante"
+							  onselect="parent.oid_Modelo_Pneu.resetLookupValues();parent.oid_Modelo_Pneu.setCriteria('oid_Fabricante_Pneu',this.value);"  />	
+
+						<lookup visible="true" x="1" y="72" name="oid_Modelo_Pneu" cdProperty="CD_Modelo_Pneu" dsProperty="NM_Modelo_Pneu" showDsProperty="false"
+							widthCdProperty="110" callService="Modelo_Pneu"  oninit="parent.pattern(this,'txt')"  >
+							<relatedEditText y ="23" x="-1" name="nm_Tipo_Pneu" width="200" height="23" />
+							<propertyMapping modelProperty="dm_Tipo_Pneu" relatedProperty="${parent.parent.dm_Tipo_Pneu}"/>
+							<propertyMapping modelProperty="oid_Fabricante_Pneu" criteriaProperty="999999"/>
+						</lookup>
+						<edittext y="96" x="200" name="dm_Tipo_Pneu"  visible="false" />
+						
+						<text x="250" y="72" name ="aviso" visible="false" multiline="true" width="200" height="300" fgcolor="#fe0000" fontsize="20" text="Garantia já indenizada!"/>
+						
+						<edittext visible="true" x="1" y="120" name="nr_Fogo" width="200" height="21" maxlength="20"  
+							oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');" onfocus="parent.deformat(this,'txt');" />
+
+						<edittext visible="true" x="1" y="144" name="nr_Dot" width="40" height="21" maxlength="4" oninit="parent.pattern(this,'int')" />
+						
+						<datacombobox visible="true" x="1" y="168" name="nr_Vida" width="200" height="21" itemdatapath="dmVida:/item" defaulttext="Escolha a recapagem"/>
+
+						<lookup visible="true" x="1" y="192" name="oid_Banda" cdProperty="cd_Banda" dsProperty="nm_Banda"
+							widthCdProperty="70" widthDsProperty="300" callService="Banda"  oninit="parent.pattern(this,'txt')" >
+							<propertyMapping modelProperty="oid_Fabricante_Banda" criteriaProperty="1"/>
+							<method name="ondataLookup"> parent.parent.ajustaDimensao(); </method>
+						</lookup>	
+
+						<datacombobox x="1" y="216" name="oid_Banda_Dimensao" width="200" height="21" itemdatapath="sisGtt101BanDim:/cad/item"  defaulttext="Escolha a dimensão"   />	
+
+						<edittext visible="true" x="1" y="240" name="vl_Servico" width="90" height="21" maxlength="12"  
+							oninit="parent.pattern(this,'dec')" onblur="parent.format(this,'dec',2);" onfocus="parent.deformat(this,'dec');" />
+
+					</cpoEditsXY>	
+	
+		      		<method name="ajustaDimensao">
+		      			var este = edits.oid_Banda.getText();
+		      			if (este!="") {
+		      				parent.parent.parent.carregando.startAni();
+		      				sisGtt101BanDim.setSrc("../../ComboServlet?combo=Banda_Dimensao&amp;oid_Banda=" + este);
+		  					sisGtt101BanDim.doRequest();
+		      			}
+					</method>
+					
+					<method name="ajustaReparo" args="p">
+						if (p=="N") {
+							edits.nr_Quantidade_Reparo.setVisible(false);
+							edits.lbl_Quantidade_Reparo.setVisible(false);
+							edits.nr_Quantidade_Reparo.clearText();
+						} else {
+							edits.nr_Quantidade_Reparo.setVisible(true);
+							edits.lbl_Quantidade_Reparo.setVisible(true);
+						}
+					</method>
+					
+		      		<method name="valida" >
+		      			<![CDATA[
+		      			var jErro = parent.parent.parent.janelaErro;
+	         			var retorno = true;
+	         			if (edits.requerido(edits.oid_Cliente.getText())) {
+	         				jErro.mostra('Informe o cliente!');
+	            			retorno = false; 
+	         			} else
+	         			if (edits.requerido(edits.nr_Nota_Fiscal.getText())) {
+	         				jErro.mostra('Informe o número da nota fiscal!');
+	            			retorno = false; 
+	         			} else 
+	         			if ( edits.oid_Fabricante_Pneu.value == null ) {
+	         				jErro.mostra('Escolha o fabricante do pneu!');
+	            			retorno = false; 
+	         			} else
+	         			if (edits.requerido(edits.oid_Modelo_Pneu.getText())) {
+	         				jErro.mostra('Informe o modelo do pneu!');
+	            			retorno = false; 
+	         			} else
+	         			if (edits.requerido(edits.nr_Fogo.getText())) {
+	         				jErro.mostra('Informe o nº fogo/série!');
+	            			retorno = false; 
+	         			} else
+	         			if ( edits.requerido(edits.nr_Dot.getText()) ) {
+	         				jErro.mostra('Informe o DOT!');
+	            			retorno = false; 
+	         			} else
+	         			if ( !edits.validaDot(edits.nr_Dot) ) {
+	         				jErro.mostra('DOT inválido!');
+	            			retorno = false; 
+	         			} else
+	         			if ( edits.nr_Vida.value == null ) {
+	         				jErro.mostra('Escolha a recapagem!');
+	            			retorno = false; 
+	         			} else
+	         			if (edits.requerido(edits.oid_Banda.getText())) {
+	         				jErro.mostra('Informe a banda!');
+	            			retorno = false; 
+	         			} else
+	         			if ( edits.oid_Banda_Dimensao.value == null ) {
+	         				jErro.mostra('Escolha a dimensão da banda!');
+	            			retorno = false; 
+	         			} else
+	         			if ( edits.util.comparaFracionario(edits.vl_Servico.getText(),"<","0,01") ) { 
+		            		  jErro.mostra('Informe o campo valor do serviço!');
+		            		  retorno = false;
+	         			} else
+	         			if ( !edits.dotVencido(edits.nr_Dot.getText(),edits.dm_Tipo_Pneu.getText()) ) {
+	         				jErro.mostra('DOT vencido!');
+	            			retorno = false; 
+	         			} 
+	         			return retorno;
+		         		]]>
+		      		</method>
+				</view>
+				<submit name="xMit" data="${parent.parent.parent.cadGar}" />
+   			</form>
+    	</view>
+    	<view name="barSel" x="10" layout="axis:x; spacing:2">
+       		<button name="btnFecharSel" width="70">
+          		Fechar
+          		<handler name="onclick" >
+             		parent.parent.parent.parent.close()
+          		</handler>
+       		</button>
+       		<button name="btnSelectSel" width="70" enabled="true">
+       			Gravar
+          		<handler name="onclick">
+          			if (parent.parent.corSel.formSel.vCampos.valida()){
+          				parent.parent.carregando.startAni();
+          				parent.parent.corSel.formSel.xMit.submit();
+          			}
+          		</handler>
+       		</button>
+      	</view>
+      	<!-- Reloginho -->
+      	<loadingAni name="carregando" />
+	</view>
+	</class>
+</library>

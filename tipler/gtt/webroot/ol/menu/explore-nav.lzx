@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas width="200" height="800" bgcolor="0xeaeaea" debug="false">
+  
+  <!-- Desabilita o menu de contexto -->
+  <script><![CDATA[ var cntxtmenu = new LzContextMenu(); ]]> </script>
+  <handler name="oninit" > canvas.setDefaultContextMenu(cntxtmenu); </handler>
+
+  <script>
+  	  var chamador = LzBrowser.getInitArg('tela');
+  </script>
+
+  <!-- Datasets -->
+  <dataset name="sinfo" src="http:explorer-nav.lzx?lzt=serverinfo" request="true" />
+  <dataset name="navdata" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false" />
+
+  <!-- Included Libraries -->
+  <include href="base/basetree.lzx" />
+
+  <include href="resources.lzx" />
+
+  <!-- Global Setup Script -->
+  <script>
+    var opened = new Array(4);
+  </script>
+
+  <handler name="oninit">
+    var navset = global['navset'];
+    if (chamador=='gestaoMenu') {
+    	navset = "gestaoMenu.xml";
+    }	
+    if (chamador=='gestaoSet') {
+    	navset = "gestaoSet.xml";
+    }	
+    if (typeof(navset) == 'undefined')
+        navset = "../../ControlerServlet?tela=nada&amp;ed=Menu_Perfil_SistemaED&amp;rn=Menu_Perfil_SistemaRN&amp;acao=M";
+    canvas.navdata.setSrc(navset);
+    canvas.navdata.doRequest();
+  </handler>
+  
+  <!-- CLASSES -->
+
+  <!-- Animator group classes to be instantiated when needed -->
+  <class name="openanimator" extends="animatorgroup" process="sequential" start="false">
+    <attribute name="item" value="null"/>
+    <animator target="$once{parent.item}" attribute="width" to="$once{160 + 7*(parent.item.level+1)}"
+        duration="100" relative="false"/>
+    <animatorgroup name="open" process="simultaneous" duration="250" start="false"
+        onstop="parent.item.onopendone.sendEvent()">
+        <!-- note the spacing & inset to -6, since the shadow is 6 pixels high -->
+        <animator attribute="inset" to="-6"
+            start="false" relative="false"/>
+        <animator attribute="spacing" to="-6"
+            start="false"  relative="false"/>
+    </animatorgroup>
+  </class>
+
+  <class name="closeanimator" extends="animatorgroup" process="sequential" start="false">
+    <attribute name="item" value="null"/>
+    <animatorgroup name="items" process="simultaneous" duration="200"  start="false"
+        onstop="parent.item.children.setVisible(false);">
+        <!-- note the spacing & inset from -6, since the shadow is 6 pixels high -->
+        <animator attribute="spacing" to="${-parent.parent.parent.hgt}" from="-6"
+            start="false"
+            relative="false"/>
+        <animator attribute="inset" to="${-parent.parent.parent.hgt}" from="-6"
+            start="false"/>
+    </animatorgroup>
+    <animator target="$once{parent.item}" attribute="width" to="$once{160 + 7*parent.item.level}"
+        duration="100" relative="false"/>
+  </class>
+
+  <!-- NavButton Class parent of all item buttons -->
+  <class name="menubutton" extends="basetree" xindent="0" yindent="${this.item.height}"
+    closechildren="true" closesiblings="true" layout="class:null">
+    <attribute name="level" type="number"/>
+    <attribute name="defaultplacement" value="itemlist" type="string"/>
+
+    <datapath xpath="*">
+        <attribute name="doneDel" value="null"/>
+        <handler name="onclones">
+            var lastclone = clones[ clones.length - 1 ];
+            if ( !this.doneDel ){
+                this.doneDel = new LzDelegate( this, 'replicationDone');
+            } else {
+                this.doneDel.unregisterAll();
+            }
+            this.doneDel.register( lastclone , "oninit" );
+        </handler>
+        <method name="replicationDone">
+            var mb = this.parent;
+            mb.dataBound();
+        </method>
+    </datapath>
+
+    <handler name="oninit">
+        this.children.sendToBack();
+    </handler>
+
+    <method event="ondata">
+        this.setAttribute("isleaf", !this.datapath.p.hasChildNodes());
+        if( !this['clonenumber'] || this.clonenumber == 0) {
+            var mb = this.parent;
+            if (mb instanceof menubutton) {
+                mb.dataBound();
+            }
+        }
+    </method> 
+            
+    <attribute name="deferOpen" value="false"/>
+
+    <method name="_setOpen" args="o"><![CDATA[
+        if (_initcomplete && this.isleaf) {
+            this.open = false;
+            return;
+        }
+
+        if (o && this.children.itemlist.subviews.length == 0) {
+            this.deferOpen = true;
+            new navbutton(this, { level: this.level + 1 });
+        }
+        else
+            super._setOpen(o);
+            
+    ]]></method>
+    
+    <method name="dataBound"><![CDATA[
+        if (this.deferOpen) {
+            this.deferOpen = false;
+            this.setAttribute('open', true);
+        }
+        if (this['nextOpenList']) {
+            var nol = this.nextOpenList;
+            var no = this[nol[0]];
+            if (no != null)
+                this[nol[0]].openSequence(nol);
+            else if ($debug) {
+                Debug.warn("invalid element in open sequence %w\n", nol[0]);
+            }
+        }
+    ]]></method>
+    
+    <method name="openChildren" args="o">
+        if (this.children.itemlist.subviews.length > 0) {
+            //Debug.write('doOpenChildren', this, o, this.children.itemlist.subviews);
+            var item_hgt = this.item.height;
+
+            this.itemlist.childlayout.setAttribute('hgt', item_hgt);
+            if (o) {
+                this.itemlist.childlayout.setAttribute('spacing', -item_hgt);
+                this.itemlist.childlayout.setAttribute('inset', -item_hgt);
+                this.children.setVisible(true);
+                this.itemlist.childlayout.doOpen();
+            } else {
+                this.itemlist.childlayout.doClose();
+            }
+        }
+    </method>
+
+    <method name="openSequence" args="seq">
+        if (seq[0] == this.name) {
+            // first, open self
+            this.header.open();
+            if (seq.length > 1) {
+                this.nextOpenList = seq.splice(1,seq.length - 1);
+            }
+        }
+    </method>
+    
+    <view name="itemlist" width="${classroot.width}" placement="children" >
+        <simplelayout name="childlayout" spacing="-20">
+            <attribute name="hgt" value="0" />
+
+            <method name="doOpen">
+                if (this.animateOpen == null) {
+                    this.animateOpen = new openanimator(this, { item: classroot });
+	          }
+                this.animateOpen.doStart();
+            </method>
+            
+            <method name="doClose">
+                if (this.animateClose == null) {
+                    this.animateClose = new closeanimator(this, { item: classroot });
+                }
+                this.animateClose.doStart();
+            </method>
+            
+            <attribute name="animateOpen" value="null"/>
+            <attribute name="animateClose" value="null"/>
+            
+        </simplelayout>
+    </view>
+    <itembutton name="header" level="$once{classroot.level}"
+       text="$once{classroot.name}" width="${classroot.width}"/>
+  </class>
+
+  <!-- ItemButton class the visible portion of navButtons -->
+  <class name="itembutton" placement="item" datapath="."
+    onmouseover="background.setResourceNumber(2)"
+    onmouseout="showUp()"
+    onmousedown="background.setResourceNumber(3)"
+    onmouseup="showUp()" clickable="true">
+
+    <attribute name="level" type="number"/>
+    <attribute name="text" type="string"/>
+    <attribute name="isleaf" value="false"/>
+    
+    <event name="onopendone"/>
+
+    <method name="largetext">
+        icon.setAttribute("y", 5);
+        label.setAttribute("y", 2);
+        label.setAttribute("fgcolor", 0xffffff);
+        label.setAttribute("fontsize", 11);
+    </method>
+    
+    <method name="smalltext">
+        icon.setAttribute("y", 5);
+        label.setAttribute("y", 2);
+        label.setAttribute("fgcolor", 0xffffff);
+        label.setAttribute("fontsize",11);
+    </method>
+    
+    <handler name="ondata">
+        var dp = this.datapath;
+
+        this.setAttribute("isleaf", !this.datapath.p.hasChildNodes());
+
+        var tagtype = dp.xpathQuery("name()");
+        this.background.setResource(tagtype + "_btn");
+	
+        if (tagtype == 'subitem') {
+             this.smalltext();
+        } else {
+            this.largetext();
+        }
+
+        var action = dp.xpathQuery("@action");
+        if (action == 'popup' || action == 'source') {
+            icon.setResourceNumber(4);
+        }
+    </handler>
+
+    <handler name="onopendone" reference="classroot" method="doaction"/>
+    <method name="doaction">  <![CDATA[
+    	
+        var dp = this.datapath;
+        var autoselect = dp.xpathQuery("@autoselect");
+        if (autoselect == "true") {
+            classroot.itemlist.subviews[0].header.open();
+        } else {
+			var action = dp.xpathQuery("@action");
+			var params = dp.xpathQuery("@params");
+			var src = dp.xpathQuery("@src");
+			var tagline = dp.xpathQuery("@text");
+			var title = dp.xpathQuery("@title");
+			if (src=="ajuda") {
+				LzBrowser.loadURL('javascript:window.open("' + "../../help/index.html?" + '","_blank"); void(0);' );
+			} else {	
+				if (action=='popup'){
+		            var popup = dp.xpathQuery("@popup");
+		            var target = dp.xpathQuery("@target");
+		            LzBrowser.loadURL('loading.jsp?src=' + popup + '&action=' + action + '&' + params,target=="" ? "_blank" : target);
+		            if (src != null){
+		              LzBrowser.loadURL('content.jsp?src=' + src + '&tag=' + tagline + '&title=' + title + '&' + params, 'content');
+		            }
+				} else if (action=='source'){
+	                  LzBrowser.loadURL('content.jsp?src=' + src + '&tag=' + tagline + '&title=' + title + '&action=source' + '&' + params, 'source');
+				} else {
+					if (title ==null){
+	                   title = classroot.name;
+	              	}
+				}    
+				if (src != null) { 	
+					LzBrowser.loadURL('content.jsp?src=' + src + '&tag=' + tagline + '&title=' + title + '&action=' + action+ '&' + params, 'content');
+				}	
+			}
+		}
+        ]]>
+    </method>
+    
+    <handler name="onclick" method="open"/>
+    <method name="open">
+      <![CDATA[
+        var dp = this.datapath;
+        var tagtype = dp.xpathQuery("name()");
+
+      classroot.changeFocus();
+
+      // only open subitems if there are
+      if (this.isleaf) {
+        this.doaction();
+      } else {
+        // only open menu if not already opened ( i.e don't toggle like before )
+        // if ( !classroot.open ) -- this did not completely work, so just always open
+        classroot.setAttribute("open", true);
+      }
+      ]]>
+    </method>
+
+    <handler name="onopen" reference="classroot" method="showUp"/>
+    <method name="showUp">
+        background.setResourceNumber(classroot.open ? 4 : 1);
+        // Only toggle arrow if there are subnodes
+        if (this.datapath.getNodeCount()) {
+            icon.setResourceNumber(classroot.open ? 2 : 1);
+        }
+    </method>
+
+    <view name="background"  width="${classroot.width}" x="${classroot.width-200}" />
+
+    <view name="icon" resource="icon" y="9" stretches="both" width="11" height="11"
+        x="${classroot.width - this.width - 6 }" />
+      
+    <text name="label" x="${6 + classroot.level*7}" y="3" font="itemfont" fgcolor="#ffffff"
+        fontsize="13" width="${parent.width-x}" text="${classroot.text}"/>
+        
+  </class>
+
+  <class name="navbutton" extends="menubutton" width="${immediateparent.width}">
+      <attribute name="name" value="$path{'@name'}"/>
+  </class>
+
+  <!-- APPLICATION -->
+  <!-- navigation bar and classes -->
+
+  <view width="200" height="$once{canvas.height}" > 
+    <view x="-15" resource="navbg"/>
+     
+    <basebutton resource="logobtn" x="5" y="6" onclick="//this.gotoWWW()">
+    	<!--
+            <method name="gotoWWW">
+                LzBrowser.loadURL('javascript:window.open("http://www.openlaszlo.org","test","resizable=1,width=1000,height=700,left=0,top=0,screenX=0,screenY=0,menubar,location,status,scrollbars,toolbar,address"); void(0);' );
+            </method>
+    	-->
+    </basebutton>
+    
+  </view>
+
+  <view width="200" y="42" height="${menu.height + 4}">
+    <basetree name="menu" datapath="navdata:/menu"
+        showroot="false" x="2" y="2"
+        layout="spacing:-6">
+        <!-- note spacing is -6, since the shadonw is 6 pixels high -->
+      <method name="dataBound">
+        // this is how we restore the state of the app from an incoming URL, 
+        // this is always provided by the JSP wrappers 
+        if (typeof(global.bookmark) != 'undefined'){
+          var restore = global.bookmark.split('|');
+          if (restore.length > 0) {
+              this[restore[0]].openSequence(restore);
+          }
+        }
+      </method>
+      <navbutton width="160" level="0">
+      </navbutton>
+    </basetree>
+  </view>
+
+
+</canvas>
+<!-- * X_LZ_COPYRIGHT_BEGIN ***************************************************
+* Copyright 2001-2006 Laszlo Systems, Inc.  All Rights Reserved.              *
+* Use is subject to license terms.                                            *
+* X_LZ_COPYRIGHT_END ****************************************************** -->
+<!-- @LZX_VERSION@                                                         -->

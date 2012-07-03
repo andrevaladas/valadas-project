@@ -1,0 +1,200 @@
+<library>
+    <script>
+    <![CDATA[
+
+        //SL:09/01/2006 helper queue object
+        var fchartqueue=new Array();
+        var fchartqueueSpace=0;
+
+        // Enfchartqueues the specified item
+        function pushqueue(item){
+          fchartqueue[fchartqueue.length++]=item;
+        }
+        
+        // Defchartqueues an item, returning undefined if the fchartqueue is empty
+        function popqueue(){
+          var item=undefined;
+          if (fchartqueue.length){
+            item=fchartqueue[fchartqueueSpace];
+            if ((++fchartqueueSpace)*2 >= fchartqueue.length){
+              for (var i=fchartqueueSpace;i<fchartqueue.length;i++) fchartqueue[i-fchartqueueSpace]=fchartqueue[i];
+              fchartqueue.length-=fchartqueueSpace;
+              fchartqueueSpace=0;
+            }
+          }
+          return item;
+        }
+
+
+        //load the next one in queue
+        _loadNext = function (){
+                                 var _fchart = popqueue();
+ 
+                                  if(_fchart != null)
+                                     __loadFusionCharts(_fchart);
+                               }
+                               
+
+        //this function incorporate the queueing feature
+        _loadFusionCharts = function (chartHolder, strSWFName, chartStartLevel, strURL, strXML, intChartWidth, intChartHeight, intChartStartX, intChartStartY) {
+             var _fchart = new Object();
+             _fchart.chartHolder = chartHolder;
+             _fchart.strSWFName = strSWFName;
+             _fchart.chartStartLevel = chartStartLevel;
+             _fchart.strURL = strURL;
+             _fchart.strXML = strXML;
+             _fchart.intChartWidth = intChartWidth;
+             _fchart.intChartHeight = intChartHeight;
+             _fchart.intChartStartX = intChartStartX;
+             _fchart.intChartStartY = intChartStartY;
+             _fchart.isfirst = false;
+             _fchart.timetoload = chartHolder.timetoload;
+
+             //save information in the queue
+             pushqueue(_fchart);
+             //if this is the first entry, load it right away. Because there was no chart before this one.
+             if(fchartqueue.length==1){
+                this.delLoadNext = new LzDelegate( this, "_loadNext" );
+                LzTimer.addTimer( this.delLoadNext, 10 );
+             }
+
+             Debug.write("_loadFusionCharts | fchartqueue.length="+fchartqueue.length);
+        }
+
+        /*
+        loadFusionCharts method is an extension to the base MovieClip object of Flash. 
+        We use this method to load a FusionCharts chart inside any movie clip instance. You can
+        create new (empty) movie clips at runtime and then load FusionCharts charts into them.
+        
+        This method accepts the following parameters:
+        strSWFName - Exact path and the name of the .swf file (i.e., chart), which you want to load
+        chartStartLevel - Starting depth (level in Flash), from where FusionCharts will start plotting.
+        This has been given so that you can adjust the chart below or above certain elements. 
+        strURL - dataURL - relative or absolute URL of the XML data document or XML providing data document. 
+        If you wish to use dataXML method to provide data, set this value as null.
+        strXML - dataXML - Complete XML data as a string.
+        If you wish to use dataURL method to provide data, set this value as null.
+        intChartWidth - Intended width of the chart (in pixesl)
+        intChartHeight - Intended height of the chart (in pixesl)
+        intChartStartX - Starting x position (w.r.t to global movie i.e., your movie) of the chart
+        i.e., left starting position of chart
+        intChartStartY - Starting y position (w.r.t to global movie i.e., your movie) of the chart
+        i.e., top starting position of chart
+        
+        This method returns nothing.
+        */
+        
+        //SL: 09/01/2006 This method is origin from FusionCharts documentation. It's in a *native* Flash Action script code.
+        //               However this method is modified to work with OpenLaszlo "LzView" object and enhanced to overcome unwanted behavior.
+        //this function is the direct call to load the chart
+        __loadFusionCharts = function (_fchart){
+            if (!_fchart) return;
+
+             var chartHolder     = _fchart['chartHolder'];
+             var strSWFName      = _fchart['strSWFName'];
+             var chartStartLevel = _fchart['chartStartLevel'];
+             var strURL           = _fchart['strURL'] ;
+             var strXML           = _fchart['strXML'] ;
+             var intChartWidth    = _fchart['intChartWidth'] ;
+             var intChartHeight   = _fchart['intChartHeight'] ;
+             var intChartStartX   = _fchart['intChartStartX'] ;
+             var intChartStartY   = _fchart['intChartStartY'] ;
+             var intTimetoload    = _fchart['timetoload'] ;
+
+            //If no starting level has been defined for the chart, we automatically assume it to be 1000.
+            if (chartStartLevel == undefined || chartStartLevel == null) {
+            chartStartLevel = 1000;
+            }
+            //Now, if dataURL has been specified, we use dataURL else dataXML
+            if (strURL != "" && strURL != "null" && typeof strURL != "undefined" && strURL != null) {
+                _root.dataURL = strURL;
+                _root.dataXML = null;
+                Debug.write("__loadFusionChartsBasic() | _root.dataURL =",_root.dataURL);
+            } else {
+            //we use strXML (where strXML contains the full XML data) 
+                _root.dataXML = strXML;
+                _root.dataURL = null;
+                Debug.write("__loadFusionChartsBasic() | _root.dataXML =",_root.dataXML);
+            }
+            //chartWidth & chartHeight specifies the size of FusionCharts chart
+            _root.chartWidth = intChartWidth;
+            _root.chartHeight = intChartHeight;
+            //Set initial x and y position for the chart 
+            //i.e., (where the chart would start from in this movie).
+            _root._FCXShift = intChartStartX;
+            _root._FCYShift = intChartStartY;
+            //Set the plot level.
+            _root._FCLastLevel = chartStartLevel;
+    
+            //update the uid when it's the first time loaded
+            if (!chartHolder['_uid'])
+                chartHolder.setAttribute("_uid",(new Date()).getTime());
+
+            //Finally, load the movie
+            chartHolder.getMCRef().loadMovie(strSWFName);
+            Debug.write("__loadFusionCharts | chartHolder._uid="+chartHolder._uid) ;
+
+            //set the 'timer' for the next load
+            this.delLoadNext = new LzDelegate( this, "_loadNext" );
+            LzTimer.addTimer( this.delLoadNext, intTimetoload );
+        };
+
+    ]]>
+    </script>
+
+    <!-- dummy resource to properly initialize a "movie ready" view -->
+    <resource name="__blank_resource" src="resources/blank.swf" />
+
+    <class name="fusioncharts">
+        <!-- properties for fusioncharts -->
+        <attribute name="strSWFName" type="string" />
+        <attribute name="chartStartLevel" type="string" />
+        <attribute name="strURL" type="string" />
+        <attribute name="strXML" type="string" />
+        <attribute name="intChartWidth" type="number" />
+        <attribute name="intChartHeight" type="number" />
+        <attribute name="intChartStartX" type="number" />
+        <attribute name="intChartStartY" type="number" />
+        <attribute name="autoload" value="true" />
+        <attribute name="timetoload" value="4000" type="number" /><!-- total time taken to load this chart before loader can proceed to load subsequent chart-->
+        <attribute name="_uid" type="string"/>
+
+
+        <!-- properties inherited from view: dimension and coordinate is constrained to the charts settings -->
+        <attribute name="x" value="${this.intChartStartX}" />
+        <attribute name="y" value="${this.intChartStartY}" />
+        <attribute name="width" value="${this.intChartWidth}" />
+        <attribute name="height" value="${this.intChartHeight}" />
+        <attribute name="clip" value="true" />
+        <attribute name="resource" value="__blank_resource" />
+
+        <handler name="oninit">
+            if (this.autoload){
+                this.load();
+            }
+
+        </handler>
+
+        <method name="refresh">
+            unload();
+            load();
+        </method>
+
+        <method name="load">
+            //set the internal fusion chart (x,y) coordinate is set to (0,0). This is because it's a child of this View container.
+            _loadFusionCharts(this, this['strSWFName'], this['chartStartLevel'], this['strURL'], this['strXML'], this['intChartWidth'], this['intChartHeight'], 0, 0);
+        </method>
+
+        <method name="unload">
+            //set the internal fusion chart (x,y) coordinate is set to (0,0). This is because it's a child of this View container.
+            getMovieClipReference().unloadMovie() ;
+        </method>
+        
+        <method name="getMovieClipReference">
+            //this method returns the native Flash movie clip object.
+            //Currently not in use, reserved for future should FusionCharts support new Flash API.
+            return this.getMCRef();
+        </method>
+        
+    </class>
+</library>

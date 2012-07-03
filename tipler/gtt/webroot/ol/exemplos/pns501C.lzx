@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="true" >
+	<script>
+	</script>
+	<debug x="0" y="0" width="300" height="800" ></debug>
+
+	<!-- Desabilita o menu de contexto -->    
+    <script><![CDATA[ var cntxtmenu = new LzContextMenu(); ]]> </script>
+    <handler name="oninit" > canvas.setDefaultContextMenu(cntxtmenu); </handler>
+    
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	
+  	<!-- Datasets para os combos -->
+	<dataset name="dimP" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ComboServlet?combo=Dimensao_Pneu&amp;consulta=sim" />
+   		
+	<dataset name="fabP" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ComboServlet?combo=Fabricante_Pneu&amp;consulta=sim" />
+   		
+	<dataset name="modP" request="true" type="http" querytype="post" acceptencodings="true" cacheable="false"
+   		src="../../ComboServlet?combo=Modelo_Pneu&amp;consulta=sim" />
+   		   		
+    <dataset name="dm_Eixo">
+       <item value="">TODOS</item>
+       <item value="A">A - Direção</item>
+       <item value="B">B - Tração</item>
+       <item value="C">C - Truck</item>
+       <item value="D">D - 1º Eixo</item>
+       <item value="E">E - 2º Eixo</item>
+       <item value="F">F - 3º Eixo</item>
+       <item value="X">X - Outros</item>
+    </dataset>
+    
+	<window title="pns501" bgcolor="#FAFAFA" height="${284+80}" width="${477+30}"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+		<simplelayout/>
+		<titulo x="5" text="Análise de Carcaça CPK" widthLine="$once{parent.width - 29}" corFrente="#FF9900" />
+		<view name="corSel" >
+			
+			<!-- Janelas de avisos e de erros -->
+			<!-- Janela de aviso -->
+			<alert name="janelaAviso" title="A v i s o !" >
+				Aviso Padrão!
+				<method name="mostra" args="msg">
+					this.setAttribute('text', msg); 
+					this.open();
+				</method>
+	 		</alert>      
+	
+			<!-- Janela de alerta de erro de validação -->
+			<alert name="janelaErro" title="E r r o !" >
+				Erro Padrão!
+				<method name="mostra" args="erro">
+					this.setAttribute('text', erro); 
+					this.open();
+				</method>
+			</alert>
+
+			<view name="A" x="10" y="10" >
+				<frame3d name="xyz1"  width="300" height="47" caption="Situacao do pneu..." />
+				<radiogroup y="15" x="10" name="dm_Situacao" layout="axis:x">
+			    	<radiobutton value="1" text="Todos"/>
+					<radiobutton value="2" text="Só sucateados" selected="true"/>
+			    	<radiobutton value="3" text="Não sucateados"/>
+				</radiogroup>
+			</view>	
+		
+			<view name="B" x="10" y="63" >
+				<frame3d name="xyz2"  width="300" height="47" caption="Período de encerramento das vidas..." />
+				<cpoEdits name="edits" y="15" x="10" layout="axis:x">
+					<checkbox  name="dm_Total" text="Total" value="true" />
+					<text text="  Início:"/>
+					<edittext name="dt_Inicial" width="75" height="21" enabled="${!parent.dm_Total.value}" 
+						oninit="parent.pattern(this,'dat')" onblur="parent.format(this,'dat');" onfocus="parent.deformat(this,'dat');"/>
+					<text text=" Fim:"/>		
+					<edittext name="dt_Final" width="75" height="21" enabled="${!parent.dm_Total.value}"
+						oninit="parent.pattern(this,'dat')" onblur="parent.format(this,'dat');" onfocus="parent.deformat(this,'dat');"/>
+				</cpoEdits>
+			</view>	
+		
+			<view name="C" x="10" y="116" >
+				<frame3d name="xyz2"  width="300" height="47" caption="Vida..." />
+				<cpoEdits name="edits" y="15" x="10" layout="axis:x">
+					<checkbox  name="dm_Vida_Ate" text="Até a vida nº" enabled="${!parent.dm_Vida_So.value}" />
+					<edittext name="nr_Vida_Ate" width="20" height="21" maxlength="1" enabled="${parent.dm_Vida_Ate.value}"
+						oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" onfocus="parent.deformat(this,'int');" />
+					<text text=" / " />
+					<checkbox  name="dm_Vida_So" text="Somente a vida nº" enabled="${!parent.dm_Vida_Ate.value}"/>
+					<edittext name="nr_Vida_So" width="20" height="21" maxlength="1" enabled="${parent.dm_Vida_So.value}"
+						oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" onfocus="parent.deformat(this,'int');" />	
+				</cpoEdits>
+			</view>	
+				
+			<view name="D" x="10" y="169" >
+				<frame3d name="xyz2"  width="300" height="120" caption="Restringir por..." />
+				<view name="vCampos" y="15" x="10" width="110" align="left" layout="axis:x; spacing:5">
+					<!-- Labels -->
+					<view width="65" align="right" layout="axis:y; spacing:3">
+						<text height="21" align="right">Eixo:</text>
+						<text height="21" align="right">Dimensão:</text>
+						<text height="21" align="right">Marca:</text>
+						<text height="21" align="right">Modelo:</text>
+					</view>
+					<view name="edits" layout="axis:y; spacing:3">
+						<datacombobox name="dm_Eixo" shownitems="5" width="220" height="21" itemdatapath="dm_Eixo:/item" defaulttext="TODOS"/>
+						<datacombobox name="oid_Dimensao_Pneu" shownitems="5" width="220" height="21" itemdatapath="dimP:/cad/item" defaulttext="TODOS"/>
+						<datacombobox name="oid_Fabricante_Pneu" shownitems="5" width="220" height="21" itemdatapath="fabP:/cad/item" defaulttext="TODOS"/>
+						<datacombobox name="oid_Modelo_Pneu" width="220" height="21" itemdatapath="modP:/cad/item" defaulttext="TODOS"/>
+					</view>
+				</view>		   		
+			</view>	
+		
+			<view name="E" x="315" y="10" >
+				<frame3d name="xyz2"  width="165" height="100" caption="Agrupar por..." />
+				<view name="edits" y="15" x="10" layout="axis:y; spacing:3">
+					<checkbox  name="dm_Eixo" text="Eixo" value="true"/>
+					<checkbox  name="dm_Dimensao" text="Dimensão" x="25" value="${parent.dm_Eixo.value}" enabled="${parent.dm_Eixo.value}" />
+					<checkbox  name="dm_Marca" text="Marca" x="50" value="${parent.dm_Dimensao.value}" enabled="${parent.dm_Dimensao.value}" />
+					<checkbox  name="dm_Modelo" text="Modelo" x="75" value="${parent.dm_Marca.value}" enabled="${parent.dm_Marca.value}"/>
+				</view>
+			</view>	
+		
+			<view name="F" x="315" y="116" >
+				<frame3d name="xyz2"  width="165" height="70" caption="Tipo de relatório..." />
+				<radiogroup y="15" x="10" name="dm_Tipo" layout="axis:y ; spacing:8">
+			    	<radiobutton value="0" text="Sintético"/>
+					<radiobutton value="1" text="Analitico" selected="true"/>
+				</radiogroup>
+			</view>	
+		
+			<view name="G" x="315" y="194" >
+				<frame3d name="xyz2"  width="165" height="50" caption="Subtrair valor da venda..." />
+				<radiogroup y="20" x="10" name="dm_Vl_Venda" layout="axis:x ; spacing:20">
+			    	<radiobutton value="0" text="Sim"/>
+					<radiobutton value="1" text="Não" selected="true"/>
+				</radiogroup>
+			</view>	
+			
+			<method name="valida" >
+				var retorno = true;
+				if (B.edits.dm_Total.value==false){
+					if (B.edits.requerido(B.edits.dt_Inicial.getText())){
+            			janelaErro.mostra('Informe a data de início!');
+            			retorno = false; 
+					} else 
+					if (B.edits.requerido(B.edits.dt_Final.getText())){
+            			janelaErro.mostra('Informe a data de fim!');
+            			retorno = false; 
+					} else
+					if (!B.edits.validaData(B.edits.dt_Inicial)) {
+            			janelaErro.mostra('Data de Inicio inválida!');
+            			retorno = false;
+					} else
+					if (!B.edits.validaData(B.edits.dt_Final)) {
+            			janelaErro.mostra('Data de Fim inválida!');
+            			retorno = false;
+					}
+				} else
+				if (C.edits.dm_Vida_Ate.value==true){
+					if (C.edits.requerido(C.edits.nr_Vida_Ate.getText())){
+            			janelaErro.mostra('Informe o nº vida até!');
+            			retorno = false; 
+					}
+				} else
+				if (C.edits.dm_Vida_So.value==true){
+					if (C.edits.requerido(C.edits.nr_Vida_So.getText())){
+            			janelaErro.mostra('Informe o nº vida somente!');
+            			retorno = false; 
+					}
+				}
+				return retorno;
+			</method>
+			
+			<view name="H" x="315" y="255" >
+				<view name="barSel" x="10" layout="axis:x; spacing:4">
+		       		<button name="btnFecharSel" width="70">
+		          		Fechar
+		          		<handler name="onclick" >
+		             		parent.parent.parent.parent.close()
+		          		</handler>
+		       		</button>
+		       		<button name="btnSelectSel" width="70" enabled="true">
+		          		Relatório
+		          		<handler name="onclick">
+		          			if (parent.parent.parent.valida()){
+		          				this.processa();
+		          			}	
+		              	</handler>
+		              	<method name="processa">
+		              		parent.parent.parent.carregando.startAni();
+							var chamada = "../include/relatorio.jsp?" ;
+							chamada += "tela=pns501";
+							chamada += "&amp;"+"ed=Vida_PneuED";
+							chamada += "&amp;"+"rn=Vida_PneuRN"; 
+							chamada += "&amp;"+"rel=2";
+							chamada += "&amp;"+"dm_Situacao="+parent.parent.parent.A.dm_Situacao.value;
+							chamada += "&amp;"+"dm_Total="+parent.parent.parent.B.edits.dm_Total.value;
+							chamada += "&amp;"+"dt_Inicial="+parent.parent.parent.B.edits.dt_Inicial.getText();
+							chamada += "&amp;"+"dt_Final="+parent.parent.parent.B.edits.dt_Final.getText();
+							chamada += "&amp;"+"dm_Vida_Ate="+parent.parent.parent.C.edits.dm_Vida_Ate.value;
+							chamada += "&amp;"+"nr_Vida_Ate="+parent.parent.parent.C.edits.nr_Vida_Ate.getText();
+							chamada += "&amp;"+"dm_Vida_So="+parent.parent.parent.C.edits.dm_Vida_So.value;
+							chamada += "&amp;"+"nr_Vida_So="+parent.parent.parent.C.edits.nr_Vida_So.getText();
+							chamada += "&amp;"+"dm_Eixo="+parent.parent.parent.D.vCampos.edits.dm_Eixo.value;
+							chamada += "&amp;"+"oid_Dimensao_Pneu="+parent.parent.parent.D.vCampos.edits.oid_Dimensao_Pneu.value;
+							chamada += "&amp;"+"oid_Fabricante_Pneu="+parent.parent.parent.D.vCampos.edits.oid_Fabricante_Pneu.value;
+							chamada += "&amp;"+"oid_Modelo_Pneu="+parent.parent.parent.D.vCampos.edits.oid_Modelo_Pneu.value;
+							chamada += "&amp;"+"dm_Agrupa_Eixo="+parent.parent.parent.E.edits.dm_Eixo.value;
+							chamada += "&amp;"+"dm_Agrupa_Dimensao="+parent.parent.parent.E.edits.dm_Dimensao.value;
+							chamada += "&amp;"+"dm_Agrupa_Marca="+parent.parent.parent.E.edits.dm_Marca.value;
+							chamada += "&amp;"+"dm_Agrupa_Modelo="+parent.parent.parent.E.edits.dm_Modelo.value;
+							chamada += "&amp;"+"dm_Tipo="+parent.parent.parent.F.dm_Tipo.value;
+							chamada += "&amp;"+"dm_Vl_Venda="+parent.parent.parent.G.dm_Vl_Venda.value;
+							LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+							parent.parent.parent.carregando.stopAni();
+		              	</method>
+		       		</button>
+				</view>
+			</view>	
+	      	<!-- Reloginho -->
+	      	<loadingAni name="carregando" />
+		</view>
+	</window>
+</canvas>

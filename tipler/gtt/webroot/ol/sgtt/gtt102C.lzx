@@ -1,0 +1,640 @@
+<canvas bgcolor="#EAEAEA" debug="false">
+	<script>
+		var controlPan=1;
+		var oid_IN=0;
+		var oid_RG=0;
+		var nr_MM=0;
+	</script>
+	
+	<!-- Includes -->
+	<include href="../include/objetosDeTela.lzx" /> 
+	<include href="../include/domain.lzx" />	
+	<window title="gtt102" name="wGtt102" bgcolor="#FAFAFA" width="750" height="450"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+	  <view name="fake">		
+		<simplelayout spacing="1" />
+		<titulo x="5" text="Requisição de Garantia de Recapagem" widthLine="${parent.parent.width-30}" corFrente="#FF9900" />
+		<view name="tela" width="${parent.parent.width}" height="350" visible="true" layout="axis:x; spacing:0" >
+			<animator name="animaMenos" attribute="x" to="${-parent.width}" duration="300" start="false" relative="true"/>
+	    	<animator name="animaMais" 	attribute="x" to="${+parent.width}" duration="300" start="false" relative="true"/>
+	    	
+			<!-- Dataset para acessar a recapagem -->
+			<dataset name="cadRecape" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+	   		src="../../ControlerServlet?"
+		    ondata="parent.parent.carregando.stopAni();
+	      			resultado = parent.dpRecap.xpathQuery('@oknok');
+	              	if (resultado=='LOGON'){
+	              		parent.logon();
+	              	}else{	      			
+		              	if ( resultado!=null ) {
+		          			parent.parent.janelaAviso.mostra(resultado);
+		          			parent.pan1.cpos.edts.nr_Certificado.clearText();
+		          			parent.pan1.cpos.edts.quadro1.setAttribute('visible',false);
+		          			parent.parent.botoes.vai.setAttribute('enabled',false);
+		              	} else {
+		              		var d=parent.dpRecap1;	
+		              		oid_RG=d.xpathQuery('@oid_Recapagem_Garantida');
+		              		var p1=parent.pan1.cpos.edts.quadro1;
+		              		p1.setAttribute('visible',true);
+		              		if (d.xpathQuery('@dm_Expirou')=='S') {
+		              			p1.aviso_Garantia.setAttribute('visible',true);
+		              			parent.parent.botoes.vai.setAttribute('enabled',false);
+		              			parent.parent.botoes.con.setAttribute('enabled',true);
+		              		} else {
+		              			p1.aviso_Garantia.setAttribute('visible',false);
+		              			parent.parent.botoes.vai.setAttribute('enabled',true);
+		              		}
+		              		nr_MM=d.xpathQuery('@nr_MM');
+		              		p1.nm_Razao_Social_Concessionaria.setAttribute('text',d.xpathQuery('@nm_Razao_Social_Concessionaria'));
+		              		p1.nr_Cnpj_Cliente.setAttribute('text',d.xpathQuery('@nr_Cnpj_Cliente'));
+		              		p1.nm_Razao_Social_Cliente.setAttribute('text',d.xpathQuery('@nm_Razao_Social_Cliente'));
+		              		p1.nr_Nota_Fiscal.setAttribute('text',d.xpathQuery('@nr_Nota_Fiscal'));
+		              		p1.vl_Servico.setAttribute('text',d.xpathQuery('@vl_Servico'));
+		              		p1.dt_Registro.setAttribute('text',d.xpathQuery('@dt_Registro'));
+		              		p1.dt_Validade_Garantia.setAttribute('text',d.xpathQuery('@dt_Validade_Garantia'));
+		              		p1.nm_Fabricante_Pneu.setAttribute('text',d.xpathQuery('@nm_Fabricante_Pneu'));
+		              		p1.nm_Modelo_Pneu.setAttribute('text',d.xpathQuery('@nm_Modelo_Pneu'));
+		              		p1.nr_Fogo.setAttribute('text',d.xpathQuery('@nr_Fogo'));
+		              		p1.nr_Dot.setAttribute('text',d.xpathQuery('@nr_Dot'));
+		              		p1.nr_Indice_Carga.setAttribute('text',d.xpathQuery('@nr_Indice_Carga'));
+		              		if (d.xpathQuery('@dm_Tipo_Pneu')=='D')
+		              			p1.dm_Tipo_Pneu.setAttribute('text','DIAGONAL');
+		              		else
+								p1.dm_Tipo_Pneu.setAttribute('text','RADIAL');
+							if (d.xpathQuery('@dm_Esconde_Preco')=='S') {
+		              			p1.vl_Servico.setAttribute('visible',false);
+		              			p1.lbl_vl_Servico.setAttribute('visible',false);
+		              		} else {
+								p1.vl_Servico.setAttribute('visible',true);
+								p1.lbl_vl_Servico.setAttribute('visible',true);
+							}	
+	              			p1.nr_Vida.setAttribute('text',d.xpathQuery('@nr_Vida')+'º RECAPAGEM');
+							p1.nm_Banda.setAttribute('text',d.xpathQuery('@nm_Banda'));
+							LzFocus.setFocus(parent.parent.botoes.vai);
+							parent.pan2.cpos.edts.quadro1.nr_MM.setAttribute('visible',false);
+		              	}
+	              	}
+	              	"
+		      	onerror="parent.parent.carregando.stopAni();" 
+		      	ontimeout="parent.parent.carregando.stopAni();
+	      			   	   parent.parent.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+		      	/>
+	   		<datapointer name="dpRecap" xpath="local:cadRecape:/ret/item" />
+	   		<datapointer name="dpRecap1" xpath="local:cadRecape:/cad/item" />
+
+			<dataset name="cadCalcula" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+	   		src="../../ControlerServlet?"
+		    ondata="parent.parent.carregando.stopAni();
+	      			resultado = parent.dpCalc.xpathQuery('@oknok');
+	               	if (resultado=='LOGON'){
+	              		parent.logon();
+	              	}else{
+		      			oid_IN = parent.dpCalc.xpathQuery('@oid_Indenizacao');
+		              	if ( resultado!=null ) {
+		              		if (resultado=='IOK') {
+		              			rejeicao = parent.dpCalc.xpathQuery('@rejeicao');
+		              			if (rejeicao=='null')
+		              				parent.parent.impCessao(parent.dpCalc.xpathQuery('@msg'));
+		              			else
+		              				parent.parent.impRejeicao(oid_IN);
+		          			} else {	
+		          				parent.parent.janelaAviso.mostra(resultado);
+		          			}	
+		              	} else {
+		              		var d=parent.dpCalc1;
+		              		var p3_1 = parent.pan3.cpos.edts.quadro1;
+		              		var p3_2 = parent.pan3.cpos.edts.quadro2;
+		              		p3_2.setAttribute('visible',false);
+							p3_1.setAttribute('visible',false);
+		              		if (d.xpathQuery('@dm_Perda_Total')=='true') {
+			              		p3_2.setAttribute('visible',true);
+			          			if (d.xpathQuery('@vl_Indenizacao')=='0,00') {
+			          				p3_2.naGarantia.setAttribute('visible',false);
+			          				p3_2.semGarantia.setAttribute('visible',true);	
+			          				p3_2.semGarantia.nr_Dias_Perda_Total.setAttribute('text',d.xpathQuery('@nr_Dias_Perda_Total'));
+			          				p3_2.semGarantia.aviso_Garantia.setAttribute('visible',true);
+			          			} else {
+			          				p3_2.semGarantia.setAttribute('visible',false);
+			          				p3_2.naGarantia.setAttribute('visible',true);
+			          				p3_2.naGarantia.nr_Dias_Perda_Total.setAttribute('text',d.xpathQuery('@nr_Dias_Perda_Total'));	
+			          				p3_2.naGarantia.vl_Indenizacao.setAttribute('text',d.xpathQuery('@vl_Indenizacao'));
+			          				p3_2.naGarantia.nr_Perc_Perda_Total.setAttribute('text',d.xpathQuery('@nr_Perc_Perda_Total') + ' %');
+			          			}
+			          		} else {
+		    	          		p3_1.setAttribute('visible',true);
+			          			if (d.xpathQuery('@vl_Indenizacao')=='0,00') {
+			          				p3_1.naGarantia.setAttribute('visible',false);
+			          				p3_1.semGarantia.setAttribute('visible',true);
+			          				p3_1.semGarantia.nr_Perc_Desgaste.setAttribute('text',d.xpathQuery('@nr_Perc_Desgaste') + ' %');	
+			          				p3_1.semGarantia.aviso_Garantia.setAttribute('visible',true);
+			          			} else {
+			          				p3_1.semGarantia.setAttribute('visible',false);
+			          				p3_1.naGarantia.setAttribute('visible',true);
+			          				p3_1.naGarantia.nr_Perc_Reforma.setAttribute('text',d.xpathQuery('@nr_Perc_Reforma') + ' %');
+			          				p3_1.naGarantia.nr_Perc_Carcaca.setAttribute('text',d.xpathQuery('@nr_Perc_Carcaca') + ' %');
+			          				p3_1.naGarantia.nr_Perc_Perda_Total.setAttribute('text',d.xpathQuery('@nr_Perc_Perda_Total') + ' %');
+			          				p3_1.naGarantia.vl_Indenizacao.setAttribute('text',d.xpathQuery('@vl_Indenizacao'));
+			          			}
+							}		          		 		
+		              	}
+		              	
+		              }"
+		      	onerror="parent.parent.carregando.stopAni();" 
+		      	ontimeout="parent.parent.carregando.stopAni();
+	      			   	   parent.parent.janelaAviso.mostra('Servidor ocupado! Tente novamente!');" 
+		      	/>
+	   		<datapointer name="dpCalc" xpath="local:cadCalcula:/ret/item" />
+	   		<datapointer name="dpCalc1" xpath="local:cadCalcula:/cad/item" />
+
+	    	<!-- Painel para solicitação do número do certificado -->
+			<view x="5" name="pan1" width="${parent.width}" height="${parent.height}" visible="true">
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="180" layout="axis:nome">
+						<text height="21" align="right" x="1" y="5" text="Informe o nº do certificado:"/>
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="180" visible="${parent.parent.edts.quadro1.visible}">
+							<text y="0" 	height="21"	align="right"  	text="Concessionária:"/>
+							<text y="24" 	height="21"	align="right"  	text="Cliente:"/>
+							<text y="48" 	height="21" align="right" 	text="Nota fiscal:"/>
+							<text y="72" 	height="21" align="right" 	text="Fabricante pneu:"/>
+							<text y="96" 	height="21" align="right" 	text="Modelo pneu:"/>
+							<text y="120" 	height="21" align="right" 	text="Nº série/fogo:"/>
+							<text y="144" 	height="21" align="right" 	text="DOT:"/>
+							<text y="168" 	height="21" align="right" 	text="Tipo pneu:"/>
+							<text y="192" 	height="21" align="right" 	text="Recapagem:"/>
+							<text y="216" 	height="21" align="right" 	text="Banda utilizada:"/>
+						</view>	
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<edittext x="1" y="5" name="nr_Certificado" width="80" height="21" maxlength="7"  onkeydown="parent.parent.parent.parent.parent.limpaTela();"
+							oninit="parent.pattern(this,'int')" onblur="parent.format(this,'int');" onfocus="parent.deformat(this,'int');" />
+						<button x="94" y="5" width="50" name="btnBusca" height="21" text="Buscar" onclick="parent.parent.parent.parent.parent.buscaCertificado(parent.nr_Certificado.getText());" />	
+						<separador x="1" y="30" widthLine="750" />
+						<view x="1" y="48" name="quadro1" visible="false">
+							<text x="0" 	y="0" 	height="21" 	fgcolor="#228B22" 	width="500" name="nm_Razao_Social_Concessionaria"/>
+							<text x="0" 	y="24" 	height="21"  	fgcolor="#228B22" 	width="110" name="nr_Cnpj_Cliente"/>
+							<text x="102" 	y="24" 	height="21"  	fgcolor="#228B22" 	text="-"/>
+							<text x="110" 	y="24" 	height="21" 	fgcolor="#228B22" 	width="500" name="nm_Razao_Social_Cliente"/>
+							<text x="0" 	y="48" 	height="21"  	fgcolor="#228B22" 	width="100" name="nr_Nota_Fiscal"/>
+							<text x="146" 	y="48" 	height="21"  	text="Valor do serviço:" name="lbl_vl_Servico"/>
+							<text x="250" 	y="48" 	height="21"  	fgcolor="#228B22" 	width="100" name="vl_Servico"/>
+							<text x="350" 	y="48" 	height="21"  	text="Data:"/>
+							<text x="390" 	y="48" 	height="21"  	fgcolor="#228B22" 	width="100" name="dt_Registro"/>
+							<text x="0" 	y="72" 	height="21"  	fgcolor="#228B22" 	width="500" name="nm_Fabricante_Pneu"/>
+
+							<text x="297" 	y="72" 	height="21"  	text="Data validade:"/>
+							<text x="390" 	y="72" 	height="21"  	fgcolor="#228B22" 	width="100" name="dt_Validade_Garantia"/>
+
+							<text x="0" 	y="96" 	height="21"  	fgcolor="#228B22" 	width="300" name="nm_Modelo_Pneu"/>
+							<text x="0" 	y="120" 	height="21"  	fgcolor="#228B22" 	width="300" name="nr_Fogo"/>
+							<text x="0" 	y="144" height="21"  	fgcolor="#228B22" 	width="100" name="nr_Dot"/>
+							<text x="150" 	y="144" height="21"  	text="Índice de carga:"/>
+							
+							<text x="250" 	y="144" height="21"  	fgcolor="#228B22" 	width="100" name="nr_Indice_Carga"/>
+							<text x="0" 	y="168" height="21"  	fgcolor="#228B22" 	width="300" name="dm_Tipo_Pneu"/>
+							<text x="0" 	y="192" height="21"  	fgcolor="#228B22" 	width="100" name="nr_Vida"/>
+							<text x="0" 	y="216" height="21"  	fgcolor="#228B22"  	width="500" name="nm_Banda"/>
+							
+							<text x="0" 	y="240" height="40"  	fgcolor="#fe0000" 	fontsize="18" fontstyle="bold" text="Garantia expirada por tempo!" name="aviso_Garantia" visible="false"/>
+							
+						</view>
+					</cpoEditsXY>
+				</view>
+			</view>			
+			<view x="5" name="pan2" width="${parent.width}" height="${parent.height}" >
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="160" layout="axis:nome">
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="160" visible="${parent.parent.edts.quadro1.visible}">
+						</view>	
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<text height="21" x="0" y="5" text="Preencha o questionário abaixo:"/>
+						<separador x="1" y="30" widthLine="750" />
+						<view x="1" y="28" name="quadro1" visible="true" >
+							<text x="0" y="40"  text="Motivos de exclusão:" />
+							<checkbox x="0" y="64"  height="16" enabled="false" name="dm_Dano_Acidente" text="Existem sinais de presença de danos acidentais." onclick="parent.valida_garantia();"/>
+							<checkbox x="0" y="80"  height="16" enabled="false" name="dm_Excesso_Carga" text="Existem sinais de emprego de excesso de carga." onclick="parent.valida_garantia();" />
+							<checkbox x="0" y="96"	height="16" enabled="false" name="dm_Baixa_Alta_Pressao" text="Existem sinais de emprego com baixa ou alta pressão." onclick="parent.valida_garantia();" />
+							<checkbox x="0" y="112" height="16" enabled="false" name="dm_Fora_Aplicacao_Recomendada" text="Existem sinais de uso fora da aplicação recomendada." onclick="parent.valida_garantia();" />
+							<checkbox x="0" y="128" height="16" enabled="false" name="dm_Montagem_Desmontagem_Inadequada" text="Existem danos oriundos de montagem ou desmontagem inadequadas." onclick="parent.valida_garantia();" />
+							<checkbox x="0" y="144" height="16" enabled="false" name="dm_Mau_Estado" text="Existem sinais de uso de câmaras de ar, protetores, rodas ou aros em mau estado." onclick="parent.valida_garantia();" />
+							<checkbox x="0" y="160" height="16" enabled="false" name="dm_Tubless_Com_Camara" text="O pneu é tipo 'tubeless' e veio com câmara de ar." onclick="parent.valida_garantia();" />
+							<checkbox x="0" y="176" height="16" enabled="false" name="dm_Substancia_Quimica" text="Existem sinais de danos por substâncias quimicas." onclick="parent.valida_garantia();" />
+							
+							<text x="0" y="200"	height="40" fgcolor="#fe0000" fontsize="18" fontstyle="bold" text="Garantia não aplicável por dano não coberto" name="aviso_Garantia" visible="false"/>
+							
+							<text x="0" y="236"  text="Indenização:" />
+							<checkbox x="0" y="260" height="16" enabled="false" name="dm_Perda_Total" text="por Tempo" onclick="parent.limpa_MM()"/>	
+							<checkbox x="0" y="276" height="16" enabled="false" name="dm_Por_Uso" text="por Uso - profundidade em MM:" onclick="parent.clickDm_Por_Uso()"/>
+							<edittext x="210" y="276" height="21" visible="false"  name="nr_MM" width="50"  maxlength="4"  
+								oninit="parent.parent.pattern(this,'dec')" onblur="parent.parent.format(this,'dec',1);" onfocus="parent.parent.deformat(this,'dec');" />
+
+							<method name="limpa_MM">
+								if (dm_Perda_Total.value==true) {
+									nr_MM.clearText();
+									nr_MM.setAttribute('enabled',false);
+									dm_Por_Uso.setAttribute('enabled',false);
+								} else {
+									nr_MM.setAttribute('enabled',true);
+									dm_Por_Uso.setAttribute('enabled',true);
+								}
+								var teste = false;
+								
+								if (dm_Dano_Acidente.value==true) teste=true;
+								if (dm_Excesso_Carga.value==true) teste=true;
+								if (dm_Baixa_Alta_Pressao.value==true) teste=true;
+								if (dm_Fora_Aplicacao_Recomendada.value==true) teste=true;
+								if (dm_Montagem_Desmontagem_Inadequada.value==true) teste=true;
+								if (dm_Mau_Estado.value==true) teste=true;
+								if (dm_Tubless_Com_Camara.value==true) teste=true;
+								if (dm_Substancia_Quimica.value==true) teste=true;
+								aviso_Garantia.setAttribute('visible',teste);
+							</method>
+
+							<method name="clickDm_Por_Uso">
+								if (dm_Por_Uso.value==true) {
+									dm_Perda_Total.setAttribute('enabled',false);
+								} else {
+									dm_Perda_Total.setAttribute('enabled',true);
+								}
+								var teste = false;
+								
+								if (dm_Dano_Acidente.value==true) teste=true;
+								if (dm_Excesso_Carga.value==true) teste=true;
+								if (dm_Baixa_Alta_Pressao.value==true) teste=true;
+								if (dm_Fora_Aplicacao_Recomendada.value==true) teste=true;
+								if (dm_Montagem_Desmontagem_Inadequada.value==true) teste=true;
+								if (dm_Mau_Estado.value==true) teste=true;
+								if (dm_Tubless_Com_Camara.value==true) teste=true;
+								if (dm_Substancia_Quimica.value==true) teste=true;
+								aviso_Garantia.setAttribute('visible',teste);
+							</method>
+								
+							<method name="valida_garantia">
+								var teste = false;
+								if (dm_Dano_Acidente.value==true) teste=true;
+								if (dm_Excesso_Carga.value==true) teste=true;
+								if (dm_Baixa_Alta_Pressao.value==true) teste=true;
+								if (dm_Fora_Aplicacao_Recomendada.value==true) teste=true;
+								if (dm_Montagem_Desmontagem_Inadequada.value==true) teste=true;
+								if (dm_Mau_Estado.value==true) teste=true;
+								if (dm_Tubless_Com_Camara.value==true) teste=true;
+								if (dm_Substancia_Quimica.value==true) teste=true;
+								
+								aviso_Garantia.setAttribute('visible',teste);
+								parent.parent.parent.parent.parent.botoes.vai.setAttribute('enabled',!teste);
+								parent.parent.parent.parent.parent.botoes.con.setAttribute('enabled',teste);
+								
+								dm_Perda_Total.setAttribute('value',false);
+								dm_Por_Uso.setAttribute('value',false);
+
+								dm_Perda_Total.setAttribute('enabled',!teste);
+								dm_Por_Uso.setAttribute('enabled',!teste);
+								
+								nr_MM.setAttribute('enabled',!teste);
+								
+								if (teste) nr_MM.clearText();
+									
+							</method>
+						</view>
+					</cpoEditsXY>
+				</view>
+			</view>			
+			<view x="5" name="pan3" width="${parent.width}" height="${parent.height}" visible="true">
+				<view name="cpos" width="${parent.width}" layout="axis:x; spacing:5">
+					<view name="lbls" width="200" layout="axis:nome">
+						<separador x="15" y="30" widthLine="272" />
+						<view x="1" y="48" name="quadro0" width="200" visible="${parent.parent.edts.quadro1.visible}">
+						</view>	
+					</view>
+					<cpoEditsXY name="edts" layout="axis:none">
+						<text height="21" x="0" y="5" text="Dados da indenização:"/>
+						<separador x="1" y="30" widthLine="750" />
+						<view x="1" y="48" name="quadro1" visible="false">
+							<view name="naGarantia">
+								<text x="2" 	y="56" 		text="Percentual de indenização para a Carcaça:" />
+								<text x="255" 	y="56" 		fgcolor="#228B22" name="nr_Perc_Carcaca" />
+								<text x="0" 	y="80" 		text="Percentual de indenização para a Reforma:" />
+								<text x="255" 	y="80" 		fgcolor="#228B22" name="nr_Perc_Reforma" />
+								<text x="62" 	y="104" 	text="Percentual Total da indenização:" />
+								<text x="255" 	y="104" 	fgcolor="#228B22" name="nr_Perc_Perda_Total" />
+								<text x="124" 	y="128" 	text="Valor da indenização:" />
+								<text x="255" 	y="128" 	fgcolor="#228B22" name="vl_Indenizacao" />
+							</view>							
+							<view name="semGarantia" visible="false">
+								<text x="0" y="80" text="Percentual de desgaste:" />
+								<text x="145" y="80" fgcolor="#228B22" name="nr_Perc_Desgaste" />
+								<text x="0"   y="100" height="40"  fgcolor="#fe0000" fontsize="18" fontstyle="bold" text="Garantia expirada por desgaste excessivo." name="aviso_Garantia" visible="false"/>
+							</view>							
+						</view>
+						<view x="1" y="48" name="quadro2" visible="false">
+							<view name="naGarantia">
+								<text x="0" 	y="80" 		text="Dias passados desde a recapagem:" />
+								<text x="210" 	y="80" 		fgcolor="#228B22" name="nr_Dias_Perda_Total" />
+								<text x="50" 	y="104" 	text="Percentual da indenização:" />
+								<text x="210" 	y="104" 	fgcolor="#228B22" name="nr_Perc_Perda_Total" />
+								<text x="80" 	y="128" 	text="Valor da indenização:" />
+								<text x="210" 	y="128" 	fgcolor="#228B22" name="vl_Indenizacao" />
+							</view>							
+							<view name="semGarantia" visible="false">
+								<text x="0" y="80" text="Dias passados desde a recapagem:" />
+								<text x="210" y="80" name="nr_Dias_Perda_Total" />
+								<text x="0"   y="100" height="40"  fgcolor="#fe0000" fontsize="18" fontstyle="bold" text="Garantia expirada por tempo." name="aviso_Garantia" visible="false"/>
+							</view>							
+						</view>
+					</cpoEditsXY>
+				</view>
+				<view x="1" y="300" name="quadro3" visible="true">
+					<text x="0"  y="1" height="40"  fgcolor="#fe0000" fontsize="14" fontstyle="bold" width="1000" text="Garantia expirada por tempo." name="aviso_Bloqueio" visible="false"/>
+				</view>						
+			</view>			
+		</view>
+		<view name="botoes" x="10" width="${parent.width}" height="50" visible="true" layout="axis:x; spacing:3">
+			<button name="vem" enabled="false" text="Retornar"> 
+	     		<handler name="onclick" >
+	     			<![CDATA[ 
+	     			parent.parent.ajustaTela("+");
+	     			]]>
+	      		</handler>
+			</button>
+			<button name="vai" enabled="false" text="Avançar">
+	     		<handler name="onclick" >
+	     			<![CDATA[ 
+	     			if (!parent.parent.valida()) { 
+	     				parent.parent.ajustaTela("-");
+	     			}	
+					]]>
+	      		</handler>
+			</button>
+			<button name="con" enabled="false" text="Concluir">
+	     		<handler name="onclick" >
+	     			<![CDATA[
+	 				//parent.parent.calcInd("I");
+	 				canvas.wGtt102l.open();
+	     			]]>
+	      		</handler>
+			</button>
+			<button name="fec" text="Fechar">
+	     		<handler name="onclick" >
+	     			<![CDATA[
+	 					parent.parent.parent.close();
+	     			]]>
+	      		</handler>
+			</button>
+		</view>
+		<method name="valida">
+ 			<![CDATA[ 
+ 			var jErro = janelaErro;
+ 			var erro=false;
+ 			// Critica o painel 1
+ 			if (controlPan==1) {
+ 				var p1 = tela.pan1.cpos.edts;
+ 				if ( p1.requerido(p1.nr_Certificado.getText()) )  {
+ 					jErro.mostra("Informe o número do certificado de garantia!");
+ 					erro=true;
+ 				} else	
+ 				if ( p1.util.comparaInteiro(p1.nr_Certificado.getText(),"=","0") )  {
+ 					jErro.mostra("Informe o número do certificado de garantia!");
+ 					erro=true;
+ 				}	
+ 			}
+ 			// Critica o painel 2
+ 			if (controlPan==2) {
+ 				var p2 = tela.pan2.cpos.edts;
+ 				if (p2.quadro1.dm_Perda_Total.value==false) {
+	 				if ( p2.requerido(p2.quadro1.nr_MM.getText()) ) {
+	 					jErro.mostra("Informe a profundidade!");
+	 					erro=true;
+	 				} else	
+	 				if ( p2.util.comparaFracionario(p2.quadro1.nr_MM.getText(),"=","0,0") )  {
+	 					jErro.mostra("Informe a profundidade!");
+	 					erro=true;
+	 				} else 
+	 				if ( p2.util.comparaFracionario(p2.quadro1.nr_MM.getText(),">",nr_MM) )  {
+	 					jErro.mostra("Profundidade informada > que original da banda!");
+	 					erro=true;
+	 				}  
+	 				
+	 			}
+ 			}
+ 			// Critica o painel 3
+ 			if (controlPan==3) {
+ 			}
+ 			return erro;
+			]]>
+			
+		</method>	
+		<method name="ajustaTela" args="dir">
+			<![CDATA[ 
+				var x=tela;	
+				if (dir=="-") x.animaMenos.doStart();
+				if (dir=="+") x.animaMais.doStart();
+				var tst1=x.x;
+
+				if (dir=="-") ++controlPan;
+				if (dir=="+") --controlPan;
+				
+				if (controlPan > 1)
+					botoes.vai.setAttribute("enabled",true);
+				if (controlPan == 4) {
+					botoes.vai.setAttribute("enabled",false);
+					botoes.con.setAttribute("enabled",true);
+				} else {
+					botoes.con.setAttribute("enabled",false);
+				}
+				if (controlPan < 4)
+					botoes.vem.setAttribute("enabled",true);
+				if (controlPan == 1) 
+					botoes.vem.setAttribute("enabled",false);
+
+				if (controlPan==1) {
+					tela.pan1.cpos.edts.nr_Certificado.setAttribute('visible',true);
+					limpaTela();
+				}
+				if (controlPan==2) {
+					liberaPan2(true);
+				}	
+				if (controlPan==3) {
+					calcInd('CI');
+					botoes.vai.setAttribute("enabled",false);
+					botoes.con.setAttribute("enabled",true);
+					if (tela.pan2.cpos.edts.quadro1.dm_Perda_Total.value==true) {
+						tela.pan3.cpos.edts.quadro1.setAttribute('visible',false);''
+						tela.pan3.cpos.edts.quadro2.setAttribute('visible',true);
+					} else {
+						tela.pan3.cpos.edts.quadro1.setAttribute('visible',true);
+						tela.pan3.cpos.edts.quadro2.setAttribute('visible',false);
+					}
+				}
+			]]>
+		</method>
+		<method name="limpaTela">
+			liberaPan2(false);
+			tela.pan1.cpos.edts.quadro1.setAttribute('visible',false);
+			var x=tela.pan2.cpos.edts.quadro1;
+			x.aviso_Garantia.setAttribute('visible',false);
+			x.dm_Baixa_Alta_Pressao.setAttribute('value',false);
+			x.dm_Dano_Acidente.setAttribute('value',false);
+			x.dm_Excesso_Carga.setAttribute('value',false);
+			x.dm_Fora_Aplicacao_Recomendada.setAttribute('value',false);
+			x.dm_Mau_Estado.setAttribute('value',false);
+			x.dm_Montagem_Desmontagem_Inadequada.setAttribute('value',false);
+			x.dm_Substancia_Quimica.setAttribute('value',false);
+			x.dm_Tubless_Com_Camara.setAttribute('value',false);
+			x.dm_Perda_Total.setAttribute('value',false);
+			x.dm_Por_Uso.setAttribute('value',false);
+			x.nr_MM.clearText();
+			botoes.vai.setAttribute('enabled',false);
+			botoes.con.setAttribute('enabled',false);
+		</method>
+  		<method name="buscaCertificado" args="nr">
+  			if (nr=="" || nr=="0") {
+  				janelaAviso.mostra("Informe o numero do certificado!");
+  				tela.pan1.cpos.edts.quadro1.setAttribute('visible',false);
+  			} else {
+  				carregando.startAni();
+  				tela.cadRecape.setSrc("../../ControlerServlet?tela=gtt102&amp;acao=CC&amp;ed=Recapagem_GarantidaED&amp;rn=Recapagem_GarantidaRN&amp;nr_Certificado=" + nr);
+  				tela.cadRecape.doRequest();
+  			}
+		</method>
+  		<method name="calcInd" args="acao">
+			carregando.startAni();
+			var x = tela.pan2.cpos.edts.quadro1;
+			var source= "../../ControlerServlet?"+
+				"tela=gtt102&amp;" +
+				"acao="+acao+"&amp;" +
+				"ed=IndenizacaoED&amp;" +
+				"rn=IndenizacaoRN&amp;" +
+				"oid_Recapagem_Garantida=" + oid_RG + "&amp;" +
+				"nr_MM="+x.nr_MM.getText()+ "&amp;" +
+				"dm_Perda_Total="+x.dm_Perda_Total.value + "&amp;" ;
+			if (acao=="I") {
+				source+="dm_Dano_Acidente="+x.dm_Dano_Acidente.value+ "&amp;" ;
+				source+="dm_Excesso_Carga="+x.dm_Excesso_Carga.value+ "&amp;" ;
+				source+="dm_Baixa_Alta_Pressao="+x.dm_Baixa_Alta_Pressao.value+ "&amp;" ;
+				source+="dm_Fora_Aplicacao_Recomendada="+x.dm_Fora_Aplicacao_Recomendada.value+ "&amp;" ;
+				source+="dm_Montagem_Desmontagem_Inadequada="+x.dm_Montagem_Desmontagem_Inadequada.value+ "&amp;" ;
+				source+="dm_Mau_Estado="+x.dm_Mau_Estado.value+ "&amp;" ;
+				source+="dm_Tubless_Com_Camara="+x.dm_Tubless_Com_Camara.value+ "&amp;" ;
+				source+="dm_Substancia_Quimica="+x.dm_Substancia_Quimica.value+ "&amp;" ;
+				source+="tx_Laudo="+parent.parent.wGtt102l.datGtt1021.tx_Laudo.getText()+ "&amp;" ;
+			}
+			tela.cadCalcula.setSrc(source);
+			tela.cadCalcula.doRequest();
+		</method>
+		<method name="liberaPan2" args="vf" >
+			var x=tela.pan2.cpos.edts.quadro1;
+			x.dm_Dano_Acidente.setAttribute('enabled',vf);
+			x.dm_Excesso_Carga.setAttribute('enabled',vf);
+			x.dm_Baixa_Alta_Pressao.setAttribute('enabled',vf);
+			x.dm_Fora_Aplicacao_Recomendada.setAttribute('enabled',vf);
+			x.dm_Montagem_Desmontagem_Inadequada.setAttribute('enabled',vf);
+			x.dm_Mau_Estado.setAttribute('enabled',vf);
+			x.dm_Tubless_Com_Camara.setAttribute('enabled',vf);
+			x.dm_Substancia_Quimica.setAttribute('enabled',vf);
+			x.dm_Perda_Total.setAttribute('enabled',vf);
+			x.dm_Por_Uso.setAttribute('enabled',vf);
+			x.nr_MM.setAttribute('visible',vf);
+			if (x.dm_Perda_Total.value) {
+				x.nr_MM.setAttribute('enabled',false);
+				x.dm_Por_Uso.setAttribute('enabled',false);
+			} else {
+				x.nr_MM.setAttribute('enabled',vf);
+				x.dm_Por_Uso.setAttribute('enabled',vf);
+				if (x.dm_Por_Uso.value) {
+					x.dm_Perda_Total.setAttribute('enabled',false);
+				}
+			}	
+			tela.pan1.cpos.edts.nr_Certificado.setAttribute('visible',!vf);
+			tela.pan1.cpos.edts.btnBusca.setAttribute('visible',!vf);
+			if (vf) LzFocus.setFocus(x.dm_Dano_Acidente);
+		</method>
+		<method name="impCessao" args="msg">
+			var x=tela.pan3.quadro3;
+			if (msg!="null") { 
+				x.aviso_Bloqueio.setAttribute('text',msg);
+				x.aviso_Bloqueio.setAttribute('visible',true);
+				x.setAttribute('visible',true);
+			} else {
+				x.aviso_Bloqueio.setAttribute('visible',false);
+				x.setAttribute('visible',false);
+			}
+			janelaAviso.mostra('Concluído com sucesso! Aguarde geração da cessão de propriedade !');
+			var chamada = "../include/relatorio.jsp?" ;
+			chamada += "tela=gtt102";
+			chamada += "&amp;"+"ed=IndenizacaoED";
+			chamada += "&amp;"+"rn=IndenizacaoRN"; 
+			chamada += "&amp;"+"rel=1"; 
+			chamada += "&amp;"+"oid_Indenizacao="+oid_IN;
+			LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+			carregando.stopAni();
+			botoes.con.setAttribute('enabled',false);
+			botoes.vai.setAttribute('enabled',false);
+			botoes.vem.setAttribute('enabled',false);
+		</method>
+		<method name="impRejeicao" args="msg">
+			var x=tela.pan3.quadro3;
+			janelaAviso.mostra('Concluído com sucesso! Aguarde geração do relatório !');
+			var chamada = "../include/relatorio.jsp?" ;
+			chamada += "tela=gtt102";
+			chamada += "&amp;"+"ed=IndenizacaoED";
+			chamada += "&amp;"+"rn=IndenizacaoRN"; 
+			chamada += "&amp;"+"rel=2"; 
+			chamada += "&amp;"+"oid_Indenizacao="+oid_IN;
+			LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+			carregando.stopAni();
+			botoes.con.setAttribute('enabled',false);
+			botoes.vai.setAttribute('enabled',false);
+			botoes.vem.setAttribute('enabled',false);
+		</method>
+	    <!-- Reloginho -->
+  		<loadingAni name="carregando" />
+		<!-- Janela de aviso -->
+		<alert name="janelaAviso" title="A v i s o !" width = "400" >
+			Aviso Padrão!
+			<method name="mostra" args="msg">
+				this.setAttribute('text', msg); 
+				this.open();
+			</method>
+ 		</alert>      
+		<!-- Janela de alerta de erro de validação -->
+		<alert name="janelaErro" title="E r r o !" width = "300" >
+			Erro Padrão!
+			<method name="mostra" args="erro">
+				this.setAttribute('text', erro); 
+	   			this.open();
+			</method>
+		</alert>
+	  </view>
+
+	</window>
+	<modaldialog title="gtt102 - Observações" name="wGtt102l" bgcolor="#FAFAFA" width="400" height="185"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="false"  >
+		<simplelayout/>
+		<cpoEdits name="datGtt1021" width="400" height="100">
+			<simplelayout/>
+			<text height="24" text="Obervações:"/>
+			<edittext name="tx_Laudo" multiline="true" width ="355" height ="70"  oninit="parent.pattern(this,'txt')" onblur="parent.format(this,'txt');"  />
+			
+		</cpoEdits>
+		<view name="btnGtt1021" width="400"  height="50" layout="axis:x; spacing:3" >
+			<button name="con" text="Concluir">
+	     		<handler name="onclick" >
+	     			<![CDATA[
+	 				parent.parent.parent.wGtt102.fake.calcInd("I");
+	 				parent.parent.close();
+	     			]]>
+	      		</handler>
+			</button>
+			<button name="fec" text="Fechar">
+	     		<handler name="onclick" >
+	     			<![CDATA[
+	 					parent.parent.close();
+	     			]]>
+	      		</handler>
+			</button>
+
+					
+		</view>
+	</modaldialog>		
+</canvas>
+            

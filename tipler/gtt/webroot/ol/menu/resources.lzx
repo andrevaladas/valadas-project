@@ -1,0 +1,66 @@
+<library>
+  <!-- resources used by explore-nav.lzx -->
+  <!-- Fonts -->
+  <font name="itemfont">
+      <face src="helmetb.ttf" />
+  </font>
+  <font name="smallfont">
+    <face src="verity/verity9.ttf" />
+  </font>
+
+  <resource name="icon">
+    <frame src="../images/arrow_close.png" />
+    <frame src="../images/arrow_open.png" />
+    <frame src="../images/arrow_open.png" />
+    <frame src="../images/arrow_open.png" />
+  </resource>
+  
+  <resource name="sect_arrow">
+    <frame src="../images/arrow_close.png" />
+    <frame src="../images/arrow_open.png" />  
+  </resource>
+  
+  <resource name="topic_arrow">
+    <frame src="../images/arrow_close.png" />
+    <frame src="../images/arrow_open.png" />
+  </resource>
+   
+  <resource name="section_btn">
+    <frame src="../images/nav1_btn_up.png" />
+    <frame src="../images/nav1_btn_mo.png" />
+    <frame src="../images/nav1_btn_dn.png" />
+    <frame src="../images/nav1_btn_slct.png" />
+  </resource>
+  
+  <resource name="topic_btn">
+    <frame src="../images/nav2_btn_up.png" />
+    <frame src="../images/nav2_btn_mo.png" />
+    <frame src="../images/nav2_btn_dn.png" />
+    <frame src="../images/nav2_btn_slct.png" />
+  </resource>
+  
+  <resource name="item_btn">
+    <frame src="../images/nav3_btn_up.png" />
+    <frame src="../images/nav3_btn_mo.png" />
+    <frame src="../images/nav3_btn_dn.png" />
+    <frame src="../images/nav3_btn_slct.png" />
+  </resource>
+  
+  <resource name="subitem_btn">
+    <frame src="../images/nav4_btn_up.png" />
+    <frame src="../images/nav4_btn_mo.png" />
+    <frame src="../images/nav4_btn_dn.png" />
+    <frame src="../images/nav4_btn_slct.png" />
+  </resource>
+  
+  <resource name="navbg" src="../images/nav_bg.png"/>
+  
+  <resource name="logobtn" >
+     <!--<frame src="../images/small_spmti.png" />-->
+     <frame src="../images/logoSgtt.png" />
+   </resource>
+</library>
+<!-- * X_LZ_COPYRIGHT_BEGIN ***************************************************
+* Copyright 2001-2004 Laszlo Systems, Inc.  All Rights Reserved.              *
+* Use is subject to license terms.                                            *
+* X_LZ_COPYRIGHT_END ****************************************************** -->

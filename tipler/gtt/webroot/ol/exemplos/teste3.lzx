@@ -1,0 +1,49 @@
+<canvas debug="true">
+    <!-- Data -->
+    <dataset name="first">
+        <ducks>
+            <character name="Donald" type="duck" />
+            <character name="Daisy" type="duck" />
+            <character name="Scrooge" type="duck" />
+        </ducks>
+    </dataset>
+
+    <dataset name="second">
+        <various_characters>
+            <character name="Mickey" type="mouse" />
+            <character name="Pluto" type="dog" />
+            <character name="Hewey" type="duck" />
+            <character name="Minnie" type="mouse" />
+        </various_characters>
+    </dataset>
+
+    <!-- Views -->
+    <simplelayout axis="y" spacing="2" />
+    <view name="characters" datapath="first:/ducks"
+          x="10" y="10">
+        <simplelayout axis="y" spacing="2" />
+        <view name="row" datapath="character" bgcolor="0xeaeaea">
+            <simplelayout axis="x" spacing="2" />
+            <text datapath="@name" />
+            <text datapath="@type" />
+        </view>
+    </view>
+
+    <button>Copy node over
+        <method event="onclick">
+        <![CDATA[
+            var dsTwo = canvas.datasets.second;
+            var dpInSecond = dsTwo.getPointer();
+            dpInSecond.setXPath( 'various_characters/' );
+            var lzNext=dpInSecond.selectChild(1);
+          	while (lzNext) {
+          		var dsOne = canvas.datasets.first;
+          		var dpInFirst = dsOne.getPointer();
+          		dpInFirst.setXPath( 'ducks' );
+	            dpInFirst.addNodeFromPointer( dpInSecond );
+	            lzNext=dpInSecond.selectNext();
+	        }
+        ]]>
+        </method>
+    </button>
+</canvas>	

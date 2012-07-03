@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<canvas bgcolor="#EAEAEA" debug="false" >
+    <!-- Desabilita o menu de contexto -->    
+    <script><![CDATA[ var cntxtmenu = new LzContextMenu(); ]]> </script>
+    <handler name="oninit" > canvas.setDefaultContextMenu(cntxtmenu); </handler>
+   	<include href="tif003L.lzx" />
+   	<!-- Splash -->
+   	<splash persistent="false">
+      	<view center="true" resource="../include/explore_loading.swf" />
+   	</splash>
+   	<window title="tif003" bgcolor="#FAFAFA" height="340" width="565"  x="${(canvas.width-this.width)/2}" y="${(canvas.height-this.height)/2}" closeable="true"  >
+      	<tif003 name="tif003" />
+   	</window>
+</canvas>
+

@@ -1,0 +1,391 @@
+<!--
+********************************************************
+* [[dragdropgrid]]
+* 2006/03/20 beta0.1
+* togawa manabu
+* web:http://laszlo.jp
+* mail:webmaster@laszlo.jp 
+********************************************************
+-->
+<library>
+        <include href="dragdropgridrow.lzx" />
+
+        <class name="dragdropgrid" extends="grid" _rowclass="dragdropgridrow">
+                <attribute name="dragitem" />
+                <attribute name="showicon" type="boolean" value="true" />
+                <attribute name="copymode" type="boolean" value="false" />
+                <attribute name="allowSameGridCopy" type="boolean" value="true" />
+                <attribute name="allowDragSort" type="boolean" value="true" />
+                <attribute name="allowDrop" type="boolean" value="true" />
+                <attribute name="dragable" type="boolean" value="true" />
+                <attribute name="dblclicktargetGrid" />
+
+                <method event="oninit">
+                        createDragItem();
+                        //LzTrack.register(this, "dragdropgrid");
+                </method>
+
+                <method name="createDragItem">
+                        <![CDATA[
+                        if(typeof canvas['dragdropdgrid_dragitem'] == "undefined"){
+                                var item = new LzView(canvas, {name:"dragdropdgrid_dragitem", visible:false, opacity:0.9});
+
+                                var ai = new LzView(item, {name: "addicon", visible:false});
+                                var ei = new LzView(item, {name: "exclamationicon", visible:false});
+
+                                ei.setSource("../images/exclamation.png");
+                                ai.setSource("../images/add.png");
+                                ei.setVisible(false);
+                                ai.setVisible(false);
+
+                                item.isOut = false;
+                                item.isCopy = this.copymode;
+                                item.isDragging = false;
+                                item.refnode = null;
+                                item.targetGrid = null;
+                                item.startGrid = null;
+                                item.textx = 15;
+                                item.rowy = 0;
+
+								item.moveDel = new LzDelegate( item, '_updatePos' );
+								item._updatePos = function() {
+									//var mx = immediateparent.getMouse('x');
+                                    //var my = immediateparent.getMouse('y');
+									var mx = canvas.getMouse('x');
+                                    var my = canvas.getMouse('y');
+                                    //this.setX(mx + this.startX - 35);
+                                    //this.setY(my + this.startY - 22);
+                                    this.setX(mx - 35);
+                                    this.setY(my - 12);
+                                    this.bringToFront();
+								}
+
+								item.drag = function(on) {
+									this.isDragging = on;
+									if ( on ) {
+										this.moveDel.register( LzIdle, "onidle" );
+									} else {
+										this.moveDel.unregisterAll();
+									}
+								}
+					
+                                item.startDragging = function(rowx, rowy) {
+                                        this.startX = rowx;
+                                        this.startY = rowy;
+                                        //Debug.write("Set start coords: " + rowx + ", " + rowy);
+                                        this.setVisible(true);
+                                        this.drag(true);
+                                }
+                                
+                                item.finishDragging = function(){
+										//Debug.write("finish drragging");
+										this.drag(false);
+										this.hideme();
+								}
+
+                                item.stopDragging = function(){
+                                		//Debug.write("stop dragging");
+                                        this.drag(false);
+                                        //Debug.write("start position: " + this.startX + ", " + this.startY);
+                                        var anm = this.animate('x', this.startX, 200);
+                                        this.animate('y', this.startY, 200);
+                                        if ( typeof this._onstopdel == "undefined" )
+                                                this._onstopdel = new LzDelegate( this, 'hideme' );
+                                        this._onstopdel.register( anm, 'onstop' );
+                                }
+                                
+                                item.hideme = function(){
+                                      	this.destroyTexts();
+                                        this.setVisible(false);
+                                }
+
+                                item.dragout = function(){
+                                        this.isOut = true;
+                                        if(showicon) this.exclamationicon.setVisible(true);
+                                }
+
+                                item.dragin = function(){
+                                        this.isOut = false;
+                                        if(showicon) this.exclamationicon.setVisible(false);
+                                }
+                                item.dragcopy = function(){
+                                        this.isCopy = true;
+                                        if(showicon) this.addicon.setVisible(true);
+                                }
+
+                                item.dragmove = function(){
+                                        this.isCopy = false;
+                                        if(showicon) this.addicon.setVisible(false);
+                                }
+                                
+                                item.addText = function(t, w){
+                                		//Debug.write("AddText: " + this.textx + ", " + this.rowy + ", " + w + ", " + t);
+                                        new LzText(this, {x:this.textx, y:this.rowy, width:w, text:t});
+                                        this.textx += w;
+                                }
+                                
+                                item.addRow = function(rowview) {
+                                        for(var i=0; i < rowview.subviews.length; i++){
+                                        		//Debug.write("Testing Subview: " + rowview.subviews[i]);
+                                                for(var j=0; j < rowview.subviews[i].subviews.length; j++){
+                                                        if(rowview.subviews[i].subviews[j] instanceof LzText){
+                                                                var v = rowview.subviews[i].subviews[j];
+                                                                this.addText(v.text, v.width);
+                                                        }
+                                                }
+                                        }
+                                        this.rowy += rowview.subviews[0].height;
+                                        this.textx = 15;
+                                }
+                                
+                                item.destroyTexts = function(){
+                                		//Debug.write("DestroyTexts " + this);
+                                        //reset coordinates
+                                        this.rowy = 0;
+                                        for(var i=0;i<this.subviews.length;i++){
+                                        		//Debug.write("Destroying: " + i + ", " + this.subviews[i]);
+                                                if(this.subviews[i] instanceof LzText){
+                                                        this.subviews[i].setVisible(false);
+                                                        this.subviews[i].destroy();
+                                                        //decrement i because destroy removes from subviews
+                                                        i--;
+                                                }
+                                        }
+                                }
+                        }
+
+                        dragitem = canvas['dragdropdgrid_dragitem'];
+                        ]]>
+                </method>
+
+                <method name="dorowmousedown" args="sender, dp">
+                        <![CDATA[
+                        if(!this.dragable) return;
+
+                        LzTrack.activate('dragdropgrid');
+                        
+                        var n = getSelectionView();
+                        for(var i=0; i < n.length; i++){
+                                dragitem.addRow(n[i]);
+                        }
+
+                        dragitem.setAttribute("bgcolor", sender.getAttribute("bgcolor"));
+                        dragitem.setAttribute("width", sender.getAttribute("width"));
+                        dragitem.startGrid = sender.ownerGrid;
+                        dragitem.startDragging(sender.getAttributeRelative('x',canvas), sender.getAttributeRelative('y',canvas) );
+                        dragitem.draggingnodes = getSelection();
+                        ]]>
+                </method>
+
+                <method name="getSelectionView">
+                        <![CDATA[
+                        var n = getSelection();
+                        var v = _selector.immediateparent.subviews;
+                        var found = new Array();
+                        
+                        if(!n instanceof Array)
+                                n = new Array(n);
+                        
+                        /*
+                        * The selection is now the outer loop
+                        * This forces the dragged view to reflect
+                        * the same order as the actual selection
+                        */
+                        var selectedrows = n.length;
+                        for(var j=0;j<n.length;j++) {
+                        	for(var i=0;i<v.length;i++) {
+                        		if(n[j].comparePointer(v[i].datapath)) {
+                        			found.push(v[i]);
+                        			if (found.length == selectedrows) break;
+                        		}
+                        	}
+                        }
+                        
+                        return(found);
+                        ]]>
+                </method>
+                
+                <method name="dorowdblclick" args="sender, dp">
+                        if(typeof dblclicktargetGrid != "undefined"){
+                                dblclicktargetGrid.data.appendChild(dp.p.cloneNode(true));
+                                dp.deleteNode();                                
+                        }
+                </method>
+
+                <method name="dorowmouseup">
+                        LzTrack.deactivate('dragdropgrid');
+                        if( dragitem.isDragging)
+                                finishDragging();
+                </method>
+
+                <method name="dorowmouseover" args="dp">
+                        //Debug.write("@@dorowmouseover:: setting refnode = " + dp);
+                        dragitem.refnode = dp;
+                </method>
+
+              	<method name="dorowmouseout" args="dp">
+                        //Debug.write("@@dorowmouseover:: setting refnode = " + dp);
+                        dragitem.refnode = null;
+                </method>
+                
+                <method name="getHighlightedView">
+                        <![CDATA[
+                        var v = _selector.immediateparent.subviews;
+                        for(var i=0;i<v.length;i++){
+                        	if (v[i].getAttribute('highlighted') ) return v[i];
+                        }
+                        return null;
+                        ]]>
+                </method>
+                
+                <method event="onmousetrackover" args="val">
+                        if(!this.allowDrop){
+                                dragitem.dragout();
+                                return;
+                        }
+                        
+                        dragitem.dragin();
+                        if(dragitem.targetGrid != val){
+                                //Debug.write("##onmousetrackover:: Set dragitem.refnode = null");
+                                dragitem.refnode = null;
+                                /*NOTE: There is a timing problem with the grid
+                                *       where mousetrackover for the parent grid
+                                *       is fired *after* the grid row's mousetrackover,
+                                *       which causes the refnode to get nulled out
+                                *       even though it has just been set.
+                                *       Here we re-check for a highlited row as a work-around.
+                                *       Note that basegrid.hilite cannot be trusted here, so
+                                *       getHighlightedView is used instead.
+                                */
+								var highlightedView = val.getHighlightedView();
+								//Debug.write("hilite= " + highlightedView);
+                                if (highlightedView != null ) {
+                                	//Debug.write("Re-trying domouseover");
+                                	dorowmouseover(highlightedView.datapath);
+                                }
+                        }
+                        dragitem.targetGrid = val;
+                </method>
+
+                <method event="onmousetrackout">
+                        dragitem.dragout();
+                </method>
+
+                <method name="finishDragging">
+                        <![CDATA[
+                        if(typeof dragitem.targetGrid != "undefined" && !dragitem.isOut){
+                                if(dragitem.targetGrid == dragitem.startGrid){
+                                        if(dragitem.isCopy && this.allowSameGridCopy)
+                                                copynodes(dragitem.draggingnodes);
+                                        else if(allowDragSort)
+                                                movenodes(dragitem.draggingnodes);
+                                        else
+                                                dragitem.stopDragging();
+                                }else{
+                                        if(dragitem.isCopy)
+                                                copynodes(dragitem.draggingnodes);
+                                        else
+                                                movenodes(dragitem.draggingnodes);
+                                }
+                        }else{
+                            dragitem.stopDragging();
+                        }
+                        dragitem.refnode = null;
+                        ]]>
+                </method>
+                
+                <method name="shouldReverseDraggingNodes">                	                        		/*
+					<![CDATA[
+					* If refnode != null then we're doing an insert.
+					* refnode refers to a view's datapath, which
+					* will change to the newly inserted view with each
+					* iteration, so we need to reverse the order.
+					*
+					* When moving within the same grid, the refnode
+					* will only be altered when dragging upward. So
+					* we treat that as a special case.
+					*/
+                	if (dragitem.refnode != null) {
+                		if (dragitem.targetGrid != dragitem.startGrid) {
+                			//Debug.write("grids are not equal");
+                			return true;
+                		} else {
+                			//Debug.write("y coords: " + dragitem.startY + ", " + dragitem.y + ", " + dragitem.isCopy);
+                			return (dragitem.startY > dragitem.y || dragitem.isCopy);
+                		}
+                	}
+                	return false;
+                	]]>
+                </method>
+                
+                <method name="copynodes" args="n">
+                        <![CDATA[
+                        if(n instanceof Array) {
+							if (shouldReverseDraggingNodes()) {
+								n.reverse();                       			
+							}
+							for(var i=0;i<n.length;i++){
+									copynode(n[i]);
+							}
+                        } else
+                                copynode(n);
+                                
+                        dragitem.finishDragging();
+                        ]]>
+                </method>
+                
+                <method name="movenodes" args="n">
+                        <![CDATA[
+                        if(n instanceof Array){
+							if (shouldReverseDraggingNodes()) {
+								n.reverse();                      			
+							} 
+							for(var i=0;i<n.length;i++){
+									movenode(n[i]);
+							}
+                        } else
+                                movenode(n);
+                                
+                        dragitem.finishDragging();
+                        ]]>
+                </method>
+
+                <method name="copynode" args="n">
+                        if(dragitem.refnode == null) {
+                                dragitem.targetGrid.data.appendChild(n.p.cloneNode(true));
+                        }else {
+                                dragitem.targetGrid.data.insertBefore(n.p.cloneNode(true), dragitem.refnode.p);
+                        }
+                </method>
+
+                <method name="movenode" args="n">
+                		//Debug.write("movenode called for" + n.p + ", refnode = " + dragitem.refnode.p);
+                		//Debug.write("VALADAS DATA BBB: "+dragitem.targetGrid.data);
+                        if(dragitem.refnode == null) {
+                                dragitem.targetGrid.data.appendChild(n.p.cloneNode(true));
+                                n.deleteNode();
+                        } else {
+                                dragitem.targetGrid.data.insertBefore(n.p.cloneNode(true), dragitem.refnode.p);
+                                n.deleteNode();
+                        }
+                        //Debug.write("VALADAS DATA AAA: "+dragitem.targetGrid.data);
+                </method>
+
+                <method event="onkeydown" reference="LzKeys" args="k">
+                        <![CDATA[
+                        if(this.copymode) return;
+
+                        if(k == 17 && dragitem.isDragging)
+                                dragitem.dragcopy();
+                        ]]>
+                </method>
+
+                <method event="onkeyup" reference="LzKeys" args="k">
+                        if(this.copymode) return;
+
+                        if(k == 17)
+                                dragitem.dragmove();
+                </method>
+                
+        </class>
+</library>
