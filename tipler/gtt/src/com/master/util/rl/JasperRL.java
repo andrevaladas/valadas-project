@@ -29,7 +29,7 @@ public class JasperRL implements Serializable {
 	private RelatorioBaseED edRelatorio;
 
 	// *** RelatórioED tras todos o dados necessários para gerar o Relatório
-	public JasperRL(RelatorioBaseED edRelatorio) {
+	public JasperRL(final RelatorioBaseED edRelatorio) {
 		this.edRelatorio = edRelatorio;
 	}
 
@@ -40,45 +40,41 @@ public class JasperRL implements Serializable {
 	public void geraRelatorio() throws Excecoes {
 
 		// *** Validações Finais
-		if (edRelatorio == null)
-			throw new Excecoes("Dados do Relatório é nulo!", this.getClass()
-					.getName(), "geraRelatorio()");
-		if (!JavaUtil.doValida(edRelatorio.getNomeRelatorio()))
+		if (edRelatorio == null) {
+			throw new Excecoes("Dados do Relatório é nulo!", this.getClass().getName(), "geraRelatorio()");
+		}
+		if (!JavaUtil.doValida(edRelatorio.getNomeRelatorio())) {
 			throw new Mensagens("Nome do Relatório não informado!");
-		if (edRelatorio.getLista() == null)
-			throw new Excecoes("Lista de Dados do Relatório não criada!", this
-					.getClass().getName(), "geraRelatorio()");
-		if (edRelatorio.getResponse() == null)
-			throw new Excecoes("Response não Passado!", this.getClass()
-					.getName(), "geraRelatorio()");
+		}
+		if (edRelatorio.getLista() == null) {
+			throw new Excecoes("Lista de Dados do Relatório não criada!", this.getClass().getName(), "geraRelatorio()");
+		}
+		if (edRelatorio.getResponse() == null) {
+			throw new Excecoes("Response não Passado!", this.getClass().getName(), "geraRelatorio()");
+		}
 
 		InterfaceRelatorio relatorio;
 		try {
 			relatorio = Relatorio.getInstance(Relatorio.GERADOR_JASPER);
-		} catch (Exception e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorio()");
+		} catch (final Exception e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorio()");
 		}
 		// *** Nome do relatório
 		relatorio.setNomeArquivo(edRelatorio.getNomeRelatorio());
-		relatorio.setPathReport(Parametro_FixoED.getInstancia()
-				.getPATH_RELATORIOS());
-		relatorio.setPathImagem(Parametro_FixoED.getInstancia()
-				.getPATH_IMAGENS());
+		relatorio.setPathReport(Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
+		relatorio.setPathImagem(Parametro_FixoED.getInstancia().getPATH_IMAGENS());
 		// *** Se existe Arquivo
-		if (!new File(relatorio.getPathReport() + relatorio.getNomeArquivo()
-				+ ".jasper").exists())
+		if (!new File(relatorio.getPathReport() + relatorio.getNomeArquivo()+ ".jasper").exists()) {
 			throw new Mensagens("Arquivo " + relatorio.getPathReport()
 					+ relatorio.getNomeArquivo()
 					+ ".jasper não encontrado para gerar Relatório!");
+		}
 
-		HashMap parametros = new HashMap();
+		final HashMap parametros = new HashMap();
 		parametros.put("RELATORIO", relatorio.getNomeArquivo());
 		parametros.put("PATH_IMAGENS", relatorio.getPathImagem());
 		parametros.put("PATH_RELATORIOS", relatorio.getPathReport());
-		parametros.put("LOGO_IMAGE", "logo"
-				+ Parametro_FixoED.getInstancia().getNM_Empresa().toLowerCase()
-				+ ".jpg");
+		parametros.put("LOGO_IMAGE", "logo"+ Parametro_FixoED.getInstancia().getNM_Empresa().toLowerCase()+ ".jpg");
 		if (JavaUtil.doValida(edRelatorio.getDescFiltro())) {
 			parametros.put("DESC_FILTER", edRelatorio.getDescFiltro());
 		} else {
@@ -88,9 +84,9 @@ public class JasperRL implements Serializable {
 		// Rotina (LASZLO)
 		// Se for informado o request então pega o usuário a empresa
 		if (edRelatorio.getRequest() != null) {
-			HttpServletRequest req = edRelatorio.getRequest();
-			HttpSession sessao = req.getSession(true);
-			UsuarioED usuario = (UsuarioED) sessao.getAttribute("usuario");
+			final HttpServletRequest req = edRelatorio.getRequest();
+			final HttpSession sessao = req.getSession(true);
+			final UsuarioED usuario = (UsuarioED) sessao.getAttribute("usuario");
 			parametros.put("EMPRESA", usuario.getNm_Razao_Social());
 			parametros.put("USUARIO", usuario.getNm_Usuario());
 			parametros.put("BASE_PATH", req.getScheme() + "://"
@@ -99,47 +95,35 @@ public class JasperRL implements Serializable {
 		}
 
 		// *** Agrega Map passado com os Fixos aqui
-		if (edRelatorio.getHashMap() != null
-				&& !edRelatorio.getHashMap().isEmpty())
+		if (edRelatorio.getHashMap() != null&& !edRelatorio.getHashMap().isEmpty()) {
 			edRelatorio.getHashMap().putAll(parametros);
-		else
+		} else {
 			edRelatorio.setHashMap(parametros);
+		}
 
 		try {
-			relatorio.listaRelatorioPdfParaByte(edRelatorio.getHashMap(),
-					(ArrayList) edRelatorio.getLista());
-			// relatorio.listaRelatorioParaImpressora(edRelatorio.getHashMap(),
-			// (ArrayList) edRelatorio.getLista());
-			// relatorio.listaRelatorioJasperView(edRelatorio.getHashMap(),
-			// (ArrayList) edRelatorio.getLista());
-		} catch (Exception e) {
-			// System.out.println("------------------------");
-			// System.out.println("deu PAU!!!!!!!!!!!!!!!!!" + e.getMessage());
-			// System.out.println("------------------------");
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorio()");
+			relatorio.listaRelatorioPdfParaByte(edRelatorio.getHashMap(),(ArrayList) edRelatorio.getLista());
+		} catch (final Exception e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorio()");
 		}
-		byte[] arquivo = relatorio.getRelatorioBytes();
+		final byte[] arquivo = relatorio.getRelatorioBytes();
 		// Escreve o pdf no JSP
 		ServletOutputStream retornoPDF;
 		try {
 			retornoPDF = edRelatorio.getResponse().getOutputStream();
-		} catch (IOException e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorio()");
+		} catch (final IOException e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorio()");
 		}
 		edRelatorio.getResponse().setHeader("application/pdf", "Content-Type");
-		edRelatorio.getResponse().setHeader("Content-Disposition:",
-				"inline; filename=" + relatorio.getNomeArquivo() + ".pdf");
+		edRelatorio.getResponse().setHeader("Content-Disposition:","inline; filename=" + relatorio.getNomeArquivo() + ".pdf");
 		edRelatorio.getResponse().setContentType("application/pdf");
 		edRelatorio.getResponse().setContentLength(arquivo.length);
 		try {
 			retornoPDF.write(arquivo);
 			retornoPDF.flush();
 			retornoPDF.close();
-		} catch (IOException e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorio()");
+		} catch (final IOException e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorio()");
 		}
 	}
 
@@ -147,45 +131,41 @@ public class JasperRL implements Serializable {
 	public String geraRelatorioToFile() throws Excecoes {
 
 		// *** Validações Finais
-		if (edRelatorio == null)
-			throw new Excecoes("Dados do Relatório é nulo!", this.getClass()
-					.getName(), "geraRelatorio()");
-		if (!JavaUtil.doValida(edRelatorio.getNomeRelatorio()))
+		if (edRelatorio == null) {
+			throw new Excecoes("Dados do Relatório é nulo!", this.getClass().getName(), "geraRelatorio()");
+		}
+		if (!JavaUtil.doValida(edRelatorio.getNomeRelatorio())) {
 			throw new Mensagens("Nome do Relatório não informado!");
-		if (edRelatorio.getLista() == null)
-			throw new Excecoes("Lista de Dados do Relatório não criada!", this
-					.getClass().getName(), "geraRelatorio()");
-		if (edRelatorio.getResponse() == null)
-			throw new Excecoes("Response não Passado!", this.getClass()
-					.getName(), "geraRelatorio()");
+		}
+		if (edRelatorio.getLista() == null) {
+			throw new Excecoes("Lista de Dados do Relatório não criada!", this.getClass().getName(), "geraRelatorio()");
+		}
+		if (edRelatorio.getResponse() == null) {
+			throw new Excecoes("Response não Passado!", this.getClass().getName(), "geraRelatorio()");
+		}
 
 		InterfaceRelatorio relatorio;
 		try {
 			relatorio = Relatorio.getInstance(Relatorio.GERADOR_JASPER);
-		} catch (Exception e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorioToFile()");
+		} catch (final Exception e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(), "geraRelatorioToFile()");
 		}
 		// *** Nome do relatório
 		relatorio.setNomeArquivo(edRelatorio.getNomeRelatorio());
-		relatorio.setPathReport(Parametro_FixoED.getInstancia()
-				.getPATH_RELATORIOS());
-		relatorio.setPathImagem(Parametro_FixoED.getInstancia()
-				.getPATH_IMAGENS());
+		relatorio.setPathReport(Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
+		relatorio.setPathImagem(Parametro_FixoED.getInstancia().getPATH_IMAGENS());
 		// *** Se existe Arquivo
-		if (!new File(relatorio.getPathReport() + relatorio.getNomeArquivo()
-				+ ".jasper").exists())
+		if (!new File(relatorio.getPathReport() + relatorio.getNomeArquivo()+ ".jasper").exists()) {
 			throw new Mensagens("Arquivo " + relatorio.getPathReport() + "/"
 					+ relatorio.getNomeArquivo()
 					+ ".jasper não encontrado para gerar Relatório!");
+		}
 
-		HashMap parametros = new HashMap();
+		final HashMap parametros = new HashMap();
 		parametros.put("RELATORIO", relatorio.getNomeArquivo());
 		parametros.put("PATH_IMAGENS", relatorio.getPathImagem());
 		parametros.put("PATH_RELATORIOS", relatorio.getPathReport());
-		parametros.put("LOGO_IMAGE", "logo"
-				+ Parametro_FixoED.getInstancia().getNM_Empresa().toLowerCase()
-				+ ".jpg");
+		parametros.put("LOGO_IMAGE", "logo"+ Parametro_FixoED.getInstancia().getNM_Empresa().toLowerCase()+ ".jpg");
 		if (JavaUtil.doValida(edRelatorio.getDescFiltro())) {
 			parametros.put("DESC_FILTER", edRelatorio.getDescFiltro());
 		} else {
@@ -195,109 +175,75 @@ public class JasperRL implements Serializable {
 		// Rotina (LASZLO)
 		// Se for informado o request então pega o usuário a empresa
 		if (edRelatorio.getRequest() != null) {
-			HttpSession sessao = edRelatorio.getRequest().getSession(true);
-			UsuarioED usuario = (UsuarioED) sessao.getAttribute("usuario");
+			final HttpSession sessao = edRelatorio.getRequest().getSession(true);
+			final UsuarioED usuario = (UsuarioED) sessao.getAttribute("usuario");
 			parametros.put("EMPRESA", usuario.getNm_Razao_Social());
 			parametros.put("USUARIO", usuario.getNm_Usuario());
 		}
 
 		// *** Agrega Map passado com os Fixos aqui
-		if (edRelatorio.getHashMap() != null
-				&& !edRelatorio.getHashMap().isEmpty())
+		if (edRelatorio.getHashMap() != null && !edRelatorio.getHashMap().isEmpty()) {
 			edRelatorio.getHashMap().putAll(parametros);
-		else
+		} else {
 			edRelatorio.setHashMap(parametros);
+		}
 
 		try {
-			relatorio.listaRelatorioPdfParaByte(edRelatorio.getHashMap(),
-					(ArrayList) edRelatorio.getLista());
-			// relatorio.listaRelatorioParaImpressora(edRelatorio.getHashMap(),
-			// (ArrayList) edRelatorio.getLista());
-			// relatorio.listaRelatorioJasperView(edRelatorio.getHashMap(),
-			// (ArrayList) edRelatorio.getLista());
-		} catch (Exception e) {
-			// System.out.println("------------------------");
-			// System.out.println("deu PAU!!!!!!!!!!!!!!!!!" + e.getMessage());
-			// System.out.println("------------------------");
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorioToFile()");
+			relatorio.listaRelatorioPdfParaByte(edRelatorio.getHashMap(),(ArrayList) edRelatorio.getLista());
+		} catch (final Exception e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorioToFile()");
 		}
-		// System.out.println("------------------------");
-		byte[] arquivo = relatorio.getRelatorioBytes();
-		// BufferedOutputStream out = null;
-		// try {
-		// out = new
-		// BufferedOutputStream(edRelatorio.getResponse().getOutputStream(),
-		// 4096);
-		// } catch (IOException e) {
-		// throw new Excecoes(e.getMessage(), e, getClass().getName(),
-		// "geraRelatorioToFile()");
-		// }
-		// edRelatorio.getResponse().setHeader("application/pdf",
-		// "Content-Type");
-		// edRelatorio.getResponse().setHeader("Content-Disposition:","inline; filename="
-		// + relatorio.getNomeArquivo() + ".pdf");
-		// edRelatorio.getResponse().setContentType("application/pdf");
-		// edRelatorio.getResponse().setContentLength(arquivo.length);
+		final byte[] arquivo = relatorio.getRelatorioBytes();
+
 		try {
-			// System.out.println("--" + relatorio.getPathReport() +
-			// relatorio.getNomeArquivo() + ".pdf");
-			FileOutputStream fos = new FileOutputStream(relatorio
-					.getPathReport()
-					+ relatorio.getNomeArquivo() + ".pdf");
+			final FileOutputStream fos = new FileOutputStream(relatorio.getPathReport()+ relatorio.getNomeArquivo() + ".pdf");
 			fos.write(arquivo);
 			fos.flush();
-		} catch (IOException e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorio()");
+		} catch (final IOException e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorio()");
 		}
-		return String.valueOf(relatorio.getPathReport()
-				+ relatorio.getNomeArquivo() + ".pdf");
+		return String.valueOf(relatorio.getPathReport()+ relatorio.getNomeArquivo() + ".pdf");
 	}
 
 	@SuppressWarnings("unchecked")
-	public void geraRelatorioToFile(String filepath) throws Excecoes {
+	public void geraRelatorioToFile(final String filepath) throws Excecoes {
 
 		// *** Validações Finais
-		if (edRelatorio == null)
-			throw new Excecoes("Dados do Relatório é nulo!", this.getClass()
-					.getName(), "geraRelatorio()");
-		if (!JavaUtil.doValida(edRelatorio.getNomeRelatorio()))
+		if (edRelatorio == null) {
+			throw new Excecoes("Dados do Relatório é nulo!", this.getClass().getName(), "geraRelatorio()");
+		}
+		if (!JavaUtil.doValida(edRelatorio.getNomeRelatorio())) {
 			throw new Mensagens("Nome do Relatório não informado!");
-		if (edRelatorio.getLista() == null)
-			throw new Excecoes("Lista de Dados do Relatório não criada!", this
-					.getClass().getName(), "geraRelatorio()");
-		if (edRelatorio.getResponse() == null)
-			throw new Excecoes("Response não Passado!", this.getClass()
-					.getName(), "geraRelatorio()");
+		}
+		if (edRelatorio.getLista() == null) {
+			throw new Excecoes("Lista de Dados do Relatório não criada!", this.getClass().getName(), "geraRelatorio()");
+		}
+		if (edRelatorio.getResponse() == null) {
+			throw new Excecoes("Response não Passado!", this.getClass().getName(), "geraRelatorio()");
+		}
 
 		InterfaceRelatorio relatorio;
 		try {
 			relatorio = Relatorio.getInstance(Relatorio.GERADOR_JASPER);
-		} catch (Exception e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorioToFile()");
+		} catch (final Exception e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorioToFile()");
 		}
 		// *** Nome do relatório
 		relatorio.setNomeArquivo(edRelatorio.getNomeRelatorio());
-		relatorio.setPathReport(Parametro_FixoED.getInstancia()
-				.getPATH_RELATORIOS());
-		relatorio.setPathImagem(Parametro_FixoED.getInstancia()
-				.getPATH_IMAGENS());
+		relatorio.setPathReport(Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
+		relatorio.setPathImagem(Parametro_FixoED.getInstancia().getPATH_IMAGENS());
 		// *** Se existe Arquivo
-		if (!new File(relatorio.getPathReport() + relatorio.getNomeArquivo()
-				+ ".jasper").exists())
+		if (!new File(relatorio.getPathReport() + relatorio.getNomeArquivo()+ ".jasper").exists()) {
 			throw new Mensagens("Arquivo " + relatorio.getPathReport() + "/"
 					+ relatorio.getNomeArquivo()
 					+ ".jasper não encontrado para gerar Relatório!");
+		}
 
-		HashMap parametros = new HashMap();
+		final HashMap parametros = new HashMap();
 		parametros.put("RELATORIO", relatorio.getNomeArquivo());
 		parametros.put("PATH_IMAGENS", relatorio.getPathImagem());
 		parametros.put("PATH_RELATORIOS", relatorio.getPathReport());
-		parametros.put("LOGO_IMAGE", "logo"
-				+ Parametro_FixoED.getInstancia().getNM_Empresa().toLowerCase()
-				+ ".jpg");
+		parametros.put("LOGO_IMAGE", "logo"+ Parametro_FixoED.getInstancia().getNM_Empresa().toLowerCase()+ ".jpg");
 		if (JavaUtil.doValida(edRelatorio.getDescFiltro())) {
 			parametros.put("DESC_FILTER", edRelatorio.getDescFiltro());
 		} else {
@@ -307,44 +253,37 @@ public class JasperRL implements Serializable {
 		// Rotina (LASZLO)
 		// Se for informado o request então pega o usuário a empresa
 		if (edRelatorio.getRequest() != null) {
-			HttpSession sessao = edRelatorio.getRequest().getSession(true);
-			UsuarioED usuario = (UsuarioED) sessao.getAttribute("usuario");
+			final HttpSession sessao = edRelatorio.getRequest().getSession(true);
+			final UsuarioED usuario = (UsuarioED) sessao.getAttribute("usuario");
 			parametros.put("EMPRESA", usuario.getNm_Razao_Social());
 			parametros.put("USUARIO", usuario.getNm_Usuario());
 		}
 
 		// *** Agrega Map passado com os Fixos aqui
-		if (edRelatorio.getHashMap() != null
-				&& !edRelatorio.getHashMap().isEmpty())
+		if (edRelatorio.getHashMap() != null && !edRelatorio.getHashMap().isEmpty()) {
 			edRelatorio.getHashMap().putAll(parametros);
-		else
+		} else {
 			edRelatorio.setHashMap(parametros);
+		}
 
 		try {
-			relatorio.listaRelatorioPdfParaByte(edRelatorio.getHashMap(),
-					(ArrayList) edRelatorio.getLista());
-			// relatorio.listaRelatorioParaImpressora(edRelatorio.getHashMap(),
-			// (ArrayList) edRelatorio.getLista());
-			// relatorio.listaRelatorioJasperView(edRelatorio.getHashMap(),
-			// (ArrayList) edRelatorio.getLista());
-		} catch (Exception e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorioToFile()");
+			relatorio.listaRelatorioPdfParaByte(edRelatorio.getHashMap(),(ArrayList) edRelatorio.getLista());
+		} catch (final Exception e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorioToFile()");
 		}
 		// System.out.println("------------------------");
-		byte[] arquivo = relatorio.getRelatorioBytes();
+		final byte[] arquivo = relatorio.getRelatorioBytes();
 
 		try {
-			FileOutputStream fos = new FileOutputStream(filepath);
+			final FileOutputStream fos = new FileOutputStream(filepath);
 			fos.write(arquivo);
 			fos.flush();
-		} catch (IOException e) {
-			throw new Excecoes(e.getMessage(), e, getClass().getName(),
-					"geraRelatorio()");
+		} catch (final IOException e) {
+			throw new Excecoes(e.getMessage(), e, getClass().getName(),"geraRelatorio()");
 		}
 	}
 
-	public void setEdRelatorio(RelatorioBaseED edRelatorio) {
+	public void setEdRelatorio(final RelatorioBaseED edRelatorio) {
 		this.edRelatorio = edRelatorio;
 	}
 

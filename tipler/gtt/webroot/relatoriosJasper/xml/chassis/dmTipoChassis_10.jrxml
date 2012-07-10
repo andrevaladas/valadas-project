@@ -1,0 +1,656 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="dmTipoChassis_10"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<parameter name="PATH_IMAGENS" isForPrompting="true" class="java.lang.String">
+		<parameterDescription><![CDATA[PATH_IMAGENS]]></parameterDescription>
+		<defaultValueExpression ><![CDATA["C:/cpoint/workspace/gtt/webroot/Imagens/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PATH_SUBLIST" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:/cpoint/workspace/gtt/webroot/relatoriosJasper/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BASE_PATH" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nr_Pressao_Eixo_1" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Pressao_Eixo_2" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Pressao_Eixo_3" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Pressao_Eixo_4" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="l8ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l8ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="d2e" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l8de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l8di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkde" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkdi" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tde" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tdi" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="d2d" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="dd" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="stp1" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="stp2" isForPrompting="false" class="java.lang.Object"/>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="400"  isSplitAllowed="true" >
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="208"
+						y="60"
+						width="6"
+						height="243"
+						forecolor="#000000"
+						backcolor="#000000"
+						key="rectangle-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="349"
+						y="60"
+						width="6"
+						height="243"
+						forecolor="#000000"
+						backcolor="#000000"
+						key="rectangle-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="490"
+						y="60"
+						width="6"
+						height="243"
+						forecolor="#000000"
+						backcolor="#000000"
+						key="rectangle-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="0" >
+					<reportElement
+						mode="Opaque"
+						x="67"
+						y="60"
+						width="6"
+						height="243"
+						forecolor="#000000"
+						backcolor="#000000"
+						key="rectangle-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<rectangle radius="2" >
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="373"
+						width="565"
+						height="20"
+						forecolor="#999999"
+						backcolor="#FFFFFF"
+						key="rectangle-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
+				</rectangle>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="0"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="71"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="291"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="220"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="0"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="71"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-2"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="291"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="220"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-3"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="423"
+						y="71"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="423"
+						y="220"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-4"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="282"
+						y="71"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="282"
+						y="220"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-5"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="196"
+						y="377"
+						width="30"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Pressao_Eixo_2}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Opaque"
+						x="6"
+						y="366"
+						width="120"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Pressão Padrão por Eixo]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="55"
+						y="377"
+						width="30"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-1"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Pressao_Eixo_1}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="337"
+						y="377"
+						width="30"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-3"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Pressao_Eixo_2}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="478"
+						y="377"
+						width="30"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Pressao_Eixo_2}]]></textFieldExpression>
+				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="282"
+						y="0"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="423"
+						y="0"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="282"
+						y="291"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="423"
+						y="291"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<rectangle radius="5" >
+					<reportElement
+						mode="Opaque"
+						x="19"
+						y="153"
+						width="510"
+						height="54"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="rectangle-2"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<graphicElement stretchType="NoStretch" pen="4Point" fill="Solid" />
+				</rectangle>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>
