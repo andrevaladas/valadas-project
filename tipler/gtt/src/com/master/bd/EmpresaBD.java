@@ -18,16 +18,16 @@ import com.master.util.bd.ExecutaSQL;
  */
 public class EmpresaBD extends BancoUtil {
 
-	private ExecutaSQL executasql;
+	private final ExecutaSQL executasql;
 
 	String sql = null;
 
-	public EmpresaBD(ExecutaSQL sql) {
+	public EmpresaBD(final ExecutaSQL sql) {
 		super(sql);
-		this.executasql = sql;
+		executasql = sql;
 	}
 
-	public EmpresaED inclui(EmpresaED ed) throws Excecoes {
+	public EmpresaED inclui(final EmpresaED ed) throws Excecoes {
 		try {
 			ed.setDt_stamp(Data.getDataDMY());
 			ed.setOid_Empresa(getAutoIncremento("oid_Empresa", "Empresas"));
@@ -81,12 +81,12 @@ public class EmpresaBD extends BancoUtil {
 			")";
 			executasql.executarUpdate(sql);
 			return ed;
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"inclui(EmpresaED ed)");
 		}
 	}
 
-	public void altera(EmpresaED ed) throws Excecoes {
+	public void altera(final EmpresaED ed) throws Excecoes {
 		try {
 			sql = "UPDATE Empresas SET " +
 			"nr_Cnpj= '" + ed.getNr_Cnpj()+ "' " +
@@ -103,33 +103,34 @@ public class EmpresaBD extends BancoUtil {
 			",nm_eMail = '" +  ed.getNm_Email() + "' " +
 			",oid_Regional = " +  ed.getOid_Regional() +  
 			",nm_Contato = '" +  ed.getNm_Contato() + "' " ;
-			if ("U".equals(ed.getDm_Tipo_Empresa())) 
+			if ("U".equals(ed.getDm_Tipo_Empresa())) {
 				sql+=",dm_Tipo_Frota = '" + ed.getDm_Tipo_Frota() + "' " ;
+			}
 			sql+=",dt_Stamp = '" + ed.getDt_stamp() + "' " +
 			",usuario_Stamp = '" + ed.getUsuario_Stamp() + "' " + 
 			",dm_Stamp = '" + ed.getDm_Stamp() + "' " +
 			"WHERE " +
 			"oid_Empresa = " + ed.getOid_Empresa() ;
 			executasql.executarUpdate(sql);
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"altera(EmpresaED ed)");
 		}
 	}
 
-	public void deleta(EmpresaED ed) throws Excecoes {
+	public void deleta(final EmpresaED ed) throws Excecoes {
 		try {
 			sql = "DELETE FROM Empresas " +
 			"WHERE " +
 			"oid_Empresa = '" + ed.getOid_Empresa() + "'";
 			executasql.executarUpdate(sql);
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"deleta(EmpresaED ed)");
 		}
 	}
 
-	public ArrayList<EmpresaED> lista(EmpresaED ed) throws Excecoes {
+	public ArrayList<EmpresaED> lista(final EmpresaED ed) throws Excecoes {
 
-		ArrayList<EmpresaED> list = new ArrayList<EmpresaED>();
+		final ArrayList<EmpresaED> list = new ArrayList<EmpresaED>();
 		try {
 			sql = "SELECT " +
 			"e.*" +
@@ -144,36 +145,43 @@ public class EmpresaBD extends BancoUtil {
 			"left join Regionais as r on r.oid_Regional = e.oid_Regional " +
 			"WHERE " + "1=1";
 			// Seleciona conforme o tipo de empresa da tela : cad002C = C, cad001C = U, mnu004C = A 
-			if (!"A".equals(ed.getDm_Tipo_Empresa()))
+			if (!"A".equals(ed.getDm_Tipo_Empresa())) {
 				sql += " and e.dm_Tipo_Empresa = '"  + ed.getDm_Tipo_Empresa() + "' " ;
+			}
 			// Seleciona conforme a empresa logada se for concessionária ...
-			if ("C".equals(ed.getDm_Tipo_Consulta()) ) 
+			if ("C".equals(ed.getDm_Tipo_Consulta()) ) {
 				sql += " and e.oid_Concessionaria = " + ed.getOid_Empresa() ;
-			if ("T".equals(ed.getDm_Tipo_Consulta()) )
-				if (ed.getOid_Empresa_Gambiarra() > 0) 
+			}
+			if ("T".equals(ed.getDm_Tipo_Consulta()) ) {
+				if (ed.getOid_Empresa_Gambiarra() > 0) {
 					sql += " and e.oid_Concessionaria = " + ed.getOid_Empresa_Gambiarra() ;
-			if (doValida(ed.getNr_Cnpj()))
+				}
+			}
+			if (doValida(ed.getNr_Cnpj())) {
 				sql += " and e.nr_Cnpj LIKE '" + ed.getNr_Cnpj() + "%' ";
-			if (doValida(ed.getNm_Razao_Social()))
+			}
+			if (doValida(ed.getNm_Razao_Social())) {
 				sql += " and e.nm_Razao_Social LIKE '" + ed.getNm_Razao_Social() + "%' ";
-			if (ed.getOid_Regional()>0)
+			}
+			if (ed.getOid_Regional()>0) {
 				sql +=" and e.oid_Regional = " + ed.getOid_Regional();
+			}
 			sql += " ORDER BY " +
 			"e.nm_Razao_Social ";
-			ResultSet res = this.executasql.executarConsulta(sql);
+			final ResultSet res = executasql.executarConsulta(sql);
 			while (res.next()) {
 				list.add(populaRegistro(res));
 			}
 			return list;
 
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"lista()");
 		}
 	}
 
-	public ArrayList<EmpresaED> listaClientesModulo(EmpresaED ed) throws Excecoes {
+	public ArrayList<EmpresaED> listaClientesModulo(final EmpresaED ed) throws Excecoes {
 
-		ArrayList<EmpresaED> list = new ArrayList<EmpresaED>();
+		final ArrayList<EmpresaED> list = new ArrayList<EmpresaED>();
 		try {
 			sql = "SELECT " +
 			"e.*" +
@@ -201,37 +209,51 @@ public class EmpresaBD extends BancoUtil {
 						"	SELECT distinct a.oid_Cliente " +
 						"	FROM Stas_Analises as a left join Empresas as e on (a.oid_Cliente=e.oid_Empresa) " +
 						"	WHERE e.oid_Concessionaria = "+ed.getOid_Empresa()+" and a.dt_Fim is not null) ";
+			} else 
+			if ("STIF".equals(ed.getDm_Modulo()) ) {
+				// So pega clientes da conssecionária que tenham stifs concluidos
+				sql+="and e.oid_Empresa in (" +
+						"	SELECT distinct i.oid_Cliente " +
+						"	FROM Stif_Inspecoes as i left join Empresas as e on (i.oid_Cliente=e.oid_Empresa) " +
+						"	WHERE e.oid_Concessionaria = "+ed.getOid_Empresa()+" and i.dt_Encerramento is not null) ";
 			}	
 
 			// Seleciona conforme o tipo de empresa da tela : cad002C = C, cad001C = U, mnu004C = A 
-			if (!"A".equals(ed.getDm_Tipo_Empresa()))
+			if (!"A".equals(ed.getDm_Tipo_Empresa())) {
 				sql += " and e.dm_Tipo_Empresa = '"  + ed.getDm_Tipo_Empresa() + "' " ;
+			}
 			// Seleciona conforme a empresa logada se for concessionária ...
-			if ("C".equals(ed.getDm_Tipo_Consulta()) ) 
+			if ("C".equals(ed.getDm_Tipo_Consulta()) ) {
 				sql += " and e.oid_Concessionaria = " + ed.getOid_Empresa() ;
-			if ("T".equals(ed.getDm_Tipo_Consulta()) )
-				if (ed.getOid_Empresa_Gambiarra() > 0) 
+			}
+			if ("T".equals(ed.getDm_Tipo_Consulta()) ) {
+				if (ed.getOid_Empresa_Gambiarra() > 0) {
 					sql += " and e.oid_Concessionaria = " + ed.getOid_Empresa_Gambiarra() ;
-			if (doValida(ed.getNr_Cnpj()))
+				}
+			}
+			if (doValida(ed.getNr_Cnpj())) {
 				sql += " and e.nr_Cnpj LIKE '" + ed.getNr_Cnpj() + "%' ";
-			if (doValida(ed.getNm_Razao_Social()))
+			}
+			if (doValida(ed.getNm_Razao_Social())) {
 				sql += " and e.nm_Razao_Social LIKE '" + ed.getNm_Razao_Social() + "%' ";
-			if (ed.getOid_Regional()>0)
+			}
+			if (ed.getOid_Regional()>0) {
 				sql +=" and e.oid_Regional = " + ed.getOid_Regional();
+			}
 			sql += " ORDER BY " +
 			"e.nm_Razao_Social ";
-			ResultSet res = this.executasql.executarConsulta(sql);
+			final ResultSet res = executasql.executarConsulta(sql);
 			while (res.next()) {
 				list.add(populaRegistro(res));
 			}
 			return list;
 
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"lista()");
 		}
 	}
 
-	public EmpresaED getByRecord(EmpresaED ed) throws Excecoes {
+	public EmpresaED getByRecord(final EmpresaED ed) throws Excecoes {
 
 		EmpresaED edQBR = new EmpresaED();
 		try {
@@ -250,26 +272,29 @@ public class EmpresaBD extends BancoUtil {
 
 			if (doValida(ed.getNr_Cnpj() ) ) { 
 				sql+=" and e.nr_cnpj = '" + ed.getNr_Cnpj() + "' " ;
-				if (ed.getOid_Concessionaria()>0) 
+				if (ed.getOid_Concessionaria()>0) {
 					sql+=" and e.oid_Concessionaria = " + ed.getOid_Concessionaria() ;
+				}
 			} else {
-				if (ed.getOid_Empresa()>0) 
+				if (ed.getOid_Empresa()>0) {
 					sql+=" and e.oid_empresa = " + ed.getOid_Empresa() ;
-				if (ed.getOid_Concessionaria()>0) 
+				}
+				if (ed.getOid_Concessionaria()>0) {
 					sql+=" and e.oid_Concessionaria = " + ed.getOid_Concessionaria() ;
+				}
 			}
-			ResultSet res = this.executasql.executarConsulta(sql);
+			final ResultSet res = executasql.executarConsulta(sql);
 			while (res.next()) {
 				edQBR = populaRegistro(res);
 			}
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"getByRecord(EmpresaED ed)");
 		}
 		return edQBR;
 	}
 
-	private EmpresaED populaRegistro(ResultSet res) throws SQLException {
-		EmpresaED ed = new EmpresaED();
+	private EmpresaED populaRegistro(final ResultSet res) throws SQLException {
+		final EmpresaED ed = new EmpresaED();
 		ed.setOid_Empresa(res.getLong("oid_Empresa"));
 		ed.setNm_Razao_Social(res.getString("nm_Razao_Social"));
 		ed.setNm_Endereco(res.getString("nm_Endereco"));

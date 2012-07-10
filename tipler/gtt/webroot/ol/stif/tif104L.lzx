@@ -94,9 +94,9 @@
 	</method>
 
 	<!-- Válvulas "dm_tipo=2" -->
-	<dataset name="dsValculas" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
+	<dataset name="dsValvulas" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
    		src="../../ControlerServlet?tela=tif104&amp;ed=Stif_ProblemaED&amp;rn=Stif_ProblemaRN&amp;acao=L&amp;dm_tipo=2"
-      	ondata="var resultado = classroot.dsValculasdp1.xpathQuery('@oknok'); 
+      	ondata="var resultado = classroot.dsValvulasdp1.xpathQuery('@oknok'); 
               	parent.janela.carregando.stopAni();
               	if (resultado=='LOGON'){
               		parent.logon();
@@ -105,8 +105,8 @@
       	ontimeout="parent.janela.carregando.stopAni();
   			   	   parent.janela.janelaAviso.mostra('Servidor ocupado! Tente novamente!');"
       	/>
-	<datapointer name="dsValculasdp" xpath="local:dsValculas:/" />
-	<datapointer name="dsValculasdp1" xpath="local:dsValculas:/ret/item" />
+	<datapointer name="dsValvulasdp" xpath="local:dsValvulas:/" />
+	<datapointer name="dsValvulasdp1" xpath="local:dsValvulas:/ret/item" />
 	<!-- Rodas "dm_tipo=3" -->
 	<dataset name="dsRodas" request="false" type="http" querytype="post" acceptencodings="true" cacheable="false"
    		src="../../ControlerServlet?tela=tif104&amp;ed=Stif_ProblemaED&amp;rn=Stif_ProblemaRN&amp;acao=L&amp;dm_tipo=3"
@@ -422,11 +422,11 @@
 			</method>
 	
         	<!-- Válvulas -->
-        	<grid name="vGridValvulas" datapath="local:classroot.dsValculas:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
+        	<grid name="vGridValvulas" datapath="local:classroot.dsValvulas:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
 				height="${(parent.height/2)-5}" width="${(parent.width/2)-5}" multiselect="false" rowheight="16">
         		<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
         		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
-       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="21" textalign="right"/>
 	           	<gridcolumn sortable="false" width="17" >
 					<checkbox datapath="@checkItem">
 						<handler name="ondata">
@@ -438,14 +438,14 @@
 	 					</handler>
 					</checkbox>
 				</gridcolumn>
-       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Inspeção das Válvulas" width="${parent.width-35}"/>
+       			<gridtext sortable="false" editable="false" resizable="false" datapath="@nm_problema" text="Inspeção das Válvulas" width="${parent.width-36}"/>
        		</grid>
 			<!-- Outras -->
         	<grid name="vGridOutras" x="${parent.width/2}" datapath="local:classroot.dsOutros:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
 				height="${(parent.height/2)-5}" width="${(parent.width/2)}" multiselect="false" rowheight="16">
        			<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
         		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
-       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="21" textalign="right"/>
 	           	<gridcolumn sortable="false" width="17" >
 					<checkbox datapath="@checkItem">
 						<handler name="ondata">
@@ -457,7 +457,7 @@
 	 					</handler>
 					</checkbox>
 				</gridcolumn>
-       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Outras Inspeção" width="${parent.width-35}"/>
+       			<gridtext sortable="false" editable="false" resizable="false" datapath="@nm_problema" text="Outras Inspeção" width="${parent.width-36}"/>
        		</grid>
 
        		<!-- Rodas -->
@@ -465,7 +465,7 @@
 				height="150" width="${(parent.width/2)-5}" multiselect="false" rowheight="16">
        			<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
         		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
-       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="21" textalign="right"/>
 	           	<gridcolumn sortable="false" width="17" >
 					<checkbox datapath="@checkItem">
 						<handler name="ondata">
@@ -477,14 +477,14 @@
 	 					</handler>
 					</checkbox>
 				</gridcolumn>
-       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Inspeção das Rodas" width="${parent.width-35}"/>
+       			<gridtext sortable="false" editable="false" resizable="false" datapath="@nm_problema" text="Inspeção das Rodas" width="${parent.width-36}"/>
        		</grid>
        		<!-- Pneus -->
         	<grid name="vGridPneus" x="${parent.width/2}" y="${parent.height/2}" datapath="local:classroot.dsPneus:/" contentdatapath="cad/item" bgcolor0="#FEEEAA"
 				height="${parent.height/2}" width="${(parent.width/2)}" multiselect="false" rowheight="16">
        			<gridtext sortable="false" editable="false" datapath="@oid_stif_problema" width="1"/>
         		<gridtext sortable="false" editable="false" datapath="@dm_problema" width="1"/>
-       			<gridtext sortable="false" editable="false" datapath="@ordem" width="20" textalign="right"/>
+       			<gridtext sortable="false" editable="false" datapath="@ordem" width="21" textalign="right"/>
 	           	<gridcolumn sortable="false" width="17" >
 					<checkbox datapath="@checkItem">
 						<handler name="ondata">
@@ -496,7 +496,7 @@
 	 					</handler>
 					</checkbox>
 				</gridcolumn>
-       			<gridtext editable="false" resizable="false" datapath="@nm_problema" text="Inspeção dos Pneus" width="${parent.width-35}"/>
+       			<gridtext sortable="false" editable="false" resizable="false" datapath="@nm_problema" text="Inspeção dos Pneus" width="${parent.width-36}"/>
        		</grid>
         </baseEdits>
 
@@ -619,7 +619,7 @@
           	<method name="buildArrayProblemas">
           		var array = "Stif_Problema_PneuED##";
           		//Válvulas
-				array+=buildProblema(classroot.dsValculas.getPointer());
+				array+=buildProblema(classroot.dsValvulas.getPointer());
 				//Rodas
 				array+=buildProblema(classroot.dsRodas.getPointer());
 				//Outros
@@ -670,9 +670,9 @@
 					oidPneuInspecao = dp.getNodeAttribute("oid_Pneu_Inspecao");
 				}
 
-				//Válculas
-				classroot.dsValculas.setSrc(classroot.dsValculas.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
-				classroot.dsValculas.doRequest();
+				//Válvulas
+				classroot.dsValvulas.setSrc(classroot.dsValvulas.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
+				classroot.dsValvulas.doRequest();
 				//Rodas
 				classroot.dsRodas.setSrc(classroot.dsRodas.getSrc()+"&oid_Pneu_Inspecao="+oidPneuInspecao);
 				classroot.dsRodas.doRequest();

@@ -33,7 +33,7 @@ public class EmpresaRN extends Transacao {
 	 * Recebe Transação e a mantem aberta
 	 * @param executasql
 	 */
-	public EmpresaRN(ExecutaSQL executasql) {
+	public EmpresaRN(final ExecutaSQL executasql) {
 		super(executasql);
 	}
 	
@@ -41,58 +41,61 @@ public class EmpresaRN extends Transacao {
 
         try {
         	
-            this.inicioTransacao();
-            ed = new EmpresaBD(this.sql).inclui(ed);
-            this.fimTransacao(true);
+            inicioTransacao();
+            ed = new EmpresaBD(sql).inclui(ed);
+            fimTransacao(true);
             return ed;
-        } catch (Excecoes e) {
-            this.abortaTransacao();
+        } catch (final Excecoes e) {
+            abortaTransacao();
             throw e;
-        } catch (RuntimeException e) {
-            this.abortaTransacao();
+        } catch (final RuntimeException e) {
+            abortaTransacao();
             throw e;
         }
     }
 
-    public void altera(EmpresaED ed) throws Excecoes {
+    public void altera(final EmpresaED ed) throws Excecoes {
 
         try {
-            this.inicioTransacao();
-            new EmpresaBD(this.sql).altera(ed);
-            this.fimTransacao(true);
-        } catch (Excecoes e) {
-            this.abortaTransacao();
+            inicioTransacao();
+            new EmpresaBD(sql).altera(ed);
+            fimTransacao(true);
+        } catch (final Excecoes e) {
+            abortaTransacao();
             throw e;
-        } catch (RuntimeException e) {
-            this.abortaTransacao();
+        } catch (final RuntimeException e) {
+            abortaTransacao();
             throw e;
         }
     }
     
-    public void delete(EmpresaED ed) throws Excecoes {
+    public void delete(final EmpresaED ed) throws Excecoes {
 
         try {
-            this.inicioTransacao();
-            new EmpresaBD(this.sql).deleta(ed);
-            this.fimTransacao(true);
-        } catch (Excecoes e) {
-            this.abortaTransacao();
+            inicioTransacao();
+            new EmpresaBD(sql).deleta(ed);
+            fimTransacao(true);
+        } catch (final Excecoes e) {
+            abortaTransacao();
             throw e;
-        } catch (RuntimeException e) {
-            this.abortaTransacao();
+        } catch (final RuntimeException e) {
+            abortaTransacao();
             throw e;
         }
     }
 
-    public ArrayList<EmpresaED> lista(EmpresaED ed) throws Excecoes {
+    public ArrayList<EmpresaED> lista(final EmpresaED ed) throws Excecoes {
     	ArrayList<EmpresaED> lista = new ArrayList<EmpresaED>();
         try {
-            this.inicioTransacao();
+            inicioTransacao();
             if (Utilitaria.doValida(ed.getDm_Modulo())) {
             	if ("STIB".equals(ed.getDm_Modulo())) {
             		lista = new EmpresaBD(sql).listaClientesModulo(ed);
             	} else  
             	if ("STAS".equals(ed.getDm_Modulo())) {
+            		lista = new EmpresaBD(sql).listaClientesModulo(ed);
+            	} else  
+            	if ("STIF".equals(ed.getDm_Modulo())) {
             		lista = new EmpresaBD(sql).listaClientesModulo(ed);
             	}
             } else {
@@ -100,52 +103,54 @@ public class EmpresaRN extends Transacao {
             }
             return lista;
         } finally {
-            this.fimTransacao(false);
+            fimTransacao(false);
         }
     }
 
-    public void lista(EmpresaED ed, HttpServletRequest request, String nmObj) throws Excecoes {
+    public void lista(final EmpresaED ed, final HttpServletRequest request, final String nmObj) throws Excecoes {
 
         try {
-            this.inicioTransacao();
-            ArrayList lista = new EmpresaBD(sql).lista(ed);
+            inicioTransacao();
+            final ArrayList lista = new EmpresaBD(sql).lista(ed);
             request.setAttribute(nmObj, lista);
         } finally {
-            this.fimTransacao(false);
+            fimTransacao(false);
         }
     }
 
-    public EmpresaED getByRecord(EmpresaED ed) throws Excecoes {
+    public EmpresaED getByRecord(final EmpresaED ed) throws Excecoes {
 
         try {
-            this.inicioTransacao();
-            return new EmpresaBD(this.sql).getByRecord(ed);
+            inicioTransacao();
+            return new EmpresaBD(sql).getByRecord(ed);
         } finally {
-            this.fimTransacao(false);
+            fimTransacao(false);
         }
     }
 
-    public void relatorio(EmpresaED ed, HttpServletRequest request, HttpServletResponse response) throws Excecoes {
+    public void relatorio(final EmpresaED ed, final HttpServletRequest request, final HttpServletResponse response) throws Excecoes {
         try {
-            this.inicioTransacao();
+            inicioTransacao();
             String nm_Filtro = "";
-            ArrayList lista = new EmpresaBD(sql).lista(ed);
+            final ArrayList lista = new EmpresaBD(sql).lista(ed);
 			ed.setLista(lista); // Joga a lista de empresas no ed para enviar pro relatório 
 			ed.setResponse(response);
 			ed.setNomeRelatorio("gtt001"); // Seta o nome do relatório
 			// Monta a descricao do filtro utilizado
-			if (Utilitaria.doValida(ed.getNr_Cnpj()))
+			if (Utilitaria.doValida(ed.getNr_Cnpj())) {
 				nm_Filtro+="Cnpj=" + ed.getNr_Cnpj();
-			if (Utilitaria.doValida(ed.getNm_Razao_Social()))
+			}
+			if (Utilitaria.doValida(ed.getNm_Razao_Social())) {
 				nm_Filtro+=" Razão Social=" + ed.getNm_Razao_Social();
+			}
 			if (ed.getOid_Empresa_Gambiarra()>0) {
-				EmpresaED coED = new EmpresaED();
+				final EmpresaED coED = new EmpresaED();
 				coED.setOid_Empresa(ed.getOid_Empresa_Gambiarra());
-				nm_Filtro+=" Concessionária=" + this.getByRecord(coED).getNm_Razao_Social();
+				nm_Filtro+=" Concessionária=" + getByRecord(coED).getNm_Razao_Social();
 			}
 			ed.setDescFiltro(nm_Filtro);
 			
-    		HashMap map = new HashMap();
+    		final HashMap map = new HashMap();
     		// Este parametro esconde os campos telefone e nome do contato e mostra nome da concessionária quando for T inverte quanfor dor C
     		//map.put("dm_Tipo_Consulta", ed.getDm_Tipo_Consulta());
     		map.put("dm_Tipo_Consulta", ed.getDm_Tipo_Consulta());
@@ -153,27 +158,29 @@ public class EmpresaRN extends Transacao {
     		
 			new JasperRL(ed).geraRelatorio(); // Chama o relatorio passando o ed
         } finally {
-            this.fimTransacao(false);
+            fimTransacao(false);
         }
     }
 
-    private void relatorioConcessionarias(EmpresaED ed, HttpServletRequest request, HttpServletResponse response) throws Excecoes {
+    private void relatorioConcessionarias(final EmpresaED ed, final HttpServletRequest request, final HttpServletResponse response) throws Excecoes {
         try {
-            this.inicioTransacao();
+            inicioTransacao();
             String nm_Filtro = "";
-            ArrayList lista = new EmpresaBD(sql).lista(ed);
+            final ArrayList lista = new EmpresaBD(sql).lista(ed);
 			ed.setLista(lista); // Joga a lista de empresas no ed para enviar pro relatório 
 			ed.setResponse(response);
 			ed.setNomeRelatorio("gtt002"); // Seta o nome do relatório
 			// Monta a descricao do filtro utilizado
-			if (Utilitaria.doValida(ed.getNr_Cnpj()))
+			if (Utilitaria.doValida(ed.getNr_Cnpj())) {
 				nm_Filtro+="Cnpj=" + ed.getNr_Cnpj();
-			if (Utilitaria.doValida(ed.getNm_Razao_Social()))
+			}
+			if (Utilitaria.doValida(ed.getNm_Razao_Social())) {
 				nm_Filtro+=" Razão Social=" + ed.getNm_Razao_Social();
+			}
 			ed.setDescFiltro(nm_Filtro);
 			new JasperRL(ed).geraRelatorio(); // Chama o relatorio passando o ed
         } finally {
-            this.fimTransacao(false);
+            fimTransacao(false);
         }
     }
 
@@ -188,17 +195,17 @@ public class EmpresaRN extends Transacao {
      * @throws Excecoes
      */
     
-    public void processaRL(String rel, Object Obj, HttpServletRequest request, HttpServletResponse response)
+    public void processaRL(final String rel, final Object Obj, final HttpServletRequest request, final HttpServletResponse response)
 	throws ServletException, IOException, Excecoes {
     	//Extrai o bean com os campos da request colados
-    	EmpresaED ed = (EmpresaED)Obj;
+    	final EmpresaED ed = (EmpresaED)Obj;
     	ed.setDm_Tipo_Consulta(Utilitaria.getTipoEmpresa(request));
     	ed.setRequest(request);
     	if ("1".equals(rel)) {
-    		this.relatorio(ed, request, response);	
+    		relatorio(ed, request, response);	
     	} else
     	if ("2".equals(rel)) {
-    		this.relatorioConcessionarias(ed, request, response);	
+    		relatorioConcessionarias(ed, request, response);	
     	}    		
 
 }
@@ -216,7 +223,7 @@ public class EmpresaRN extends Transacao {
      * @throws IOException
      * @throws Excecoes
      */
-    public void processaOL(String acao, Object Obj, HttpServletRequest request, HttpServletResponse response)
+    public void processaOL(final String acao, final Object Obj, final HttpServletRequest request, final HttpServletResponse response)
     	throws ServletException, IOException, Excecoes {
     	//Extrai o bean com os campos da request colados
     	EmpresaED ed = (EmpresaED)Obj;
@@ -224,17 +231,18 @@ public class EmpresaRN extends Transacao {
     	// Busca o tipo de empresa do usuario logado
     	ed.setDm_Tipo_Consulta(Utilitaria.getTipoEmpresa(request));
     	//Prepara a saída
-    	PrintWriter out = response.getWriter();
+    	final PrintWriter out = response.getWriter();
     	out.println("<?xml version='1.0' encoding='ISO-8859-1'?>");
     	if ("I".equals(acao)) {
 			ed.setOid_Concessionaria(ed.getOid_Empresa());
     		if (checkDuplo(ed,acao)) {
-    			if ("C".equals(ed.getDm_Tipo_Empresa()) ) 
-    				out.println("<ret><item oknok='Concessionária já existe com este CNPJ!'/></ret>");
-    			else
-    				out.println("<ret><item oknok='Cliente já existe com este CNPJ/CPF!'/></ret>");
+    			if ("C".equals(ed.getDm_Tipo_Empresa()) ) {
+					out.println("<ret><item oknok='Concessionária já existe com este CNPJ!'/></ret>");
+				} else {
+					out.println("<ret><item oknok='Cliente já existe com este CNPJ/CPF!'/></ret>");
+				}
     		} else {
-    			ed = this.inclui(ed);
+    			ed = inclui(ed);
 	    		out.println("<ret><item oknok='IOK' oid='" + ed.getOid_Empresa() + "' /></ret>");
     		}
     	} else 
@@ -248,65 +256,74 @@ public class EmpresaRN extends Transacao {
     			out.println("<ret><item oknok='Não pode alterar o cnpj!'/></ret>");
     		} else {
     			ed.setOid_Empresa(ed.getOid_Empresa_Gambiarra());
-    			this.altera(ed);
+    			altera(ed);
     			out.println("<ret><item oknok='AOK' /></ret>");
     		}
 		}else
 		if ("C".equals(acao)) {
-			if (ed.getOid_Empresa_Gambiarra()>0) // Usado pelo lookup da tela de cadastro de usuarios mnu004
+			if (ed.getOid_Empresa_Gambiarra()>0) {
 				ed.setOid_Empresa(ed.getOid_Empresa_Gambiarra());
-			EmpresaED edVolta = this.getByRecord(ed);
+			}
+			final EmpresaED edVolta = getByRecord(ed);
 			if (edVolta.getOid_Empresa() > 0) {
 				out.println("<cad>");
 				out.println(montaRegistro(edVolta));
 				out.println("</cad>");
-			} else
+			} else {
 				out.println("<ret><item oknok='Empresa não encontrada!' /></ret>");
+			}
 		} else
 		if ("CC".equals(acao)) { // Busca concessionaria no lookup exato - tela fat001C
-			if (ed.getOid_Empresa_Gambiarra()>0) // Usado pelo lookup da tela de cadastro de usuarios mnu004
+			if (ed.getOid_Empresa_Gambiarra()>0) {
 				ed.setOid_Empresa(ed.getOid_Empresa_Gambiarra());
-			EmpresaED edVolta = this.getByRecord(ed);
+			}
+			final EmpresaED edVolta = getByRecord(ed);
 			if (edVolta.getOid_Empresa() > 0) {
 				out.println("<cad>");
 				out.println(montaRegistro(edVolta));
 				out.println("</cad>");
-			} else
+			} else {
 				out.println("<ret><item oknok='Empresa não encontrada!' /></ret>");
+			}
 		} else
 		// Lookup de cliente quando concessionaria logada - Sempre tem que ter uma concessionaria na variavel cliente dm_tipo_empresa = 	
 		if ("CU".equals(acao)) { // Busca cliente no lookup exato - tela gtt101C
-			if ("C".equals(ed.getDm_Tipo_Consulta()))
+			if ("C".equals(ed.getDm_Tipo_Consulta())) {
 				ed.setOid_Concessionaria(ed.getOid_Empresa());
-			if (ed.getOid_Cliente()>0)
-				ed.setOid_Empresa(ed.getOid_Cliente()); 
-			EmpresaED edVolta = this.getByRecord(ed);
+			}
+			if (ed.getOid_Cliente()>0) {
+				ed.setOid_Empresa(ed.getOid_Cliente());
+			} 
+			final EmpresaED edVolta = getByRecord(ed);
 			if (edVolta.getOid_Empresa() > 0) {
 				out.println("<cad>");
 				out.println(montaRegistro(edVolta));
 				out.println("</cad>");
-			} else
+			} else {
 				out.println("<ret><item oknok='Cliente não encontrado!' /></ret>");
+			}
 		} else
 			
 		if ("CG".equals(acao)) {
 			ed.setOid_Empresa_Gambiarra(0);
 			ed.setOid_Empresa(0);
-			EmpresaED edVolta = this.getByRecord(ed);
+			final EmpresaED edVolta = getByRecord(ed);
 			if (edVolta.getOid_Empresa() > 0) {
 				out.println("<cad>");
 				out.println(montaRegistro(edVolta));
 				out.println("</cad>");
-			} else
+			} else {
 				out.println("<ret><item oknok='Empresa não encontrada!' /></ret>");
+			}
 		} else			
 		if ("D".equals(acao)) {
-			if (ed.getOid_Empresa_Gambiarra()>0) 
+			if (ed.getOid_Empresa_Gambiarra()>0) {
 				ed.setOid_Empresa(ed.getOid_Empresa_Gambiarra());
+			}
 			if (checkEmUso(ed)) {
 				out.println("<ret><item oknok='Impossível excluir! Empresa em uso!' /></ret>");
 			} else {
-				this.delete(ed);
+				delete(ed);
 				out.println("<ret><item oknok='DOK' /></ret>");
 			}
 		} else 
@@ -316,12 +333,12 @@ public class EmpresaRN extends Transacao {
 			// altera a variavel dm_Tipo_Consulta para perfil Tipler para poder pegar todos os clientes
 			if (ed.getOid_Concessionaria()==999) { ed.setDm_Tipo_Consulta("T"); }
 			// *****************************************************************************************
-			ArrayList<EmpresaED> lst = this.lista(ed);
+			final ArrayList<EmpresaED> lst = this.lista(ed);
 			if (!lst.isEmpty()) {
 				String saida = null;
 				out.println("<cad>");
 				for (int i=0; i<lst.size(); i++){
-					EmpresaED edVolta = (EmpresaED)lst.get(i);
+					final EmpresaED edVolta = lst.get(i);
 					saida = "<item ";
 					saida += "oid_Empresa='" + edVolta.getOid_Empresa() + "' ";
 					saida += "oid_Empresa_Gambiarra='" + edVolta.getOid_Empresa() + "' ";
@@ -344,7 +361,7 @@ public class EmpresaRN extends Transacao {
 			EmpresaED edVolta = new EmpresaED();
 			edVolta = (EmpresaED)lst.get(i);
 			if ("L".equals(acao)) {
-				saida=this.montaRegistro(edVolta);
+				saida=montaRegistro(edVolta);
 			}else
 			if ("CB".equals(acao) || "CBC".equals(acao)) {
 				if ( i==0 && "CBC".equals(acao) ) {
@@ -369,7 +386,7 @@ public class EmpresaRN extends Transacao {
     	out.close();
     }
     
-    private String montaRegistro( EmpresaED edVolta ){
+    private String montaRegistro( final EmpresaED edVolta ){
     	String saida;
     	saida = "<item ";
 		saida += "oid_Empresa='" + edVolta.getOid_Empresa() + "' ";
@@ -401,44 +418,46 @@ public class EmpresaRN extends Transacao {
 		return saida;
     }
 
-    public boolean checkDuplo ( EmpresaED ed, String acao) throws Excecoes {
+    public boolean checkDuplo ( final EmpresaED ed, final String acao) throws Excecoes {
     	EmpresaED edChk = new EmpresaED();
     	edChk.setNr_Cnpj(ed.getNr_Cnpj());
     	edChk.setOid_Concessionaria(ed.getOid_Concessionaria());
-		edChk = this.getByRecord(edChk);
-    	if ("I".equals(acao) && Utilitaria.doValida(edChk.getNr_Cnpj()))
-    		return true;
-    	else
-    	if ("A".equals(acao) && !(ed.getNr_Cnpj().equals(edChk.getNr_Cnpj()) ))
-    		return true;
-    	else
-    		return false;
+		edChk = getByRecord(edChk);
+    	if ("I".equals(acao) && Utilitaria.doValida(edChk.getNr_Cnpj())) {
+			return true;
+		} else
+    	if ("A".equals(acao) && !(ed.getNr_Cnpj().equals(edChk.getNr_Cnpj()) )) {
+			return true;
+		} else {
+			return false;
+		}
     }
     
-    public boolean checkEmUso ( EmpresaED ed ) throws Excecoes {
+    public boolean checkEmUso ( final EmpresaED ed ) throws Excecoes {
 		try {
-			this.inicioTransacao();
+			inicioTransacao();
 			if ("C".equals(ed.getDm_Tipo_Empresa())) {
-				EmpresaED empED = new EmpresaED();
+				final EmpresaED empED = new EmpresaED();
 				empED.setOid_Empresa(ed.getOid_Empresa());
 				empED.setDm_Tipo_Consulta("C"); 
 			empED.setDm_Tipo_Empresa("A");
 				return this.lista(empED).size()>0?true:false;
 			} else
 			if ("U".equals(ed.getDm_Tipo_Empresa())) {
-				Recapagem_GarantidaED rgED = new Recapagem_GarantidaED();
+				final Recapagem_GarantidaED rgED = new Recapagem_GarantidaED();
 				rgED.setOid_Cliente(ed.getOid_Empresa());
-				return (new Recapagem_GarantidaRN(this.sql).lista(rgED).size()>0 ? true : false);	
+				return (new Recapagem_GarantidaRN(sql).lista(rgED).size()>0 ? true : false);	
 			}
 			return false;
         } finally {
-            this.fimTransacao(false);
+            fimTransacao(false);
         }
     }
     
     protected void finalize() throws Throwable {
-        if (this.sql != null)
-            this.abortaTransacao();
+        if (sql != null) {
+			abortaTransacao();
+		}
     }
 
 }

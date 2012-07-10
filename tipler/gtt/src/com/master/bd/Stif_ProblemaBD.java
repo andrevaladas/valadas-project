@@ -19,15 +19,15 @@ import com.master.util.bd.ExecutaSQL;
  */
 public class Stif_ProblemaBD extends BancoUtil {
 
-	private ExecutaSQL executaSQL;
+	private final ExecutaSQL executaSQL;
 	String sql=null;
 
-	public Stif_ProblemaBD (ExecutaSQL executaSQL) {
+	public Stif_ProblemaBD (final ExecutaSQL executaSQL) {
 		super(executaSQL);
 		this.executaSQL = executaSQL;
 	}
 
-	public Stif_ProblemaED inclui(Stif_ProblemaED ed) throws Excecoes {
+	public Stif_ProblemaED inclui(final Stif_ProblemaED ed) throws Excecoes {
 		try {
 			sql = "INSERT INTO Stif_Problemas (" +
 			"oid_empresa " +
@@ -50,12 +50,12 @@ public class Stif_ProblemaBD extends BancoUtil {
 			sql+=")";
 			executaSQL.executarUpdate (sql);
 			return ed;
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new Excecoes (e.getMessage () , e , this.getClass ().getName () , "inclui (Stif_ProblemaED ed)");
 		}
 	}
 
-	public void altera(Stif_ProblemaED ed) throws Excecoes {
+	public void altera(final Stif_ProblemaED ed) throws Excecoes {
 		try {
 			sql = "UPDATE Stif_Problemas SET " +
 			"cd_problema = '" + ed.getCd_problema() + "'" +
@@ -67,22 +67,22 @@ public class Stif_ProblemaBD extends BancoUtil {
   	   		",usuario_Stamp = '"+ed.getUsuario_Stamp() + "' " +
 			"WHERE oid_stif_problema = " + ed.getOid_stif_problema();
 			executaSQL.executarUpdate (sql);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new Excecoes (e.getMessage () , e , this.getClass ().getName () , "altera (Stif_ProblemaED ed)");
 		}
 	}
 
-	public void delete (Stif_ProblemaED ed) throws Excecoes {
+	public void delete (final Stif_ProblemaED ed) throws Excecoes {
 		try {
 			sql = "DELETE FROM Stif_Problemas " +
 				  "WHERE oid_stif_problema = " + ed.getOid_stif_problema();
 			executaSQL.executarUpdate (sql);
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new Excecoes (e.getMessage () , e , this.getClass ().getName () , "delete (Stif_ProblemaED ed)");
 		}
 	}
 
-	public List<Stif_ProblemaED> lista (Stif_ProblemaED ed) throws Excecoes {
+	public List<Stif_ProblemaED> lista (final Stif_ProblemaED ed) throws Excecoes {
 		final List<Stif_ProblemaED> list = new ArrayList <Stif_ProblemaED>();
 		try {
 			/** Busca vinculo com PNEU INSPECAO */
@@ -115,7 +115,7 @@ public class Stif_ProblemaBD extends BancoUtil {
 					sql += " and sp.dm_tipo = '" + ed.getDm_tipo() + "'";
 				}
 			}
-			sql += " ORDER BY sp.nm_problema";
+			sql += " ORDER BY sp.cd_problema";
 			final ResultSet rs = executaSQL.executarConsulta(sql);
 			final AtomicInteger rowCount = new AtomicInteger(1);
 			while (rs.next()) {
@@ -123,25 +123,25 @@ public class Stif_ProblemaBD extends BancoUtil {
 				populaRegistro.setOrdem(rowCount.getAndIncrement());
 				list.add(populaRegistro);
 			}
-		} catch (SQLException e) {
+		} catch (final SQLException e) {
 			throw new Excecoes (e.getMessage(), e,this.getClass().getName() , "lista(Stif_ProblemaED ed)");
 		}
 		return list;
 	}
 
-	public Stif_ProblemaED getByRecord(Stif_ProblemaED ed) throws Excecoes {
+	public Stif_ProblemaED getByRecord(final Stif_ProblemaED ed) throws Excecoes {
 		try {
-			List<Stif_ProblemaED> lista = this.lista(ed);
+			final List<Stif_ProblemaED> lista = lista(ed);
 			if(!lista.isEmpty()) {
-				return (Stif_ProblemaED) lista.get(0);
+				return lista.get(0);
 			}
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			throw new Excecoes(exc.getMessage(), exc, this.getClass().getName(),"getByRecord(Stif_ProblemaED ed)");
 		}
 		return new Stif_ProblemaED();
 	}
 
-	public Stif_ProblemaED populaRegistro(ResultSet res) throws SQLException {
+	public Stif_ProblemaED populaRegistro(final ResultSet res) throws SQLException {
 		final Stif_ProblemaED ed = (Stif_ProblemaED) beanProcessor.toBean(res, Stif_ProblemaED.class);
 	    ed.formataMsgStamp();
 	    return ed;	  
