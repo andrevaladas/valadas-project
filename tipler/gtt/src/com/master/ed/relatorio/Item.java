@@ -19,26 +19,26 @@ public class Item implements Serializable {
 	}
 
 	public void addQuantidade() {
-		quantidade++;
+		this.quantidade++;
 	}
 	public void addValor(final Double value) {
-		valor += value;
+		this.valor += value;
 	}
 	
 	public String getNome() {
-		return nome;
+		return this.nome;
 	}
 	public void setNome(final String nome) {
 		this.nome = nome;
 	}
 	public Integer getQuantidade() {
-		return quantidade;
+		return this.quantidade;
 	}
 	public void setQuantidade(final Integer quantidade) {
 		this.quantidade = quantidade;
 	}
 	public Double getValor() {
-		return valor;
+		return this.valor;
 	}
 	public void setValor(final Double valor) {
 		this.valor = valor;
