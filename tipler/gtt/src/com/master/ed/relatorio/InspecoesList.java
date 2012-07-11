@@ -29,7 +29,7 @@ public class InspecoesList extends RelatorioED {
 	private List<Veiculo> veiculos = new ArrayList<Veiculo>();
 
 	public List<Veiculo> getVeiculos() {
-		return veiculos;
+		return this.veiculos;
 	}
 
 	public void setVeiculos(final List<Veiculo> veiculos) {
@@ -49,10 +49,10 @@ public class InspecoesList extends RelatorioED {
 		de.setNm_Pneu_Dimensao("PIRELLI");
 		de.setNm_Modelo_Pneu("MODELO DE");
 		de.setNm_Banda("TIPLER");
-		de.setNr_Problemas_Rodas("2");
-		de.setNr_Problemas_Valvulas("5");
-		de.setNr_Problemas_Pneus("7");
-		de.setNr_Problemas_Outros("9");
+		de.addNr_Problemas_Rodas("2");
+		de.addNr_Problemas_Valvulas("5");
+		de.addNr_Problemas_Pneus("7");
+		de.addNr_Problemas_Outros("9");
 
 		final Pneu dd = new Pneu();
 		dd.setNr_Fogo(45678);
@@ -62,10 +62,10 @@ public class InspecoesList extends RelatorioED {
 		dd.setNm_Pneu_Dimensao("GODYEARRRRRRRRRRRRR");
 		dd.setNm_Modelo_Pneu("MODELO DD");
 		dd.setNm_Banda("TIPLER");
-		dd.setNr_Problemas_Rodas("0");
-		dd.setNr_Problemas_Valvulas("2");
-		dd.setNr_Problemas_Pneus("4");
-		dd.setNr_Problemas_Outros("6");
+		dd.addNr_Problemas_Rodas("0");
+		dd.addNr_Problemas_Valvulas("2");
+		dd.addNr_Problemas_Pneus("4");
+		dd.addNr_Problemas_Outros("6");
 
 		final Veiculo veiculo = new Veiculo();
 		veiculo.setDm_Tipo_Chassis(10);
