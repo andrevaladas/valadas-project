@@ -269,7 +269,6 @@ public class Stif_InspecaoBD extends BancoUtil {
 	private final List<Stif_ConstatacaoED> constatacoes = new ArrayList<Stif_ConstatacaoED>();
 	private enum DmTipo { 
 		valvulas("2"), rodas("3"), outros("4"), pneus("5");
-
 		private String codigo;
 		private DmTipo(final String dmTipo) {
 			this.codigo = dmTipo;
@@ -308,6 +307,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 			}
 		}
 		final Item item = new Item(nome);
+		item.addQuantidade();
 		item.addValor(valor);
 		items.add(item);
 	}
@@ -316,6 +316,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 		try {
 			inicioTransacao();
 			initalize();
+			loadAllProblemas();
 
 			//parametro da empresa
 			final Stif_ParametroED parametro = findParametro(oidEmpresa);
@@ -398,7 +399,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.valvulas, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							pneu.addNr_Problemas_Valvulas(problemaED.getCd_problema());
-							verificaAnomaliaPneu(problemaED);
+							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
 						//RODAS
 						final List<Stif_Problema_PneuED> problemasRodas = findProblemasPneu(pneuInspecaoED.getOid_Pneu_Inspecao(), DmTipo.rodas);
@@ -406,7 +407,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.rodas, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							pneu.addNr_Problemas_Rodas(problemaED.getCd_problema());
-							verificaAnomaliaPneu(problemaED);
+							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
 
 						//OUTROS
@@ -415,7 +416,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.outros, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							pneu.addNr_Problemas_Outros(problemaED.getCd_problema());
-							verificaAnomaliaPneu(problemaED);
+							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
 
 						//PNEUS
@@ -424,7 +425,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.pneus, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							pneu.addNr_Problemas_Pneus(problemaED.getCd_problema());
-							verificaAnomaliaPneu(problemaED);
+							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
 					}
 
@@ -554,10 +555,29 @@ public class Stif_InspecaoBD extends BancoUtil {
 		return vlPercentual;
 	}
 	
-	private void verificaAnomaliaPneu(final Stif_ProblemaED problemaED) {
-		if ("G".equals(problemaED.getDm_problema())) {
+	private void verificaAnomaliaPneu(final String dmProblema) {
+		if ("G".equals(dmProblema)) {
 			this.countPneusComAnomalias++;
 			this.hasAnomalia = Boolean.TRUE;
+		}
+	}
+	
+	private void loadAllProblemas() {
+		final List<Stif_ProblemaED> valvulasList = findProblemas(DmTipo.valvulas);
+		for (final Stif_ProblemaED problemaED : valvulasList) {
+			this.valvulas.add(new Item(problemaED.getNm_problema()));
+		}
+		final List<Stif_ProblemaED> rodasList = findProblemas(DmTipo.rodas);
+		for (final Stif_ProblemaED problemaED : rodasList) {
+			this.rodas.add(new Item(problemaED.getNm_problema()));
+		}
+		final List<Stif_ProblemaED> outrosList = findProblemas(DmTipo.outros);
+		for (final Stif_ProblemaED problemaED : outrosList) {
+			this.outros.add(new Item(problemaED.getNm_problema()));
+		}
+		final List<Stif_ProblemaED> pneusList = findProblemas(DmTipo.pneus);
+		for (final Stif_ProblemaED problemaED : pneusList) {
+			this.pneus.add(new Item(problemaED.getNm_problema()));
 		}
 	}
 	
@@ -708,6 +728,27 @@ public class Stif_InspecaoBD extends BancoUtil {
 		return result;
 	}
 
+	/**
+	 * Busca Problemas Pneu
+	 */
+	private List<Stif_ProblemaED> findProblemas(final DmTipo dmTipo) {
+		final StringBuilder query = new StringBuilder();
+		query.append(" SELECT p.*");
+		query.append(" FROM Stif_Problemas p");
+		query.append(" WHERE p.dm_Tipo = "+JavaUtil.getSQLString(dmTipo.getCodigo()));
+
+		final List<Stif_ProblemaED> result = new ArrayList<Stif_ProblemaED>();
+		try {
+			final ResultSet rs = this.sql.executarConsulta(query.toString());
+			while (rs.next()) {
+				final Stif_ProblemaED problemaED = (Stif_ProblemaED) beanProcessor.toBean(rs, Stif_ProblemaED.class);
+				result.add(problemaED);
+			}
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	/**
 	 * Busca Problemas Pneu
 	 */

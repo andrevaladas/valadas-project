@@ -10,7 +10,7 @@ public class Item implements Serializable {
 	private static final long serialVersionUID = 7715559925553019556L;
 
 	private String nome;
-	private Integer quantidade = 1;
+	private Integer quantidade = 0;
 	private Double valor = 0D;
 
 	public Item(final String nome) {
