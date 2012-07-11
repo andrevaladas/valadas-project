@@ -1,5 +1,6 @@
 package com.master.bd;
 
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import com.master.ed.relatorio.Veiculo;
 import com.master.util.BancoUtil;
 import com.master.util.Data;
 import com.master.util.Excecoes;
+import com.master.util.JavaUtil;
 import com.master.util.bd.ExecutaSQL;
 
 /**
@@ -309,13 +311,6 @@ public class Stif_InspecaoBD extends BancoUtil {
 		item.addValor(valor);
 		items.add(item);
 	}
-	private Double getValorTotal(final List<Item> items) {
-		Double valorTotal = 0D;
-		for (final Item item : items) {
-			valorTotal += item.getValor();
-		}
-		return valorTotal;
-	}
 
 	public void relatorio(final long oidEmpresa, final long oidInspecao) {
 		try {
@@ -346,7 +341,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 
 					final List<Stif_Pneu_InspecaoED> pneusInspecaoList = findPneusInspecao(veiculoInspecaoED.getOid_Veiculo_Inspecao());
 					for (final Stif_Pneu_InspecaoED pneuInspecaoED : pneusInspecaoList) {
-						/** add pneu */
+						/** pneu */
 						final Pneu pneu = new Pneu();
 						pneu.setNr_Fogo(pneuInspecaoED.getNr_Fogo());
 						pneu.setDm_Vida_Pneu(pneuInspecaoED.getDm_Vida_Pneu_Descricao());
@@ -355,6 +350,8 @@ public class Stif_InspecaoBD extends BancoUtil {
 						pneu.setNm_Pneu_Dimensao(pneuInspecaoED.getPneuDimensaoED().getNm_Pneu_Dimensao());
 						pneu.setNm_Modelo_Pneu(pneuInspecaoED.getModeloPneuED().getNM_Modelo_Pneu());
 						pneu.setNm_Banda(pneuInspecaoED.getBandaED().getNm_Banda());
+						/** add pneu via reflection */
+						addPneu(pneuInspecaoED.getDm_Posicao(), veiculo, pneu);
 
 						//carrega constatacao do respectivo eixo
 						final Stif_ConstatacaoED constatacaoED = findConstatacaoByNrEixo(pneuInspecaoED.getNr_Eixo());
@@ -452,6 +449,15 @@ public class Stif_InspecaoBD extends BancoUtil {
 		}
 	}
 
+	private void addPneu(final String dmPosicao, final Veiculo veiculo, final Pneu pneu) {
+		try {
+			final Method meth = veiculo.getClass().getMethod("set" + dmPosicao.substring(0,1).toUpperCase() + dmPosicao.substring(1).toLowerCase(),Pneu.class);
+			meth.invoke(veiculo, pneu);
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	private double getPercentualPerdaPressao(final long nrPressao, final Stif_Perda_PercentualED perdaPercentualED) {
 		double vlPercentual = 0.0;
 		if (nrPressao >= 150) {
@@ -646,13 +652,13 @@ public class Stif_InspecaoBD extends BancoUtil {
 				constatacaoED.setPerdaPercentualED((Stif_Perda_PercentualED) beanProcessor.toBean(rs, Stif_Perda_PercentualED.class));
 
 				if (constatacaoED.getNr_Eixo() >= 4) {
-					veiculo.setNr_Pressao_Eixo_4(constatacaoED.getNr_Eixo());
+					veiculo.setNr_Pressao_Eixo_4((long)constatacaoED.getPerdaPercentualED().getPc_perda_padrao());
 				} else if (constatacaoED.getNr_Eixo() >= 3) {
-					veiculo.setNr_Pressao_Eixo_3(constatacaoED.getNr_Eixo());
+					veiculo.setNr_Pressao_Eixo_3((long)constatacaoED.getPerdaPercentualED().getPc_perda_padrao());
 				} else if (constatacaoED.getNr_Eixo() >= 2) {
-					veiculo.setNr_Pressao_Eixo_2(constatacaoED.getNr_Eixo());
+					veiculo.setNr_Pressao_Eixo_2((long)constatacaoED.getPerdaPercentualED().getPc_perda_padrao());
 				} else {
-					veiculo.setNr_Pressao_Eixo_1(constatacaoED.getNr_Eixo());
+					veiculo.setNr_Pressao_Eixo_1((long)constatacaoED.getPerdaPercentualED().getPc_perda_padrao());
 				}
 				this.constatacoes.add(constatacaoED);
 			}
@@ -714,7 +720,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 		query.append(" 	INNER JOIN Stif_Pneus_Inspecoes pi");
 		query.append(" 		ON (pp.oid_Pneu_Inspecao = pi.oid_Pneu_Inspecao)");
 		query.append(" WHERE pi.oid_Pneu_Inspecao = "+oidPneuInspecao);
-		query.append(" AND p.dm_Tipo = "+dmTipo.getCodigo());
+		query.append(" AND p.dm_Tipo = "+JavaUtil.getSQLString(dmTipo.getCodigo()));
 
 		final List<Stif_Problema_PneuED> result = new ArrayList<Stif_Problema_PneuED>();
 		try {
