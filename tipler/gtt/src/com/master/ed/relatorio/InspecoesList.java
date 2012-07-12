@@ -1,13 +1,18 @@
 package com.master.ed.relatorio;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.WindowConstants;
 
+import com.master.bd.Stif_InspecaoBD;
 import com.master.ed.RelatorioED;
+import com.master.ed.Stif_InspecaoED;
 import com.master.relatorio.relatorioJasper.ObjetoJRDataSource;
+import com.master.util.Utilitaria;
 import com.master.util.ed.Parametro_FixoED;
 
 import dori.jasper.engine.JRException;
@@ -109,23 +114,60 @@ public class InspecoesList extends RelatorioED {
 			final JasperDesign jasperDesign = JRXmlLoader.load("C:/cpoint/workspace/gtt/webroot/relatoriosJasper/xml/tif201.jrxml");
 			final JasperReport jasperReport = JasperCompileManager.compileReport(jasperDesign);
 
-			final HashMap<String,String> map = new HashMap<String,String>();
+			final ObjetoJRDataSource veiculos = new ObjetoJRDataSource();
+			final ObjetoJRDataSource pressoes = new ObjetoJRDataSource();
+			final ObjetoJRDataSource valvulas = new ObjetoJRDataSource();
+			final ObjetoJRDataSource rodas = new ObjetoJRDataSource();
+			final ObjetoJRDataSource outros = new ObjetoJRDataSource();
+			final ObjetoJRDataSource pneus = new ObjetoJRDataSource();
+
+			final Stif_InspecaoBD inspecaoBD = new Stif_InspecaoBD();
+
+			/** Veículos */
+			veiculos.setArrayED(new ArrayList<Veiculo>(inspecaoBD.relatorio(1)));
+
+			/** Inspeção */
+			final Stif_InspecaoED inspecaoED = inspecaoBD.getInspecaoED();
+
+			/** Itens */
+			pressoes.setArrayED(new ArrayList<Item>(inspecaoBD.getPressoes()));
+			valvulas.setArrayED(new ArrayList<Item>(inspecaoBD.getValvulas()));
+			rodas.setArrayED(new ArrayList<Item>(inspecaoBD.getRodas()));
+			outros.setArrayED(new ArrayList<Item>(inspecaoBD.getOutros()));
+			pneus.setArrayED(new ArrayList<Item>(inspecaoBD.getPneus()));
+
+			final HashMap<String,Object> map = new HashMap<String,Object>();
+			map.put("nm_Local_Data", inspecaoED.getEmpresaED().getNm_Cidade()+", "+new SimpleDateFormat("d 'de' MMMM 'de' yyyy").format(new Date()));
+			map.put("nm_Razao_Social", inspecaoED.getEmpresaED().getNm_Razao_Social());
+			map.put("nm_Local", inspecaoED.getEmpresaED().getNm_Cidade()+" - "+inspecaoED.getEmpresaED().getCd_Estado());
+			if (Utilitaria.doValida(inspecaoED.getNm_Signatario())) {
+				map.put("tx_Tratamento", inspecaoED.getNm_Signatario().toUpperCase().startsWith("SRA.", 0) ? "Prezada ":"Prezado ");
+		    }
+			map.put("nm_Signatario", inspecaoED.getNm_Signatario());
+			map.put("tx_Inicial", inspecaoED.getTx_Inicial());
+			map.put("tx_Final", inspecaoED.getTx_Final());
+			map.put("tx_Assinatura1", inspecaoED.getTx_Assinatura1());
+			map.put("tx_Assinatura2", inspecaoED.getTx_Assinatura2());
+
+			map.put("pressoes", pressoes);
+			map.put("valvulas", valvulas);
+			map.put("rodas", rodas);
+			map.put("outros", outros);
+			map.put("pneus", pneus);
+
+			map.put("TITULO", "STIF - Relatório de Inspeção de Frota");
+			map.put("PATH_SUBLIST", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
+
 			map.put("RELATORIO", "tif201");
 			map.put("USUARIO", "USUARIO");
-			map.put("DESC_FILTER", "FILTRO");
 			map.put("EMPRESA", "EMPRESA");
-			map.put("TITULO", "TITULO");
 			map.put("BASE_PATH", "TESTE");
-    		map.put("PATH_SUBLIST", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
-    		map.put("PATH_IMAGENS", Parametro_FixoED.getInstancia().getPATH_IMAGENS());
-    		map.put("PATH_RELATORIOS", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
+			map.put("PATH_IMAGENS", Parametro_FixoED.getInstancia().getPATH_IMAGENS());
+			map.put("PATH_RELATORIOS", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
 
-			final ObjetoJRDataSource objJR = new ObjetoJRDataSource();
-            objJR.setArrayED(new InspecoesList().getVeiculoTest());
-
-			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, objJR);
+			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, veiculos);
 			final JasperViewer viewer = new JasperViewer(jasperPrint, false);
-			viewer.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			viewer.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 			viewer.setVisible(true);
 		} catch (final JRException e) {
 			e.printStackTrace();

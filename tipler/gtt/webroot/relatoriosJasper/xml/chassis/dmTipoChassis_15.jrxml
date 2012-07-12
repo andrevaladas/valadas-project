@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="dmTipoChassis_full"
+		 name="dmTipoChassis_15"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -104,9 +104,9 @@
 					<reportElement
 						mode="Opaque"
 						x="349"
-						y="60"
+						y="79"
 						width="6"
-						height="243"
+						height="200"
 						forecolor="#000000"
 						backcolor="#000000"
 						key="rectangle-5"
@@ -122,9 +122,9 @@
 					<reportElement
 						mode="Opaque"
 						x="490"
-						y="60"
+						y="79"
 						width="6"
-						height="243"
+						height="200"
 						forecolor="#000000"
 						backcolor="#000000"
 						key="rectangle-6"
@@ -281,27 +281,6 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="71"
-						width="140"
-						height="70"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="dd-2"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<subreportParameter  name="pneu">
-						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
-				</subreport>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="141"
 						y="291"
 						width="140"
 						height="70"
@@ -316,27 +295,6 @@
 						isPrintWhenDetailOverflows="false"/>
 					<subreportParameter  name="pneu">
 						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
-				</subreport>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="141"
-						y="220"
-						width="140"
-						height="70"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="de-3"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<subreportParameter  name="pneu">
-						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
 				</subreport>
@@ -525,90 +483,6 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Pressao_Eixo_4}]]></textFieldExpression>
 				</textField>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="282"
-						y="0"
-						width="140"
-						height="70"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="dd-6"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<subreportParameter  name="pneu">
-						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
-				</subreport>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="423"
-						y="0"
-						width="140"
-						height="70"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="dd-7"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<subreportParameter  name="pneu">
-						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
-				</subreport>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="282"
-						y="291"
-						width="140"
-						height="70"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="de-6"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<subreportParameter  name="pneu">
-						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
-				</subreport>
-				<subreport  isUsingCache="true">
-					<reportElement
-						mode="Transparent"
-						x="423"
-						y="291"
-						width="140"
-						height="70"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="de-7"
-						stretchType="NoStretch"
-						positionType="Float"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<subreportParameter  name="pneu">
-						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
-				</subreport>
 				<rectangle radius="5" >
 					<reportElement
 						mode="Opaque"

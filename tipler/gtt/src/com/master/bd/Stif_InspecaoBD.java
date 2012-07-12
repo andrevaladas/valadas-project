@@ -4,11 +4,12 @@ import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
 
 import com.master.ed.BandaED;
+import com.master.ed.EmpresaED;
 import com.master.ed.Modelo_PneuED;
 import com.master.ed.Pneu_DimensaoED;
 import com.master.ed.Stif_ConstatacaoED;
@@ -243,14 +244,15 @@ public class Stif_InspecaoBD extends BancoUtil {
 	}
 
 	public static void main(final String[] args) {
-		new Stif_InspecaoBD().relatorio(1,1);
+		new Stif_InspecaoBD().relatorio(1);
 	}
 	
 	public Stif_InspecaoBD() {
 		super();
 	}
 
-	private final Set<Veiculo> veiculos = new HashSet<Veiculo>();
+	private Stif_InspecaoED inspecaoED;
+	private final List<Veiculo> veiculos = new ArrayList<Veiculo>();
 	private Integer countVeiculosComAnomalias;
 	private Integer countPneusComAnomalias;
 	private Boolean hasAnomalia = Boolean.FALSE;
@@ -260,11 +262,11 @@ public class Stif_InspecaoBD extends BancoUtil {
 	private Double wTotalPerc;
 	private Double wTotalVlr;
 
-	private final Set<Item> pressoes = new HashSet<Item>();
-	private final Set<Item> valvulas = new HashSet<Item>();
-	private final Set<Item> rodas = new HashSet<Item>();
-	private final Set<Item> outros = new HashSet<Item>();
-	private final Set<Item> pneus = new HashSet<Item>();
+	private final List<Item> pressoes = new ArrayList<Item>();
+	private final List<Item> valvulas = new ArrayList<Item>();
+	private final List<Item> rodas = new ArrayList<Item>();
+	private final List<Item> outros = new ArrayList<Item>();
+	private final List<Item> pneus = new ArrayList<Item>();
 
 	private final List<Stif_ConstatacaoED> constatacoes = new ArrayList<Stif_ConstatacaoED>();
 	private enum DmTipo { 
@@ -277,6 +279,12 @@ public class Stif_InspecaoBD extends BancoUtil {
 			return this.codigo;
 		}
 	}
+	final Comparator<Item> itemNameComparator = new Comparator<Item>() {
+		@Override
+		public int compare(final Item arg0, final Item arg1) {
+			return arg0.getNome().compareTo(arg1.getNome());
+		}
+	};
 
 	private void initalize() {
 		this.veiculos.clear();
@@ -298,9 +306,9 @@ public class Stif_InspecaoBD extends BancoUtil {
 		this.constatacoes.clear();
 	}
 
-	private void addItem(final Set<Item> items, final String nome, final Double valor) {
+	private void addItem(final List<Item> items, final String nome, final Double valor) {
 		for (final Item item : items) {
-			if (item.getNome().equals(nome)) {
+			if (item.getNome().equalsIgnoreCase(nome)) {
 				item.addQuantidade();
 				item.addValor(valor);
 				return;
@@ -312,18 +320,19 @@ public class Stif_InspecaoBD extends BancoUtil {
 		items.add(item);
 	}
 
-	public void relatorio(final long oidEmpresa, final long oidInspecao) {
+	public List<Veiculo> relatorio(final long oidInspecao) {
 		try {
 			inicioTransacao();
 			initalize();
 			loadAllProblemas();
 
-			//parametro da empresa
-			final Stif_ParametroED parametro = findParametro(oidEmpresa);
+			this.inspecaoED = findInspecao(oidInspecao);
 
-			final Stif_InspecaoED inspecaoED = findInspecao(oidInspecao);
-			if (inspecaoED != null) {
-				final List<Stif_Veiculo_InspecaoED> veiculosInspecaoList = findVeiculosInspecao(inspecaoED.getOid_Inspecao());
+			//parametro da empresa
+			final Stif_ParametroED parametro = findParametro(this.inspecaoED.getOid_Empresa());
+
+			if (this.inspecaoED != null) {
+				final List<Stif_Veiculo_InspecaoED> veiculosInspecaoList = findVeiculosInspecao(this.inspecaoED.getOid_Inspecao());
 				for (final Stif_Veiculo_InspecaoED veiculoInspecaoED : veiculosInspecaoList) {
 					/** add veiculo */
 					final VeiculoED veiculoED = veiculoInspecaoED.getVeiculoED();
@@ -366,15 +375,15 @@ public class Stif_InspecaoBD extends BancoUtil {
 						final String dmVidaPneu = pneuInspecaoED.getDm_Vida_Pneu();
 						if ("N".equals(dmVidaPneu)) {
 							//TODO verificar se pega da INSPECAO OU DOS PARAMETROS
-							vlParametroVidaPneu = inspecaoED.getVl_pneu_novo();
+							vlParametroVidaPneu = this.inspecaoED.getVl_pneu_novo();
 						} else if ("R1".equals(dmVidaPneu)) {
-							vlParametroVidaPneu = inspecaoED.getVl_pneu_r1();
+							vlParametroVidaPneu = this.inspecaoED.getVl_pneu_r1();
 						} else if ("R2".equals(dmVidaPneu)) {
-							vlParametroVidaPneu = inspecaoED.getVl_pneu_r2();
+							vlParametroVidaPneu = this.inspecaoED.getVl_pneu_r2();
 						} else if ("R3".equals(dmVidaPneu)) {
-							vlParametroVidaPneu = inspecaoED.getVl_pneu_r3();
+							vlParametroVidaPneu = this.inspecaoED.getVl_pneu_r3();
 						} else if ("R4".equals(dmVidaPneu)) {
-							vlParametroVidaPneu = inspecaoED.getVl_pneu_r4();
+							vlParametroVidaPneu = this.inspecaoED.getVl_pneu_r4();
 						}
 
 						final double vlPerdaDoPneu = (vlParametroVidaPneu * vlPercentual / 100);
@@ -387,7 +396,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 						}
 						//faz o somatorio geral
 						addItem(this.pressoes, "PERDA TOTAL DE KM P/ BAIXA E ALTA PRESSAO %", vlPercentual);
-						addItem(this.pressoes, "PERDA TOTAL EM NUMERO DE PNEUS", vlPerdaDoPneu / inspecaoED.getVl_pneu_novo());
+						addItem(this.pressoes, "PERDA TOTAL EM NUMERO DE PNEUS", vlPerdaDoPneu / this.inspecaoED.getVl_pneu_novo());
 						
 						this.wTotalVlr += vlPerdaDoPneu;
 						this.wTotalPerc += vlPercentual;
@@ -446,8 +455,8 @@ public class Stif_InspecaoBD extends BancoUtil {
 			e.printStackTrace();
 		} finally {
 			fimTransacao(false);
-			System.exit(1);
 		}
+		return this.veiculos;
 	}
 
 	private void addPneu(final String dmPosicao, final Veiculo veiculo, final Pneu pneu) {
@@ -523,7 +532,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 		return vlPercentual;
 	}
 	
-	private void recalculaIncidenciaPeso(final Set<Item> items, final Stif_ParametroED parametro) {
+	private void recalculaIncidenciaPeso(final List<Item> items, final Stif_ParametroED parametro) {
 		for (final Item item : items) {
 			final double vlPercentual = getPercentualIncidenciaPeso(parametro, item.getQuantidade());
 			final double valorTotalValvulas = item.getValor() + (item.getValor() * vlPercentual/100);
@@ -580,20 +589,47 @@ public class Stif_InspecaoBD extends BancoUtil {
 			this.pneus.add(new Item(problemaED.getNm_problema()));
 		}
 	}
+	public Stif_InspecaoED getInspecaoED() {
+		return this.inspecaoED;
+	}
+	public List<Item> getPressoes() {
+		Collections.sort(this.pressoes, this.itemNameComparator);
+		return this.pressoes;
+	}
+	public List<Item> getValvulas() {
+		Collections.sort(this.valvulas, this.itemNameComparator);
+		return this.valvulas;
+	}
+	public List<Item> getRodas() {
+		Collections.sort(this.rodas, this.itemNameComparator);
+		return this.rodas;
+	}
+	public List<Item> getOutros() {
+		Collections.sort(this.outros, this.itemNameComparator);
+		return this.outros;
+	}
+	public List<Item> getPneus() {
+		Collections.sort(this.pneus, this.itemNameComparator);
+		return this.pneus;
+	}
 	
 	/**
 	 * Busca Inspeção
 	 */
-	private Stif_InspecaoED findInspecao(final long oidInspecao) {
+	public Stif_InspecaoED findInspecao(final long oidInspecao) {
 		final StringBuilder query = new StringBuilder();
-		query.append(" SELECT i.* ");
+		query.append(" SELECT * ");
 		query.append(" FROM Stif_Inspecoes i");
+		query.append(" 	LEFT JOIN Empresas e");
+		query.append(" 		ON (e.oid_Empresa = i.oid_Empresa)");//TODO i.oid_Cliente ???
 		query.append(" WHERE i.oid_Inspecao = "+oidInspecao);
 
 		try {
 			final ResultSet rs = this.sql.executarConsulta(query.toString());
 			if (rs.next()) {
-				return (Stif_InspecaoED) beanProcessor.toBean(rs, Stif_InspecaoED.class);
+				final Stif_InspecaoED inspecaoED = (Stif_InspecaoED) beanProcessor.toBean(rs, Stif_InspecaoED.class);
+				inspecaoED.setEmpresaED((EmpresaED) beanProcessor.toBean(rs, EmpresaED.class));
+				return inspecaoED;
 			}
 		} catch (final Exception e) {
 			e.printStackTrace();
@@ -736,6 +772,7 @@ public class Stif_InspecaoBD extends BancoUtil {
 		query.append(" SELECT p.*");
 		query.append(" FROM Stif_Problemas p");
 		query.append(" WHERE p.dm_Tipo = "+JavaUtil.getSQLString(dmTipo.getCodigo()));
+		query.append(" ORDER BY p.cd_problema");
 
 		final List<Stif_ProblemaED> result = new ArrayList<Stif_ProblemaED>();
 		try {
@@ -761,7 +798,8 @@ public class Stif_InspecaoBD extends BancoUtil {
 		query.append(" 	INNER JOIN Stif_Pneus_Inspecoes pi");
 		query.append(" 		ON (pp.oid_Pneu_Inspecao = pi.oid_Pneu_Inspecao)");
 		query.append(" WHERE pi.oid_Pneu_Inspecao = "+oidPneuInspecao);
-		query.append(" AND p.dm_Tipo = "+JavaUtil.getSQLString(dmTipo.getCodigo()));
+		query.append("   AND p.dm_Tipo = "+JavaUtil.getSQLString(dmTipo.getCodigo()));
+		query.append(" ORDER BY p.cd_problema");
 
 		final List<Stif_Problema_PneuED> result = new ArrayList<Stif_Problema_PneuED>();
 		try {

@@ -34,164 +34,174 @@ public class Stif_InspecaoED extends RelatorioBaseED {
 
 	// List<Stif_Veiculo_InspecaoED>
 	private transient String array;
-	
+
+	private transient EmpresaED empresaED;
+
 	private transient boolean encerrada;
 	private transient boolean todas;
 
 	public long getOid_Inspecao() {
-		return oid_Inspecao;
+		return this.oid_Inspecao;
 	}
 
 	public void setOid_Inspecao(final long oidInspecao) {
-		oid_Inspecao = oidInspecao;
+		this.oid_Inspecao = oidInspecao;
 	}
 
 	public long getOid_Empresa() {
-		return oid_Empresa;
+		return this.oid_Empresa;
 	}
 
 	public void setOid_Empresa(final long oidEmpresa) {
-		oid_Empresa = oidEmpresa;
+		this.oid_Empresa = oidEmpresa;
 	}
 
 	public long getOid_Usuario() {
-		return oid_Usuario;
+		return this.oid_Usuario;
 	}
 
 	public void setOid_Usuario(final long oidUsuario) {
-		oid_Usuario = oidUsuario;
+		this.oid_Usuario = oidUsuario;
 	}
 
 	public long getOid_Cliente() {
-		return oid_Cliente;
+		return this.oid_Cliente;
 	}
 
 	public void setOid_Cliente(final long oidCliente) {
-		oid_Cliente = oidCliente;
+		this.oid_Cliente = oidCliente;
 	}
 	
 	public long getNr_Veiculos() {
-		return nr_Veiculos;
+		return this.nr_Veiculos;
 	}
 
 	public void setNr_Veiculos(final long nrVeiculos) {
-		nr_Veiculos = nrVeiculos;
+		this.nr_Veiculos = nrVeiculos;
 	}
 
 	public String getDt_Inspecao() {
-		return dt_Inspecao;
+		return this.dt_Inspecao;
 	}
 
 	public void setDt_Inspecao(final String dtInspecao) {
-		dt_Inspecao = dtInspecao;
+		this.dt_Inspecao = dtInspecao;
 	}
 
 	public String getDt_Encerramento() {
-		return dt_Encerramento;
+		return this.dt_Encerramento;
 	}
 
 	public void setDt_Encerramento(final String dtEncerramento) {
-		dt_Encerramento = dtEncerramento;
+		this.dt_Encerramento = dtEncerramento;
 	}
 
 	public String getTx_Inicial() {
-		return tx_Inicial;
+		return this.tx_Inicial;
 	}
 
 	public void setTx_Inicial(final String txInicial) {
-		tx_Inicial = txInicial;
+		this.tx_Inicial = txInicial;
 	}
 
 	public String getTx_Final() {
-		return tx_Final;
+		return this.tx_Final;
 	}
 
 	public void setTx_Final(final String txFinal) {
-		tx_Final = txFinal;
+		this.tx_Final = txFinal;
 	}
 
 	public String getTx_Assinatura1() {
-		return tx_Assinatura1;
+		return this.tx_Assinatura1;
 	}
 
 	public void setTx_Assinatura1(final String txAssinatura1) {
-		tx_Assinatura1 = txAssinatura1;
+		this.tx_Assinatura1 = txAssinatura1;
 	}
 
 	public String getTx_Assinatura2() {
-		return tx_Assinatura2;
+		return this.tx_Assinatura2;
 	}
 
 	public void setTx_Assinatura2(final String txAssinatura2) {
-		tx_Assinatura2 = txAssinatura2;
+		this.tx_Assinatura2 = txAssinatura2;
 	}
 
 	public String getNm_Signatario() {
-		return nm_Signatario;
+		return this.nm_Signatario;
 	}
 
 	public void setNm_Signatario(final String nmSignatario) {
-		nm_Signatario = nmSignatario;
+		this.nm_Signatario = nmSignatario;
 	}
 
 	public String getNm_Tecnico() {
-		return nm_Tecnico;
+		return this.nm_Tecnico;
 	}
 
 	public void setNm_Tecnico(final String nmTecnico) {
-		nm_Tecnico = nmTecnico;
+		this.nm_Tecnico = nmTecnico;
 	}
 
 	public double getVl_pneu_novo() {
-		return vl_pneu_novo;
+		return this.vl_pneu_novo;
 	}
 
 	public void setVl_pneu_novo(final double vlPneuNovo) {
-		vl_pneu_novo = vlPneuNovo;
+		this.vl_pneu_novo = vlPneuNovo;
 	}
 
 	public double getVl_pneu_r1() {
-		return vl_pneu_r1;
+		return this.vl_pneu_r1;
 	}
 
 	public void setVl_pneu_r1(final double vlPneuR1) {
-		vl_pneu_r1 = vlPneuR1;
+		this.vl_pneu_r1 = vlPneuR1;
 	}
 
 	public double getVl_pneu_r2() {
-		return vl_pneu_r2;
+		return this.vl_pneu_r2;
 	}
 
 	public void setVl_pneu_r2(final double vlPneuR2) {
-		vl_pneu_r2 = vlPneuR2;
+		this.vl_pneu_r2 = vlPneuR2;
 	}
 
 	public double getVl_pneu_r3() {
-		return vl_pneu_r3;
+		return this.vl_pneu_r3;
 	}
 
 	public void setVl_pneu_r3(final double vlPneuR3) {
-		vl_pneu_r3 = vlPneuR3;
+		this.vl_pneu_r3 = vlPneuR3;
 	}
 
 	public double getVl_pneu_r4() {
-		return vl_pneu_r4;
+		return this.vl_pneu_r4;
 	}
 
 	public void setVl_pneu_r4(final double vlPneuR4) {
-		vl_pneu_r4 = vlPneuR4;
+		this.vl_pneu_r4 = vlPneuR4;
 	}
 
 	public String getArray() {
-		return array;
+		return this.array;
 	}
 
 	public void setArray(final String array) {
 		this.array = array;
 	}
 
+	public EmpresaED getEmpresaED() {
+		return this.empresaED;
+	}
+
+	public void setEmpresaED(final EmpresaED empresaED) {
+		this.empresaED = empresaED;
+	}
+
 	public boolean isEncerrada() {
-		return encerrada;
+		return this.encerrada;
 	}
 
 	public void setEncerrada(final boolean encerrada) {
@@ -199,7 +209,7 @@ public class Stif_InspecaoED extends RelatorioBaseED {
 	}
 
 	public boolean isTodas() {
-		return todas;
+		return this.todas;
 	}
 
 	public void setTodas(final boolean todas) {
@@ -210,29 +220,29 @@ public class Stif_InspecaoED extends RelatorioBaseED {
 	public String toString() {
 		final StringBuilder builder = new StringBuilder();
 		builder.append("Stif_InspecaoED [dt_Encerramento=");
-		builder.append(dt_Encerramento);
+		builder.append(this.dt_Encerramento);
 		builder.append(", dt_Inspecao=");
-		builder.append(dt_Inspecao);
+		builder.append(this.dt_Inspecao);
 		builder.append(", nr_Veiculos=");
-		builder.append(nr_Veiculos);
+		builder.append(this.nr_Veiculos);
 		builder.append(", oid_Cliente=");
-		builder.append(oid_Cliente);
+		builder.append(this.oid_Cliente);
 		builder.append(", oid_Empresa=");
-		builder.append(oid_Empresa);
+		builder.append(this.oid_Empresa);
 		builder.append(", oid_Inspecao=");
-		builder.append(oid_Inspecao);
+		builder.append(this.oid_Inspecao);
 		builder.append(", oid_Usuario=");
-		builder.append(oid_Usuario);
+		builder.append(this.oid_Usuario);
 		builder.append(", vl_pneu_novo=");
-		builder.append(vl_pneu_novo);
+		builder.append(this.vl_pneu_novo);
 		builder.append(", vl_pneu_r1=");
-		builder.append(vl_pneu_r1);
+		builder.append(this.vl_pneu_r1);
 		builder.append(", vl_pneu_r2=");
-		builder.append(vl_pneu_r2);
+		builder.append(this.vl_pneu_r2);
 		builder.append(", vl_pneu_r3=");
-		builder.append(vl_pneu_r3);
+		builder.append(this.vl_pneu_r3);
 		builder.append(", vl_pneu_r4=");
-		builder.append(vl_pneu_r4);
+		builder.append(this.vl_pneu_r4);
 		builder.append("]");
 		return builder.toString();
 	}
