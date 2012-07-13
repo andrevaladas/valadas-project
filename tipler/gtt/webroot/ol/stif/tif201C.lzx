@@ -5,7 +5,6 @@
 		var oidInspecao=0;
 		var controlPan=1;
 		var txInicialDefault= "		Com a intenção de auxiliar na melhoria constante do setor de borracharia, transcrevemos abaixo a avaliação das condições atuais e no quadro que segue um comparativo com as anteriores. ";
-		var txInicialDefaultE= "		Con la intención de ayudar en la mejora de sector neumáticos, transcribimos abajo una evaluacción de las condiciones atuales y en el quadro que sigue un comparativo con las anteriores. ";
 		var lang = 'P';
 		]]>
 	</script>
@@ -27,7 +26,7 @@
 	          		var p3 = parent.wTif201.fake.tela.pan3.cpos.edts.quadro1;
 	          		var p4 = parent.wTif201.fake.tela.pan4.cpos.edts;
 	          		if (d.xpathQuery('@tx_Inicial')==undefined || d.xpathQuery('@tx_Inicial')=='') {
-	          			p3.tx_Inicial.setAttribute('text',lang='E'? txInicialDefaultE : txInicialDefault);
+	          			p3.tx_Inicial.setAttribute('text',txInicialDefault);
       					p3.nm_Razao_Social.setAttribute('text',parent.wTif201.fake.tela.pan1.cpos.edts.quadro1.oid_Cliente.getDescriptionText());
 	          			p3.nm_Signatario.setAttribute('text','');
 	          			p3.nm_Tecnico.setAttribute('text',d.xpathQuery('@nm_Usuario'));
@@ -337,7 +336,8 @@
 			  	  		      rn : "Stif_InspecaoRN",
 						  	acao : "L",
 					   encerrada : "true",
-				  	 oid_Inspecao : oid
+					   	   todas : "true",
+				  	oid_Inspecao : oid
 	  			});	
   				dsInspecao.doRequest();
 		</method>
@@ -351,6 +351,7 @@
 				  	  		      rn : "Stif_InspecaoRN",
 							  	acao : "L",
 					   	   encerrada : "true",
+					   	       todas : "true",
 					  	 oid_Cliente : oid
 	  			});	
   				dsInspecaoList.doRequest();

@@ -8,10 +8,10 @@ import java.util.List;
 
 import javax.swing.WindowConstants;
 
-import com.master.bd.Stif_InspecaoBD;
 import com.master.ed.RelatorioED;
 import com.master.ed.Stif_InspecaoED;
 import com.master.relatorio.relatorioJasper.ObjetoJRDataSource;
+import com.master.rl.Stif_InspecaoRL;
 import com.master.util.Utilitaria;
 import com.master.util.ed.Parametro_FixoED;
 
@@ -120,21 +120,25 @@ public class InspecoesList extends RelatorioED {
 			final ObjetoJRDataSource rodas = new ObjetoJRDataSource();
 			final ObjetoJRDataSource outros = new ObjetoJRDataSource();
 			final ObjetoJRDataSource pneus = new ObjetoJRDataSource();
+			final ObjetoJRDataSource totalPerdas = new ObjetoJRDataSource();
+			final ObjetoJRDataSource resumos = new ObjetoJRDataSource();
 
-			final Stif_InspecaoBD inspecaoBD = new Stif_InspecaoBD();
+			final Stif_InspecaoRL inspecaoRL = new Stif_InspecaoRL();
 
 			/** Veículos */
-			veiculos.setArrayED(new ArrayList<Veiculo>(inspecaoBD.relatorio(1)));
+			veiculos.setArrayED(new ArrayList<Veiculo>(inspecaoRL.relatorio(3)));
 
 			/** Inspeção */
-			final Stif_InspecaoED inspecaoED = inspecaoBD.getInspecaoED();
+			final Stif_InspecaoED inspecaoED = inspecaoRL.getInspecaoED();
 
 			/** Itens */
-			pressoes.setArrayED(new ArrayList<Item>(inspecaoBD.getPressoes()));
-			valvulas.setArrayED(new ArrayList<Item>(inspecaoBD.getValvulas()));
-			rodas.setArrayED(new ArrayList<Item>(inspecaoBD.getRodas()));
-			outros.setArrayED(new ArrayList<Item>(inspecaoBD.getOutros()));
-			pneus.setArrayED(new ArrayList<Item>(inspecaoBD.getPneus()));
+			pressoes.setArrayED(new ArrayList<Item>(inspecaoRL.getPressoes()));
+			valvulas.setArrayED(new ArrayList<Item>(inspecaoRL.getValvulas()));
+			rodas.setArrayED(new ArrayList<Item>(inspecaoRL.getRodas()));
+			outros.setArrayED(new ArrayList<Item>(inspecaoRL.getOutros()));
+			pneus.setArrayED(new ArrayList<Item>(inspecaoRL.getPneus()));
+			totalPerdas.setArrayED(new ArrayList<Item>(inspecaoRL.getTotalPerdas()));
+			resumos.setArrayED(new ArrayList<Resumo>(inspecaoRL.getResumos()));
 
 			final HashMap<String,Object> map = new HashMap<String,Object>();
 			map.put("nm_Local_Data", inspecaoED.getEmpresaED().getNm_Cidade()+", "+new SimpleDateFormat("d 'de' MMMM 'de' yyyy").format(new Date()));
@@ -142,18 +146,26 @@ public class InspecoesList extends RelatorioED {
 			map.put("nm_Local", inspecaoED.getEmpresaED().getNm_Cidade()+" - "+inspecaoED.getEmpresaED().getCd_Estado());
 			if (Utilitaria.doValida(inspecaoED.getNm_Signatario())) {
 				map.put("tx_Tratamento", inspecaoED.getNm_Signatario().toUpperCase().startsWith("SRA.", 0) ? "Prezada ":"Prezado ");
+				map.put("nm_Signatario", inspecaoED.getNm_Signatario());
 		    }
-			map.put("nm_Signatario", inspecaoED.getNm_Signatario());
 			map.put("tx_Inicial", inspecaoED.getTx_Inicial());
 			map.put("tx_Final", inspecaoED.getTx_Final());
 			map.put("tx_Assinatura1", inspecaoED.getTx_Assinatura1());
 			map.put("tx_Assinatura2", inspecaoED.getTx_Assinatura2());
+
+			map.put("countVeiculos", inspecaoRL.getCountVeiculos());
+			map.put("countVeiculosComAnomalias", inspecaoRL.getCountVeiculosComAnomalias());
+			map.put("countPneus", inspecaoRL.getCountPneus());
+			map.put("countPneusComAnomalias", inspecaoRL.getCountPneusComAnomalias());
+			map.put("valorTotalPressao", inspecaoRL.getValorTotalPressao());
 
 			map.put("pressoes", pressoes);
 			map.put("valvulas", valvulas);
 			map.put("rodas", rodas);
 			map.put("outros", outros);
 			map.put("pneus", pneus);
+			map.put("totalPerdas", totalPerdas);
+			map.put("resumos", resumos);
 
 			map.put("TITULO", "STIF - Relatório de Inspeção de Frota");
 			map.put("PATH_SUBLIST", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
@@ -161,8 +173,8 @@ public class InspecoesList extends RelatorioED {
 			map.put("RELATORIO", "tif201");
 			map.put("USUARIO", "USUARIO");
 			map.put("EMPRESA", "EMPRESA");
-			map.put("BASE_PATH", "TESTE");
-			map.put("PATH_IMAGENS", Parametro_FixoED.getInstancia().getPATH_IMAGENS());
+			//map.put("BASE_PATH", "TESTE");
+			//map.put("PATH_IMAGENS", Parametro_FixoED.getInstancia().getPATH_IMAGENS());
 			map.put("PATH_RELATORIOS", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
 
 			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, map, veiculos);

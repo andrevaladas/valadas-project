@@ -26,6 +26,12 @@
 		<defaultValueExpression ><![CDATA["C:/cpoint/workspace/gtt/webroot/relatoriosJasper/"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="BASE_PATH" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nm_Empresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nr_Frota" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nr_Odometro" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Placa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nm_Tipo_Veiculo" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nm_Modelo_Veiculo" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="nr_Pressao_Eixo_1" isForPrompting="false" class="java.lang.Long"/>
 	<parameter name="nr_Pressao_Eixo_2" isForPrompting="false" class="java.lang.Long"/>
 	<parameter name="nr_Pressao_Eixo_3" isForPrompting="false" class="java.lang.Long"/>
@@ -81,17 +87,263 @@
 			</band>
 		</background>
 		<title>
-			<band height="400"  isSplitAllowed="true" >
+			<band height="662"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="47"
+						y="8"
+						width="518"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-27"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Empresa}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="44"
+						y="28"
+						width="55"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nr_Frota}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="28"
+						width="44"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Nº Frota:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="153"
+						y="28"
+						width="57"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Odometro}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="247"
+						y="28"
+						width="70"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nr_Placa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="215"
+						y="28"
+						width="32"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Placa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="319"
+						y="28"
+						width="27"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Tipo:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="346"
+						y="28"
+						width="82"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Tipo_Veiculo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="430"
+						y="28"
+						width="40"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-7"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Modelo:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="470"
+						y="28"
+						width="95"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-10"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Modelo_Veiculo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="101"
+						y="28"
+						width="52"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Odômetro:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="8"
+						width="47"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Empresa:]]></text>
+				</staticText>
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
-						x="208"
-						y="60"
+						x="210"
+						y="130"
 						width="6"
 						height="243"
 						forecolor="#000000"
 						backcolor="#000000"
-						key="rectangle-4"
+						key="rectangle-1"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -103,13 +355,13 @@
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
-						x="490"
-						y="80"
+						x="492"
+						y="150"
 						width="6"
 						height="200"
 						forecolor="#000000"
 						backcolor="#000000"
-						key="rectangle-6"
+						key="rectangle-2"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -121,8 +373,8 @@
 				<rectangle radius="0" >
 					<reportElement
 						mode="Opaque"
-						x="67"
-						y="60"
+						x="69"
+						y="130"
 						width="6"
 						height="243"
 						forecolor="#000000"
@@ -140,12 +392,12 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="373"
+						y="443"
 						width="565"
 						height="20"
 						forecolor="#999999"
 						backcolor="#FFFFFF"
-						key="rectangle-1"
+						key="rectangle-4"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -158,12 +410,12 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="0"
+						y="70"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="de"
+						key="de-1"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -179,12 +431,12 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="71"
+						y="141"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="dd"
+						key="dd-1"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -200,12 +452,12 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="291"
+						y="361"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="dd-1"
+						key="dd-2"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -221,12 +473,12 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="220"
+						y="290"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="de-1"
+						key="de-2"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -242,12 +494,12 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="0"
+						y="70"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="de-2"
+						key="de-3"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -263,12 +515,12 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="71"
+						y="141"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="dd-2"
+						key="dd-3"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -284,12 +536,12 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="291"
+						y="361"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="dd-3"
+						key="dd-4"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -305,12 +557,12 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="220"
+						y="290"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="de-3"
+						key="de-4"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -326,12 +578,12 @@
 					<reportElement
 						mode="Transparent"
 						x="423"
-						y="71"
+						y="141"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="dd-4"
+						key="dd-5"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -347,12 +599,12 @@
 					<reportElement
 						mode="Transparent"
 						x="423"
-						y="220"
+						y="290"
 						width="140"
 						height="70"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="de-4"
+						key="de-5"
 						stretchType="NoStretch"
 						positionType="Float"
 						isPrintRepeatedValues="true"
@@ -367,12 +619,12 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="196"
-						y="377"
+						y="447"
 						width="30"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="textField-2"
+						key="textField-28"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -388,12 +640,12 @@
 					<reportElement
 						mode="Opaque"
 						x="6"
-						y="366"
+						y="436"
 						width="120"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="staticText-1"
+						key="staticText-12"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -408,12 +660,12 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="55"
-						y="377"
+						y="447"
 						width="30"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="textField-1"
+						key="textField-29"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -428,12 +680,12 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="478"
-						y="377"
+						y="447"
 						width="30"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="textField-4"
+						key="textField-30"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -449,12 +701,12 @@
 					<reportElement
 						mode="Opaque"
 						x="19"
-						y="153"
+						y="223"
 						width="530"
 						height="54"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
-						key="rectangle-2"
+						key="rectangle-5"
 						stretchType="NoStretch"
 						positionType="FixRelativeToTop"
 						isPrintRepeatedValues="true"
@@ -463,6 +715,48 @@
 						isPrintWhenDetailOverflows="false"/>
 					<graphicElement stretchType="NoStretch" pen="4Point" fill="Solid" />
 				</rectangle>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="476"
+						width="117"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-13"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Problemas encontrados]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="528"
+						width="65"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Observação:]]></text>
+				</staticText>
 			</band>
 		</title>
 		<pageHeader>

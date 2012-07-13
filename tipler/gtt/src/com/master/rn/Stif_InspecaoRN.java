@@ -2,6 +2,10 @@ package com.master.rn;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -17,14 +21,21 @@ import com.master.ed.Stif_ParametroED;
 import com.master.ed.Stif_Pneu_InspecaoED;
 import com.master.ed.Stif_Veiculo_InspecaoED;
 import com.master.ed.UsuarioED;
+import com.master.ed.relatorio.Item;
+import com.master.ed.relatorio.Resumo;
+import com.master.ed.relatorio.Veiculo;
+import com.master.relatorio.relatorioJasper.ObjetoJRDataSource;
+import com.master.rl.Stif_InspecaoRL;
 import com.master.util.Data;
 import com.master.util.Excecoes;
 import com.master.util.FormataData;
 import com.master.util.FormataValor;
 import com.master.util.JavaUtil;
 import com.master.util.OLUtil;
+import com.master.util.Utilitaria;
 import com.master.util.bd.ExecutaSQL;
 import com.master.util.bd.Transacao;
+import com.master.util.ed.Parametro_FixoED;
 import com.master.util.rl.JasperRL;
 
 /**
@@ -54,7 +65,7 @@ public class Stif_InspecaoRN extends Transacao {
             /** Configura parâmetros de cotação Pneu */
             Stif_ParametroED parametro = new Stif_ParametroED();
             parametro.setOid_Empresa(ed.getOid_Empresa());
-            parametro = new Stif_ParametroBD(sql).getByRecord(parametro);
+            parametro = new Stif_ParametroBD(this.sql).getByRecord(parametro);
             if (parametro !=  null) {
             	ed.setVl_pneu_novo(parametro.getVl_pneu_novo());
     			ed.setVl_pneu_r1(parametro.getVl_pneu_r1());
@@ -68,13 +79,13 @@ public class Stif_InspecaoRN extends Transacao {
             ed.setNr_Veiculos(veiculosInspecao.size());
 
             /** Grava Inspeção */
-            final Stif_InspecaoED inspecaoED = new Stif_InspecaoBD(sql).inclui(ed);
+            final Stif_InspecaoED inspecaoED = new Stif_InspecaoBD(this.sql).inclui(ed);
 
             /** Grava Veículos da Inspeção */
         	for (final Stif_Veiculo_InspecaoED veiculoInspecaoED : veiculosInspecao) {
         		veiculoInspecaoED.setOid_Inspecao(inspecaoED.getOid_Inspecao());
         		veiculoInspecaoED.setMasterDetails(inspecaoED);
-        		new Stif_Veiculo_InspecaoBD(sql).inclui(veiculoInspecaoED);
+        		new Stif_Veiculo_InspecaoBD(this.sql).inclui(veiculoInspecaoED);
         	}
             fimTransacao(true);
             return inspecaoED;
@@ -90,7 +101,7 @@ public class Stif_InspecaoRN extends Transacao {
     public void altera(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            new Stif_InspecaoBD(sql).altera(ed);
+            new Stif_InspecaoBD(this.sql).altera(ed);
             fimTransacao(true);
         } catch (final Excecoes e) {
             abortaTransacao();
@@ -104,7 +115,7 @@ public class Stif_InspecaoRN extends Transacao {
     public void alteraRelatorio(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            new Stif_InspecaoBD(sql).alteraRelatorio(ed);
+            new Stif_InspecaoBD(this.sql).alteraRelatorio(ed);
             fimTransacao(true);
         } catch (final Excecoes e) {
             abortaTransacao();
@@ -124,20 +135,20 @@ public class Stif_InspecaoRN extends Transacao {
             /** Excluir toda relacao de dados vinculada a Inspecao */
             final Stif_Veiculo_InspecaoED filterVeiculo = new Stif_Veiculo_InspecaoED();
             filterVeiculo.setOid_Inspecao(ed.getOid_Inspecao());
-            final List<Stif_Veiculo_InspecaoED> veiculos = new Stif_Veiculo_InspecaoBD(sql).lista(filterVeiculo);
+            final List<Stif_Veiculo_InspecaoED> veiculos = new Stif_Veiculo_InspecaoBD(this.sql).lista(filterVeiculo);
             for (final Stif_Veiculo_InspecaoED veiculo : veiculos) {
             	final Stif_Pneu_InspecaoED filterPneu = new Stif_Pneu_InspecaoED();  
             	filterPneu.setOid_Veiculo_Inspecao(veiculo.getOid_Veiculo_Inspecao());
-            	final List<Stif_Pneu_InspecaoED> pneus = new Stif_Pneu_InspecaoBD(sql).lista(filterPneu);
+            	final List<Stif_Pneu_InspecaoED> pneus = new Stif_Pneu_InspecaoBD(this.sql).lista(filterPneu);
             	for (final Stif_Pneu_InspecaoED pneu : pneus) {
             		/** Exclui Pneus e Problemas */
-            		new Stif_Pneu_InspecaoRN(sql).deleta(pneu);
+            		new Stif_Pneu_InspecaoRN(this.sql).deleta(pneu);
 				}
             	/** Exclui Constatacoes e Veiculo Inspecao */
-        		new Stif_Veiculo_InspecaoRN(sql).deleta(veiculo);
+        		new Stif_Veiculo_InspecaoRN(this.sql).deleta(veiculo);
 			}
             /** Exclui Inspecao */
-            new Stif_InspecaoBD(sql).deleta(ed);
+            new Stif_InspecaoBD(this.sql).deleta(ed);
             fimTransacao(true);
         } catch (final Excecoes e) {
             abortaTransacao();
@@ -151,7 +162,7 @@ public class Stif_InspecaoRN extends Transacao {
     public void encerrar(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            new Stif_InspecaoBD(sql).encerrar(ed);
+            new Stif_InspecaoBD(this.sql).encerrar(ed);
             fimTransacao(true);
         } catch (final Excecoes e) {
             abortaTransacao();
@@ -165,7 +176,7 @@ public class Stif_InspecaoRN extends Transacao {
     public void reabrir(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            new Stif_InspecaoBD(sql).reabrir(ed);
+            new Stif_InspecaoBD(this.sql).reabrir(ed);
             fimTransacao(true);
         } catch (final Excecoes e) {
             abortaTransacao();
@@ -179,7 +190,7 @@ public class Stif_InspecaoRN extends Transacao {
      public List<Stif_InspecaoED> lista(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            final List<Stif_InspecaoED> lista = new Stif_InspecaoBD(sql).lista(ed);
+            final List<Stif_InspecaoED> lista = new Stif_InspecaoBD(this.sql).lista(ed);
             return lista;
         } finally {
             fimTransacao(false);
@@ -189,7 +200,7 @@ public class Stif_InspecaoRN extends Transacao {
     public Stif_InspecaoED getByRecord(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            return new Stif_InspecaoBD(sql).getByRecord(ed);
+            return new Stif_InspecaoBD(this.sql).getByRecord(ed);
         } finally {
             fimTransacao(false);
         }
@@ -198,24 +209,74 @@ public class Stif_InspecaoRN extends Transacao {
     public boolean verificaPneuConfigurado(final Stif_InspecaoED ed) throws Excecoes {
         try {
             inicioTransacao();
-            return new Stif_InspecaoBD(sql).verificaPneuConfigurado(ed);
+            return new Stif_InspecaoBD(this.sql).verificaPneuConfigurado(ed);
         } finally {
             fimTransacao(false);
         }
     }
     
     public void relatorio(final Stif_InspecaoED ed, final HttpServletRequest request, final HttpServletResponse response) throws Excecoes {
-        try {
-            inicioTransacao();
-            final List<Stif_InspecaoED> lista = new Stif_InspecaoBD(sql).lista(ed);
-			ed.setLista(lista); // Joga a lista de veiculos no ed para enviar pro relatório 
-			ed.setResponse(response);
-			ed.setNomeRelatorio("tif201"); // Seta o nome do relatório
-			// Monta a descricao do filtro utilizado
-			new JasperRL(ed).geraRelatorio(); // Chama o relatorio passando o ed
-        } finally {
-            fimTransacao(false);
-        }
+		final ObjetoJRDataSource pressoes = new ObjetoJRDataSource();
+		final ObjetoJRDataSource valvulas = new ObjetoJRDataSource();
+		final ObjetoJRDataSource rodas = new ObjetoJRDataSource();
+		final ObjetoJRDataSource outros = new ObjetoJRDataSource();
+		final ObjetoJRDataSource pneus = new ObjetoJRDataSource();
+		final ObjetoJRDataSource totalPerdas = new ObjetoJRDataSource();
+		final ObjetoJRDataSource resumos = new ObjetoJRDataSource();
+
+		final Stif_InspecaoRL inspecaoRL = new Stif_InspecaoRL();
+
+		/** Veículos */
+		final ArrayList<Veiculo> veiculos = new ArrayList<Veiculo>(inspecaoRL.relatorio(ed.getOid_Inspecao()));
+
+		/** Inspeção */
+		final Stif_InspecaoED inspecaoED = inspecaoRL.getInspecaoED();
+
+		/** Itens */
+		pressoes.setArrayED(new ArrayList<Item>(inspecaoRL.getPressoes()));
+		valvulas.setArrayED(new ArrayList<Item>(inspecaoRL.getValvulas()));
+		rodas.setArrayED(new ArrayList<Item>(inspecaoRL.getRodas()));
+		outros.setArrayED(new ArrayList<Item>(inspecaoRL.getOutros()));
+		pneus.setArrayED(new ArrayList<Item>(inspecaoRL.getPneus()));
+		totalPerdas.setArrayED(new ArrayList<Item>(inspecaoRL.getTotalPerdas()));
+		resumos.setArrayED(new ArrayList<Resumo>(inspecaoRL.getResumos()));
+
+		final HashMap<String,Object> map = new HashMap<String,Object>();
+		map.put("nm_Local_Data", inspecaoED.getEmpresaED().getNm_Cidade()+", "+new SimpleDateFormat("d 'de' MMMM 'de' yyyy").format(new Date()));
+		map.put("nm_Razao_Social", inspecaoED.getEmpresaED().getNm_Razao_Social());
+		map.put("nm_Local", inspecaoED.getEmpresaED().getNm_Cidade()+" - "+inspecaoED.getEmpresaED().getCd_Estado());
+		if (Utilitaria.doValida(inspecaoED.getNm_Signatario())) {
+			map.put("tx_Tratamento", inspecaoED.getNm_Signatario().toUpperCase().startsWith("SRA.", 0) ? "Prezada ":"Prezado ");
+			map.put("nm_Signatario", inspecaoED.getNm_Signatario());
+	    }
+		map.put("tx_Inicial", inspecaoED.getTx_Inicial());
+		map.put("tx_Final", inspecaoED.getTx_Final());
+		map.put("tx_Assinatura1", inspecaoED.getTx_Assinatura1());
+		map.put("tx_Assinatura2", inspecaoED.getTx_Assinatura2());
+
+		map.put("countVeiculos", inspecaoRL.getCountVeiculos());
+		map.put("countVeiculosComAnomalias", inspecaoRL.getCountVeiculosComAnomalias());
+		map.put("countPneus", inspecaoRL.getCountPneus());
+		map.put("countPneusComAnomalias", inspecaoRL.getCountPneusComAnomalias());
+		map.put("valorTotalPressao", inspecaoRL.getValorTotalPressao());
+
+		map.put("pressoes", pressoes);
+		map.put("valvulas", valvulas);
+		map.put("rodas", rodas);
+		map.put("outros", outros);
+		map.put("pneus", pneus);
+		map.put("totalPerdas", totalPerdas);
+		map.put("resumos", resumos);
+
+		map.put("TITULO", "STIF - Relatório de Inspeção de Frota");
+		map.put("PATH_SUBLIST", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());
+
+		ed.setLista(new ArrayList<Veiculo>(veiculos));
+		ed.setRequest(request);
+		ed.setResponse(response);
+		ed.setNomeRelatorio("tif201");
+		ed.setHashMap(map);
+		new JasperRL(ed).geraRelatorio();
     }
 
     /**
@@ -358,6 +419,11 @@ public class Stif_InspecaoRN extends Transacao {
 		saida += "vl_pneu_r2 = '" + FormataValor.formataValorBT(ed.getVl_pneu_r2(), 2) + "' ";
 		saida += "vl_pneu_r3 = '" + FormataValor.formataValorBT(ed.getVl_pneu_r3(), 2) + "' ";
 		saida += "vl_pneu_r4 = '" + FormataValor.formataValorBT(ed.getVl_pneu_r4(), 2) + "' ";
+		
+		if (ed.getEmpresaED() != null) {
+			saida += "nm_Razao_Social='" + JavaUtil.getValue(ed.getEmpresaED().getNm_Razao_Social()) + "' ";
+		}
+
 		saida += "msg_Stamp='" + ed.getMsg_Stamp() + "' ";
 		saida += "/>";
 		return saida;
@@ -365,7 +431,7 @@ public class Stif_InspecaoRN extends Transacao {
 
     @Override
 	protected void finalize() throws Throwable {
-        if (sql != null) {
+        if (this.sql != null) {
 			abortaTransacao();
 		}
     }

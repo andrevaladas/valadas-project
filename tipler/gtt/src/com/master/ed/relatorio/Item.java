@@ -15,7 +15,7 @@ public class Item implements Serializable {
 
 	public Item(final String nome) {
 		super();
-		this.nome = nome.substring(0, 1).toUpperCase()+nome.substring(1).toLowerCase();
+		this.nome = nome;
 	}
 
 	public void addQuantidade() {

@@ -33,12 +33,6 @@
 	</parameter>
 	<parameter name="TITULO" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="BASE_PATH" isForPrompting="false" class="java.lang.String"/>
-	<parameter name="value" isForPrompting="false" class="java.lang.Integer">
-		<defaultValueExpression ><![CDATA[0]]></defaultValueExpression>
-	</parameter>
-	<parameter name="value2" isForPrompting="false" class="java.lang.Double">
-		<defaultValueExpression ><![CDATA[0.0]]></defaultValueExpression>
-	</parameter>
 	<parameter name="pressoes" isForPrompting="false" class="java.lang.Object"/>
 	<parameter name="valvulas" isForPrompting="false" class="java.lang.Object"/>
 	<parameter name="rodas" isForPrompting="false" class="java.lang.Object"/>
@@ -53,6 +47,21 @@
 	<parameter name="tx_Final" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="tx_Assinatura1" isForPrompting="false" class="java.lang.String"/>
 	<parameter name="tx_Assinatura2" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="totalPerdas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="valorTotalPressao" isForPrompting="false" class="java.lang.Double"/>
+	<parameter name="countVeiculos" isForPrompting="false" class="java.lang.Integer">
+		<defaultValueExpression ><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="countVeiculosComAnomalias" isForPrompting="false" class="java.lang.Integer">
+		<defaultValueExpression ><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="countPneus" isForPrompting="false" class="java.lang.Integer">
+		<defaultValueExpression ><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="countPneusComAnomalias" isForPrompting="false" class="java.lang.Integer">
+		<defaultValueExpression ><![CDATA[0]]></defaultValueExpression>
+	</parameter>
+	<parameter name="resumos" isForPrompting="false" class="java.lang.Object"/>
 	<field name="dm_Tipo_Chassis" class="java.lang.Long"/>
 	<field name="nr_Frota" class="java.lang.String"/>
 	<field name="nr_Odometro" class="java.lang.Long"/>
@@ -112,12 +121,12 @@
 		<group  name="problemas" isStartNewColumn="false" isStartNewPage="false" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="0" >
 			<groupExpression><![CDATA[null]]></groupExpression>
 			<groupHeader>
-			<band height="700"  isSplitAllowed="true" >
+			<band height="755"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="133"
+						y="118"
 						width="565"
 						height="12"
 						forecolor="#000000"
@@ -138,7 +147,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="133"
+						y="118"
 						width="565"
 						height="12"
 						forecolor="#000000"
@@ -156,7 +165,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="145"
+						y="130"
 						width="565"
 						height="12"
 						forecolor="#000000"
@@ -174,7 +183,7 @@
 					<reportElement
 						mode="Transparent"
 						x="198"
-						y="145"
+						y="130"
 						width="84"
 						height="12"
 						forecolor="#000000"
@@ -192,7 +201,7 @@
 					<reportElement
 						mode="Transparent"
 						x="481"
-						y="145"
+						y="130"
 						width="84"
 						height="12"
 						forecolor="#000000"
@@ -210,7 +219,7 @@
 					<reportElement
 						mode="Transparent"
 						x="2"
-						y="145"
+						y="130"
 						width="194"
 						height="11"
 						forecolor="#000000"
@@ -231,7 +240,7 @@
 					<reportElement
 						mode="Transparent"
 						x="284"
-						y="145"
+						y="130"
 						width="194"
 						height="11"
 						forecolor="#000000"
@@ -248,10 +257,10 @@
 					</textElement>
 				<text><![CDATA[Total de pneus da amostra]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="199"
-						y="145"
+						y="130"
 						width="81"
 						height="11"
 						forecolor="#000000"
@@ -266,13 +275,13 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{value}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{countVeiculos}]]></textFieldExpression>
 				</textField>
 				<rectangle radius="0" >
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="157"
+						y="142"
 						width="565"
 						height="12"
 						forecolor="#000000"
@@ -290,7 +299,7 @@
 					<reportElement
 						mode="Transparent"
 						x="198"
-						y="157"
+						y="142"
 						width="84"
 						height="12"
 						forecolor="#000000"
@@ -308,7 +317,7 @@
 					<reportElement
 						mode="Transparent"
 						x="481"
-						y="157"
+						y="142"
 						width="84"
 						height="12"
 						forecolor="#000000"
@@ -326,7 +335,7 @@
 					<reportElement
 						mode="Transparent"
 						x="2"
-						y="157"
+						y="142"
 						width="194"
 						height="11"
 						forecolor="#000000"
@@ -347,7 +356,7 @@
 					<reportElement
 						mode="Transparent"
 						x="284"
-						y="157"
+						y="142"
 						width="194"
 						height="11"
 						forecolor="#000000"
@@ -364,10 +373,10 @@
 					</textElement>
 				<text><![CDATA[Total de pneus com anomalias]]></text>
 				</staticText>
-				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="199"
-						y="157"
+						y="142"
 						width="81"
 						height="11"
 						forecolor="#000000"
@@ -382,12 +391,12 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{value}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{countVeiculosComAnomalias}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="482"
-						y="157"
+						y="142"
 						width="81"
 						height="11"
 						forecolor="#000000"
@@ -402,12 +411,12 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{value}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{countPneusComAnomalias}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="##0" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="482"
-						y="145"
+						y="130"
 						width="81"
 						height="11"
 						forecolor="#000000"
@@ -422,13 +431,13 @@
 					<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="8" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{value}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[$P{countPneus}]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement
 						mode="Opaque"
 						x="0"
-						y="172"
+						y="157"
 						width="565"
 						height="12"
 						forecolor="#000000"
@@ -449,7 +458,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="172"
+						y="157"
 						width="565"
 						height="12"
 						forecolor="#000000"
@@ -467,7 +476,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="187"
+						y="172"
 						width="280"
 						height="12"
 						forecolor="#000000"
@@ -482,14 +491,17 @@
 					<subreportParameter  name="titulo">
 						<subreportParameterExpression><![CDATA["I - PRESSÕES"]]></subreportParameterExpression>
 					</subreportParameter>
+					<subreportParameter  name="valorTotalPressao">
+						<subreportParameterExpression><![CDATA[$P{valorTotalPressao}]]></subreportParameterExpression>
+					</subreportParameter>
 					<dataSourceExpression><![CDATA[$P{pressoes}]]></dataSourceExpression>
-					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_item.jasper"]]></subreportExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_pressoes.jasper"]]></subreportExpression>
 				</subreport>
 				<subreport  isUsingCache="true">
 					<reportElement
 						mode="Transparent"
 						x="285"
-						y="187"
+						y="172"
 						width="280"
 						height="12"
 						forecolor="#000000"
@@ -511,7 +523,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="206"
+						y="192"
 						width="280"
 						height="12"
 						forecolor="#000000"
@@ -533,7 +545,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="225"
+						y="212"
 						width="280"
 						height="12"
 						forecolor="#000000"
@@ -555,7 +567,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="244"
+						y="232"
 						width="280"
 						height="12"
 						forecolor="#000000"
@@ -576,7 +588,7 @@
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="23"
-						y="90"
+						y="73"
 						width="517"
 						height="40"
 						forecolor="#000000"
@@ -592,26 +604,6 @@
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Inicial}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="23"
-						y="73"
-						width="254"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-25"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Signatario}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
@@ -636,7 +628,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="43"
-						y="32"
+						y="30"
 						width="251"
 						height="12"
 						forecolor="#000000"
@@ -657,7 +649,7 @@
 					<reportElement
 						mode="Opaque"
 						x="43"
-						y="20"
+						y="18"
 						width="16"
 						height="12"
 						forecolor="#000000"
@@ -677,7 +669,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="43"
-						y="43"
+						y="41"
 						width="251"
 						height="12"
 						forecolor="#000000"
@@ -697,8 +689,8 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="23"
-						y="61"
-						width="86"
+						y="57"
+						width="517"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
@@ -708,18 +700,20 @@
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{nm_Signatario} != null]]></printWhenExpression>
+						</reportElement>
 					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Tratamento}]]></textFieldExpression>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Tratamento}+$P{nm_Signatario}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="true" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="25"
-						y="615"
+						y="643"
 						width="517"
-						height="32"
+						height="60"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-30"
@@ -737,9 +731,9 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="25"
-						y="665"
+						y="726"
 						width="156"
-						height="30"
+						height="24"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-31"
@@ -757,9 +751,9 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="386"
-						y="665"
+						y="726"
 						width="156"
-						height="30"
+						height="24"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="textField-32"
@@ -778,7 +772,7 @@
 					<reportElement
 						mode="Opaque"
 						x="25"
-						y="660"
+						y="721"
 						width="156"
 						height="0"
 						forecolor="#000000"
@@ -796,7 +790,7 @@
 					<reportElement
 						mode="Opaque"
 						x="386"
-						y="660"
+						y="721"
 						width="156"
 						height="0"
 						forecolor="#000000"
@@ -812,6 +806,47 @@
 						</reportElement>
 					<graphicElement stretchType="NoStretch" pen="Thin" fill="Solid" />
 				</line>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="285"
+						y="186"
+						width="280"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="veiculosList-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["VI - PERDAS $$$"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{totalPerdas}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_total.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="518"
+						width="565"
+						height="31"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="veiculosList-7"
+						stretchType="RelativeToTallestObject"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<dataSourceExpression><![CDATA[$P{resumos}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_resumo.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 			</groupHeader>
 			<groupFooter>
@@ -822,217 +857,12 @@
 		<group  name="veiculos" isStartNewColumn="true" isStartNewPage="true" isResetPageNumber="false" isReprintHeaderOnEachPage="false" minHeightToStartNewPage="600" >
 			<groupExpression><![CDATA[$F{nr_Placa}]]></groupExpression>
 			<groupHeader>
-			<band height="20"  isSplitAllowed="true" >
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="44"
-						y="3"
-						width="55"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-5"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{nr_Frota}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="0"
-						y="3"
-						width="44"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-4"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Nº Frota:]]></text>
-				</staticText>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="153"
-						y="3"
-						width="57"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-6"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.Long"><![CDATA[$F{nr_Odometro}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="247"
-						y="3"
-						width="70"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-8"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{nr_Placa}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="215"
-						y="3"
-						width="32"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-5"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Placa:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="319"
-						y="3"
-						width="27"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-6"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Tipo:]]></text>
-				</staticText>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="346"
-						y="3"
-						width="82"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-9"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{nm_Tipo_Veiculo}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="430"
-						y="3"
-						width="40"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-7"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Modelo:]]></text>
-				</staticText>
-				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
-						mode="Transparent"
-						x="470"
-						y="3"
-						width="95"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="textField-10"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{nm_Modelo_Veiculo}]]></textFieldExpression>
-				</textField>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="101"
-						y="3"
-						width="52"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-8"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Odômetro:]]></text>
-				</staticText>
+			<band height="0"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
 						mode="Transparent"
 						x="2"
-						y="-1236"
+						y="-1291"
 						width="117"
 						height="12"
 						forecolor="#000000"
@@ -1052,49 +882,7 @@
 			</band>
 			</groupHeader>
 			<groupFooter>
-			<band height="35"  isSplitAllowed="true" >
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="2"
-						y="3"
-						width="117"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-9"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Problemas encontrados]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						mode="Transparent"
-						x="2"
-						y="22"
-						width="65"
-						height="12"
-						forecolor="#000000"
-						backcolor="#FFFFFF"
-						key="staticText-10"
-						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
-						isPrintRepeatedValues="true"
-						isRemoveLineWhenBlank="false"
-						isPrintInFirstWholeBand="false"
-						isPrintWhenDetailOverflows="false"/>
-					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
-						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
-					</textElement>
-				<text><![CDATA[Observação:]]></text>
-				</staticText>
+			<band height="0"  isSplitAllowed="true" >
 			</band>
 			</groupFooter>
 		</group>
@@ -1499,6 +1287,24 @@
 					</subreportParameter>
 					<subreportParameter  name="stp2">
 						<subreportParameterExpression><![CDATA[$F{stp2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nm_Empresa">
+						<subreportParameterExpression><![CDATA[$P{nm_Razao_Social}+" - "+$P{nm_Local}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Frota">
+						<subreportParameterExpression><![CDATA[$F{nr_Frota}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Odometro">
+						<subreportParameterExpression><![CDATA[$F{nr_Odometro}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Placa">
+						<subreportParameterExpression><![CDATA[$F{nr_Placa}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nm_Tipo_Veiculo">
+						<subreportParameterExpression><![CDATA[$F{nm_Tipo_Veiculo}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nm_Modelo_Veiculo">
+						<subreportParameterExpression><![CDATA[$F{nm_Modelo_Veiculo}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"dmTipoChassis_"+($F{dm_Tipo_Chassis} == null ? "10" : $F{dm_Tipo_Chassis})+".jasper"]]></subreportExpression>
 				</subreport>
