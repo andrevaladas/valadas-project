@@ -21,7 +21,10 @@ public class Veiculo implements Serializable {
 	private String nr_Placa;
 	private long dm_Tipo_Veiculo;
 	private String nm_Modelo_Veiculo;
-	
+	private String tx_Observacao;
+	private String tx_Observacao_Imagem;
+	private long oid_Imagem;
+
 	/** Pneus esquerdos */
 	private Pneu l8ee;
 	private Pneu l8ei;
@@ -153,6 +156,24 @@ public class Veiculo implements Serializable {
 	}
 	public void setNm_Modelo_Veiculo(final String nmModeloVeiculo) {
 		this.nm_Modelo_Veiculo = nmModeloVeiculo;
+	}
+	public String getTx_Observacao() {
+		return this.tx_Observacao;
+	}
+	public void setTx_Observacao(final String txObservacao) {
+		this.tx_Observacao = txObservacao;
+	}
+	public String getTx_Observacao_Imagem() {
+		return this.tx_Observacao_Imagem;
+	}
+	public void setTx_Observacao_Imagem(final String txObservacaoImagem) {
+		this.tx_Observacao_Imagem = txObservacaoImagem;
+	}
+	public long getOid_Imagem() {
+		return this.oid_Imagem;
+	}
+	public void setOid_Imagem(final long oidImagem) {
+		this.oid_Imagem = oidImagem;
 	}
 
 	/** Pneus */

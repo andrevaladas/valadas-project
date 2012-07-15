@@ -22,6 +22,7 @@ import com.master.ed.Stif_Veiculo_InspecaoED;
 import com.master.ed.VeiculoED;
 import com.master.ed.relatorio.Item;
 import com.master.ed.relatorio.Pneu;
+import com.master.ed.relatorio.Problema;
 import com.master.ed.relatorio.Resumo;
 import com.master.ed.relatorio.Veiculo;
 import com.master.util.BancoUtil;
@@ -152,6 +153,9 @@ public class Stif_InspecaoRL extends BancoUtil {
 					veiculo.setNr_Placa(veiculoED.getNr_Placa());
 					veiculo.setDm_Tipo_Veiculo(veiculoED.getDm_Tipo_Veiculo());
 					veiculo.setNm_Modelo_Veiculo(veiculoED.getNm_Modelo_Veiculo());
+					veiculo.setTx_Observacao(veiculoInspecaoED.getTx_Observacao());
+					veiculo.setTx_Observacao_Imagem(veiculoInspecaoED.getTx_Observacao_Imagem());
+					veiculo.setOid_Imagem(veiculoInspecaoED.getOid_Veiculo_Inspecao());
 
 					//carrega as constatacoes por eixo do veículo
 					loadConstatacoesVeiculo(veiculo, veiculoInspecaoED.getOid_Veiculo_Inspecao());
@@ -387,19 +391,19 @@ public class Stif_InspecaoRL extends BancoUtil {
 	private void loadAllProblemas() {
 		final List<Stif_ProblemaED> valvulasList = findProblemas(DmTipo.valvulas);
 		for (final Stif_ProblemaED problemaED : valvulasList) {
-			this.valvulas.add(new Item(problemaED.getNm_problema()));
+			this.valvulas.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
 		}
 		final List<Stif_ProblemaED> rodasList = findProblemas(DmTipo.rodas);
 		for (final Stif_ProblemaED problemaED : rodasList) {
-			this.rodas.add(new Item(problemaED.getNm_problema()));
+			this.rodas.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
 		}
 		final List<Stif_ProblemaED> outrosList = findProblemas(DmTipo.outros);
 		for (final Stif_ProblemaED problemaED : outrosList) {
-			this.outros.add(new Item(problemaED.getNm_problema()));
+			this.outros.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
 		}
 		final List<Stif_ProblemaED> pneusList = findProblemas(DmTipo.pneus);
 		for (final Stif_ProblemaED problemaED : pneusList) {
-			this.pneus.add(new Item(problemaED.getNm_problema()));
+			this.pneus.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
 		}
 	}
 	public Stif_InspecaoED getInspecaoED() {
@@ -449,6 +453,18 @@ public class Stif_InspecaoRL extends BancoUtil {
 		addItem(totalPerdas, "ITEM IV - OUTROS", getValorTotal(this.outros));
 		addItem(totalPerdas, "ITEM V - PNEUS EM USO", getValorTotal(this.pneus));
 		return totalPerdas;
+	}
+	public List<Problema> getProblemas(final List<Item> items) {
+		final List<Problema> problemas = new ArrayList<Problema>();
+		for (final Item item : items) {
+			if (item.getQuantidade() > 0) {
+				problemas.add(new Problema(item.getCodigo()+" - "+item.getNome()));
+			}
+		}
+		if (problemas.isEmpty()) {
+			problemas.add(new Problema("Nenhum problema aparente"));
+		}
+		return problemas;
 	}
 	private Double getValorTotal(final List<Item> items){
 		Double valorTotal = 0D;

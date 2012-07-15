@@ -62,6 +62,10 @@
 		<defaultValueExpression ><![CDATA[0]]></defaultValueExpression>
 	</parameter>
 	<parameter name="resumos" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasRodas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasValvulas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasPneus" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasOutros" isForPrompting="false" class="java.lang.Object"/>
 	<field name="dm_Tipo_Chassis" class="java.lang.Long"/>
 	<field name="nr_Frota" class="java.lang.String"/>
 	<field name="nr_Odometro" class="java.lang.Long"/>
@@ -72,6 +76,9 @@
 	<field name="nr_Pressao_Eixo_2" class="java.lang.Long"/>
 	<field name="nr_Pressao_Eixo_3" class="java.lang.Long"/>
 	<field name="nr_Pressao_Eixo_4" class="java.lang.Long"/>
+	<field name="tx_Observacao" class="java.lang.String"/>
+	<field name="tx_Observacao_Imagem" class="java.lang.String"/>
+	<field name="oid_Imagem" class="java.lang.Long"/>
 	<field name="l8ee" class="java.lang.Object"/>
 	<field name="l8ei" class="java.lang.Object"/>
 	<field name="l7ee" class="java.lang.Object"/>
@@ -1138,6 +1145,12 @@
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
 						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="BASE_PATH">
+						<subreportParameterExpression><![CDATA[$P{BASE_PATH}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nm_Empresa">
+						<subreportParameterExpression><![CDATA[$P{nm_Razao_Social}+" - "+$P{nm_Local}]]></subreportParameterExpression>
+					</subreportParameter>
 					<subreportParameter  name="nr_Pressao_Eixo_1">
 						<subreportParameterExpression><![CDATA[$F{nr_Pressao_Eixo_1}]]></subreportParameterExpression>
 					</subreportParameter>
@@ -1149,6 +1162,42 @@
 					</subreportParameter>
 					<subreportParameter  name="nr_Pressao_Eixo_4">
 						<subreportParameterExpression><![CDATA[$F{nr_Pressao_Eixo_4}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Frota">
+						<subreportParameterExpression><![CDATA[$F{nr_Frota}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Odometro">
+						<subreportParameterExpression><![CDATA[$F{nr_Odometro}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Placa">
+						<subreportParameterExpression><![CDATA[$F{nr_Placa}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nm_Tipo_Veiculo">
+						<subreportParameterExpression><![CDATA[$F{nm_Tipo_Veiculo}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nm_Modelo_Veiculo">
+						<subreportParameterExpression><![CDATA[$F{nm_Modelo_Veiculo}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tx_Observacao">
+						<subreportParameterExpression><![CDATA[$F{tx_Observacao}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tx_Observacao_Imagem">
+						<subreportParameterExpression><![CDATA[$F{tx_Observacao_Imagem}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="oid_Imagem">
+						<subreportParameterExpression><![CDATA[$F{oid_Imagem}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="problemasRodas">
+						<subreportParameterExpression><![CDATA[$P{problemasRodas}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="problemasValvulas">
+						<subreportParameterExpression><![CDATA[$P{problemasValvulas}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="problemasPneus">
+						<subreportParameterExpression><![CDATA[$P{problemasPneus}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="problemasOutros">
+						<subreportParameterExpression><![CDATA[$P{problemasOutros}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportParameter  name="l8ee">
 						<subreportParameterExpression><![CDATA[$F{l8ee}]]></subreportParameterExpression>
@@ -1287,24 +1336,6 @@
 					</subreportParameter>
 					<subreportParameter  name="stp2">
 						<subreportParameterExpression><![CDATA[$F{stp2}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter  name="nm_Empresa">
-						<subreportParameterExpression><![CDATA[$P{nm_Razao_Social}+" - "+$P{nm_Local}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter  name="nr_Frota">
-						<subreportParameterExpression><![CDATA[$F{nr_Frota}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter  name="nr_Odometro">
-						<subreportParameterExpression><![CDATA[$F{nr_Odometro}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter  name="nr_Placa">
-						<subreportParameterExpression><![CDATA[$F{nr_Placa}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter  name="nm_Tipo_Veiculo">
-						<subreportParameterExpression><![CDATA[$F{nm_Tipo_Veiculo}]]></subreportParameterExpression>
-					</subreportParameter>
-					<subreportParameter  name="nm_Modelo_Veiculo">
-						<subreportParameterExpression><![CDATA[$F{nm_Modelo_Veiculo}]]></subreportParameterExpression>
 					</subreportParameter>
 					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"dmTipoChassis_"+($F{dm_Tipo_Chassis} == null ? "10" : $F{dm_Tipo_Chassis})+".jasper"]]></subreportExpression>
 				</subreport>

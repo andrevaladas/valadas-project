@@ -22,6 +22,7 @@ import com.master.ed.Stif_Pneu_InspecaoED;
 import com.master.ed.Stif_Veiculo_InspecaoED;
 import com.master.ed.UsuarioED;
 import com.master.ed.relatorio.Item;
+import com.master.ed.relatorio.Problema;
 import com.master.ed.relatorio.Resumo;
 import com.master.ed.relatorio.Veiculo;
 import com.master.relatorio.relatorioJasper.ObjetoJRDataSource;
@@ -223,6 +224,10 @@ public class Stif_InspecaoRN extends Transacao {
 		final ObjetoJRDataSource pneus = new ObjetoJRDataSource();
 		final ObjetoJRDataSource totalPerdas = new ObjetoJRDataSource();
 		final ObjetoJRDataSource resumos = new ObjetoJRDataSource();
+		final ObjetoJRDataSource problemasRodas = new ObjetoJRDataSource();
+		final ObjetoJRDataSource problemasValvulas = new ObjetoJRDataSource();
+		final ObjetoJRDataSource problemasPneus = new ObjetoJRDataSource();
+		final ObjetoJRDataSource problemasOutros = new ObjetoJRDataSource();
 
 		final Stif_InspecaoRL inspecaoRL = new Stif_InspecaoRL();
 
@@ -240,6 +245,11 @@ public class Stif_InspecaoRN extends Transacao {
 		pneus.setArrayED(new ArrayList<Item>(inspecaoRL.getPneus()));
 		totalPerdas.setArrayED(new ArrayList<Item>(inspecaoRL.getTotalPerdas()));
 		resumos.setArrayED(new ArrayList<Resumo>(inspecaoRL.getResumos()));
+		
+		problemasRodas.setArrayED(new ArrayList<Problema>(inspecaoRL.getProblemas(inspecaoRL.getRodas())));
+		problemasValvulas.setArrayED(new ArrayList<Problema>(inspecaoRL.getProblemas(inspecaoRL.getValvulas())));
+		problemasPneus.setArrayED(new ArrayList<Problema>(inspecaoRL.getProblemas(inspecaoRL.getPneus())));
+		problemasOutros.setArrayED(new ArrayList<Problema>(inspecaoRL.getProblemas(inspecaoRL.getOutros())));
 
 		final HashMap<String,Object> map = new HashMap<String,Object>();
 		map.put("nm_Local_Data", inspecaoED.getEmpresaED().getNm_Cidade()+", "+new SimpleDateFormat("d 'de' MMMM 'de' yyyy").format(new Date()));
@@ -267,6 +277,10 @@ public class Stif_InspecaoRN extends Transacao {
 		map.put("pneus", pneus);
 		map.put("totalPerdas", totalPerdas);
 		map.put("resumos", resumos);
+		map.put("problemasRodas", problemasRodas);
+		map.put("problemasValvulas", problemasValvulas);
+		map.put("problemasPneus", problemasPneus);
+		map.put("problemasOutros", problemasOutros);
 
 		map.put("TITULO", "STIF - Relatório de Inspeção de Frota");
 		map.put("PATH_SUBLIST", Parametro_FixoED.getInstancia().getPATH_RELATORIOS());

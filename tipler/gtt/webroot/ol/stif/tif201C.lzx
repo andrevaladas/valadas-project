@@ -1,4 +1,4 @@
-<canvas bgcolor="#EAEAEA" debug="true">
+<canvas bgcolor="#EAEAEA" debug="false">
 	<debug x="0" y="0" height="800" width="300"></debug>
 	<script>
 		<![CDATA[

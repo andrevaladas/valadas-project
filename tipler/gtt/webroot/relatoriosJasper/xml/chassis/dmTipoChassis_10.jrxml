@@ -82,6 +82,13 @@
 	<parameter name="dd" isForPrompting="false" class="java.lang.Object"/>
 	<parameter name="stp1" isForPrompting="false" class="java.lang.Object"/>
 	<parameter name="stp2" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasRodas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasValvulas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasPneus" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasOutros" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tx_Observacao" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="tx_Observacao_Imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="oid_Imagem" isForPrompting="false" class="java.lang.Long"/>
 		<background>
 			<band height="0"  isSplitAllowed="true" >
 			</band>
@@ -338,7 +345,7 @@
 					<reportElement
 						mode="Opaque"
 						x="210"
-						y="130"
+						y="120"
 						width="6"
 						height="243"
 						forecolor="#000000"
@@ -356,7 +363,7 @@
 					<reportElement
 						mode="Opaque"
 						x="492"
-						y="150"
+						y="140"
 						width="6"
 						height="200"
 						forecolor="#000000"
@@ -374,7 +381,7 @@
 					<reportElement
 						mode="Opaque"
 						x="69"
-						y="130"
+						y="120"
 						width="6"
 						height="243"
 						forecolor="#000000"
@@ -392,7 +399,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="443"
+						y="433"
 						width="565"
 						height="20"
 						forecolor="#999999"
@@ -410,7 +417,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="70"
+						y="60"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -431,7 +438,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="141"
+						y="131"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -452,7 +459,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="361"
+						y="351"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -473,7 +480,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="290"
+						y="280"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -494,7 +501,7 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="70"
+						y="60"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -515,7 +522,7 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="141"
+						y="131"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -536,7 +543,7 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="361"
+						y="351"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -557,7 +564,7 @@
 					<reportElement
 						mode="Transparent"
 						x="141"
-						y="290"
+						y="280"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -578,7 +585,7 @@
 					<reportElement
 						mode="Transparent"
 						x="423"
-						y="141"
+						y="131"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -599,7 +606,7 @@
 					<reportElement
 						mode="Transparent"
 						x="423"
-						y="290"
+						y="280"
 						width="140"
 						height="70"
 						forecolor="#000000"
@@ -619,7 +626,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="196"
-						y="447"
+						y="437"
 						width="30"
 						height="12"
 						forecolor="#000000"
@@ -640,7 +647,7 @@
 					<reportElement
 						mode="Opaque"
 						x="6"
-						y="436"
+						y="426"
 						width="120"
 						height="12"
 						forecolor="#000000"
@@ -660,7 +667,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="55"
-						y="447"
+						y="437"
 						width="30"
 						height="12"
 						forecolor="#000000"
@@ -680,7 +687,7 @@
 				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
 						mode="Transparent"
 						x="478"
-						y="447"
+						y="437"
 						width="30"
 						height="12"
 						forecolor="#000000"
@@ -701,7 +708,7 @@
 					<reportElement
 						mode="Opaque"
 						x="19"
-						y="223"
+						y="213"
 						width="530"
 						height="54"
 						forecolor="#000000"
@@ -719,7 +726,7 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="476"
+						y="460"
 						width="117"
 						height="12"
 						forecolor="#000000"
@@ -740,14 +747,14 @@
 					<reportElement
 						mode="Transparent"
 						x="0"
-						y="528"
-						width="65"
+						y="498"
+						width="565"
 						height="12"
 						forecolor="#000000"
 						backcolor="#FFFFFF"
 						key="staticText-14"
 						stretchType="NoStretch"
-						positionType="FixRelativeToTop"
+						positionType="Float"
 						isPrintRepeatedValues="true"
 						isRemoveLineWhenBlank="false"
 						isPrintInFirstWholeBand="false"
@@ -755,8 +762,155 @@
 					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
 						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
 					</textElement>
-				<text><![CDATA[Observação:]]></text>
+				<text><![CDATA[Observação]]></text>
 				</staticText>
+				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
+						mode="Opaque"
+						x="0"
+						y="537"
+						width="206"
+						height="122"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{oid_Imagem} != null]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{BASE_PATH}+"/ImageServlet?oid_Veiculo_Inspecao="+$P{oid_Imagem}]]></imageExpression>				</image>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="0"
+						y="511"
+						width="565"
+						height="24"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-31"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Observacao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="211"
+						y="537"
+						width="354"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-32"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Observacao_Imagem}]]></textFieldExpression>
+				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="473"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["IR - Inspeção de Rodas"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasRodas}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="473"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["IV - Inspeção de Válvulas"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasValvulas}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="282"
+						y="473"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-8"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["IP - Inspeção de Pneus"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasPneus}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="423"
+						y="473"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-9"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["OI - Outras Inspeções"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasOutros}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</title>
 		<pageHeader>
