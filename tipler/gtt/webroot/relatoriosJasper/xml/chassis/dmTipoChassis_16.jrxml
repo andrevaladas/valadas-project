@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="dmTipoChassis_15"
+		 name="dmTipoChassis_16"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -501,6 +501,48 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Pressao_Eixo_3}]]></textFieldExpression>
 				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="71"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{tkei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="220"
+						width="140"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="de-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="pneu">
+						<subreportParameterExpression><![CDATA[$P{tkdi}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"pneu.jasper"]]></subreportExpression>
+				</subreport>
 			</band>
 		</title>
 		<pageHeader>

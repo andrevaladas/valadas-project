@@ -36,7 +36,6 @@
  		<frame  src="../images/PNEURE02_S.PNG" /> <!--18 ok-->
  		<frame  src="../images/PNEURE08_S.PNG" /> <!--19 ok-->
  		<frame  src="../images/PNEURE12_S.PNG" /> <!--20 ok-->
- 		<frame  src="../images/PNEUEM06_S.PNG" /> <!--21 ok-->
 	</resource>
 	<resource name="pneuesqfig" src="../images/pneuesq.png"/>
 	<resource name="pneudirfig" src="../images/pneudir.png"/>

@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"  ?>
+<!-- Created with iReport - A designer for JasperReports -->
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+<jasperReport
+		 name="dmTipoChassis_10"
+		 columnCount="1"
+		 printOrder="Vertical"
+		 orientation="Portrait"
+		 pageWidth="595"
+		 pageHeight="842"
+		 columnWidth="535"
+		 columnSpacing="0"
+		 leftMargin="0"
+		 rightMargin="0"
+		 topMargin="0"
+		 bottomMargin="0"
+		 whenNoDataType="AllSectionsNoDetail"
+		 isTitleNewPage="false"
+		 isSummaryNewPage="false">
+	<property name="ireport.scriptlethandling" value="2" />
+	<parameter name="PATH_IMAGENS" isForPrompting="true" class="java.lang.String">
+		<parameterDescription><![CDATA[PATH_IMAGENS]]></parameterDescription>
+		<defaultValueExpression ><![CDATA["C:/cpoint/workspace/gtt/webroot/Imagens/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PATH_SUBLIST" isForPrompting="false" class="java.lang.String">
+		<defaultValueExpression ><![CDATA["C:/cpoint/workspace/gtt/webroot/relatoriosJasper/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BASE_PATH" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nm_Empresa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nr_Frota" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nr_Odometro" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Placa" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nm_Tipo_Veiculo" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nm_Modelo_Veiculo" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="nr_Pressao_Eixo_1" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Pressao_Eixo_2" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Pressao_Eixo_3" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="nr_Pressao_Eixo_4" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="problemasRodas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasValvulas" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasPneus" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="problemasOutros" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tx_Observacao" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="tx_Observacao_Imagem" isForPrompting="false" class="java.lang.String"/>
+	<parameter name="oid_Imagem" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="dm_Tipo_Chassis" isForPrompting="false" class="java.lang.Long"/>
+	<parameter name="l8ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l8ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1ee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1ei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tee" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tei" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="d2e" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l8de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l8di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l7di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l6di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l5di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l4di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l3di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l2di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1de" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="l1di" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkde" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tkdi" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tde" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="tdi" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="d2d" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="dd" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="stp1" isForPrompting="false" class="java.lang.Object"/>
+	<parameter name="stp2" isForPrompting="false" class="java.lang.Object"/>
+		<background>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</background>
+		<title>
+			<band height="275"  isSplitAllowed="true" >
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="47"
+						y="8"
+						width="518"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-27"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Empresa}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="44"
+						y="28"
+						width="55"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nr_Frota}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="28"
+						width="44"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-4"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Nº Frota:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="153"
+						y="28"
+						width="57"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.Long"><![CDATA[$P{nr_Odometro}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="247"
+						y="28"
+						width="70"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nr_Placa}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="215"
+						y="28"
+						width="32"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-5"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Placa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="319"
+						y="28"
+						width="27"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-6"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Tipo:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="346"
+						y="28"
+						width="82"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Tipo_Veiculo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="430"
+						y="28"
+						width="40"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-7"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Modelo:]]></text>
+				</staticText>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="470"
+						y="28"
+						width="95"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-10"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{nm_Modelo_Veiculo}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="101"
+						y="28"
+						width="52"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-8"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Odômetro:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="8"
+						width="47"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-9"
+						stretchType="NoStretch"
+						positionType="FixRelativeToTop"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Empresa:]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="75"
+						width="565"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-13"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Problemas encontrados]]></text>
+				</staticText>
+				<staticText>
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="113"
+						width="565"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="staticText-14"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Middle" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="10" isBold="true" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<text><![CDATA[Observação]]></text>
+				</staticText>
+				<image  scaleImage="FillFrame" vAlign="Top" hAlign="Left" isUsingCache="false" evaluationTime="Now" hyperlinkType="None">					<reportElement
+						mode="Opaque"
+						x="0"
+						y="151"
+						width="206"
+						height="122"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="image-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false">
+							<printWhenExpression><![CDATA[$P{oid_Imagem} != null]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch" pen="None" fill="Solid" />
+					<imageExpression class="java.lang.String"><![CDATA[$P{BASE_PATH}+"/ImageServlet?oid_Veiculo_Inspecao="+$P{oid_Imagem}]]></imageExpression>				</image>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="0"
+						y="126"
+						width="565"
+						height="24"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-31"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Observacao}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None" >					<reportElement
+						mode="Transparent"
+						x="211"
+						y="151"
+						width="354"
+						height="70"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="textField-32"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" lineSpacing="Single">
+						<font fontName="Arial" pdfFontName="Helvetica" size="9" isBold="false" isItalic="false" isUnderline="false" isPdfEmbedded ="false" pdfEncoding ="Cp1252" isStrikeThrough="false" />
+					</textElement>
+				<textFieldExpression   class="java.lang.String"><![CDATA[$P{tx_Observacao_Imagem}]]></textFieldExpression>
+				</textField>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="88"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-6"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["IR - Inspeção de Rodas"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasRodas}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="141"
+						y="88"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-7"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["IV - Inspeção de Válvulas"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasValvulas}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="282"
+						y="88"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-8"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["IP - Inspeção de Pneus"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasPneus}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="423"
+						y="88"
+						width="140"
+						height="22"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="dd-9"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="titulo">
+						<subreportParameterExpression><![CDATA["OI - Outras Inspeções"]]></subreportParameterExpression>
+					</subreportParameter>
+					<dataSourceExpression><![CDATA[$P{problemasOutros}]]></dataSourceExpression>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"tif201_problemas.jasper"]]></subreportExpression>
+				</subreport>
+				<subreport  isUsingCache="true">
+					<reportElement
+						mode="Transparent"
+						x="0"
+						y="60"
+						width="565"
+						height="12"
+						forecolor="#000000"
+						backcolor="#FFFFFF"
+						key="veiculosList-1"
+						stretchType="NoStretch"
+						positionType="Float"
+						isPrintRepeatedValues="true"
+						isRemoveLineWhenBlank="false"
+						isPrintInFirstWholeBand="false"
+						isPrintWhenDetailOverflows="false"/>
+					<subreportParameter  name="l8ee">
+						<subreportParameterExpression><![CDATA[$P{l8ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l8ei">
+						<subreportParameterExpression><![CDATA[$P{l8ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l7ee">
+						<subreportParameterExpression><![CDATA[$P{l7ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l7ei">
+						<subreportParameterExpression><![CDATA[$P{l7ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l6ee">
+						<subreportParameterExpression><![CDATA[$P{l6ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l6ei">
+						<subreportParameterExpression><![CDATA[$P{l6ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l5ee">
+						<subreportParameterExpression><![CDATA[$P{l5ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l5ei">
+						<subreportParameterExpression><![CDATA[$P{l5ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l4ee">
+						<subreportParameterExpression><![CDATA[$P{l4ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l4ei">
+						<subreportParameterExpression><![CDATA[$P{l4ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l3ee">
+						<subreportParameterExpression><![CDATA[$P{l3ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l3ei">
+						<subreportParameterExpression><![CDATA[$P{l3ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l2ee">
+						<subreportParameterExpression><![CDATA[$P{l2ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l2ei">
+						<subreportParameterExpression><![CDATA[$P{l2ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l1ee">
+						<subreportParameterExpression><![CDATA[$P{l1ee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l1ei">
+						<subreportParameterExpression><![CDATA[$P{l1ei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tkee">
+						<subreportParameterExpression><![CDATA[$P{tkee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tkei">
+						<subreportParameterExpression><![CDATA[$P{tkei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tee">
+						<subreportParameterExpression><![CDATA[$P{tee}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tei">
+						<subreportParameterExpression><![CDATA[$P{tei}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="d2e">
+						<subreportParameterExpression><![CDATA[$P{d2e}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="de">
+						<subreportParameterExpression><![CDATA[$P{de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l8de">
+						<subreportParameterExpression><![CDATA[$P{l8de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l8di">
+						<subreportParameterExpression><![CDATA[$P{l8di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l7de">
+						<subreportParameterExpression><![CDATA[$P{l7de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l7di">
+						<subreportParameterExpression><![CDATA[$P{l7di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l6de">
+						<subreportParameterExpression><![CDATA[$P{l6de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l6di">
+						<subreportParameterExpression><![CDATA[$P{l6di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l5de">
+						<subreportParameterExpression><![CDATA[$P{l5de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l5di">
+						<subreportParameterExpression><![CDATA[$P{l5di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l4de">
+						<subreportParameterExpression><![CDATA[$P{l4de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l4di">
+						<subreportParameterExpression><![CDATA[$P{l4di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l3de">
+						<subreportParameterExpression><![CDATA[$P{l3de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l3di">
+						<subreportParameterExpression><![CDATA[$P{l3di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l2de">
+						<subreportParameterExpression><![CDATA[$P{l2de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l2di">
+						<subreportParameterExpression><![CDATA[$P{l2di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l1de">
+						<subreportParameterExpression><![CDATA[$P{l1de}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="l1di">
+						<subreportParameterExpression><![CDATA[$P{l1di}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tkde">
+						<subreportParameterExpression><![CDATA[$P{tkde}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tkdi">
+						<subreportParameterExpression><![CDATA[$P{tkdi}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tde">
+						<subreportParameterExpression><![CDATA[$P{tde}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="tdi">
+						<subreportParameterExpression><![CDATA[$P{tdi}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="d2d">
+						<subreportParameterExpression><![CDATA[$P{d2d}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="dd">
+						<subreportParameterExpression><![CDATA[$P{dd}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="stp1">
+						<subreportParameterExpression><![CDATA[$P{stp1}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="stp2">
+						<subreportParameterExpression><![CDATA[$P{stp2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Pressao_Eixo_1">
+						<subreportParameterExpression><![CDATA[$P{nr_Pressao_Eixo_1}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Pressao_Eixo_2">
+						<subreportParameterExpression><![CDATA[$P{nr_Pressao_Eixo_2}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Pressao_Eixo_3">
+						<subreportParameterExpression><![CDATA[$P{nr_Pressao_Eixo_3}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter  name="nr_Pressao_Eixo_4">
+						<subreportParameterExpression><![CDATA[$P{nr_Pressao_Eixo_4}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportExpression  class="java.lang.String"><![CDATA[$P{PATH_SUBLIST}+"dmTipoChassis_"+($P{dm_Tipo_Chassis} == null ? "15" : $P{dm_Tipo_Chassis})+".jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</title>
+		<pageHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageHeader>
+		<columnHeader>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnHeader>
+		<detail>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</detail>
+		<columnFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</columnFooter>
+		<pageFooter>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</pageFooter>
+		<summary>
+			<band height="0"  isSplitAllowed="true" >
+			</band>
+		</summary>
+</jasperReport>

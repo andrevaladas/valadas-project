@@ -43,7 +43,7 @@
  		<frame  src="../images/PNEUCA08.PNG" /> <!--2 ok -->
  		<frame  src="../images/PNEUCA12.PNG" /> <!--3 ok -->
  		<frame  src="../images/PNEUCA16.PNG" /> <!--4 ok -->
- 		<frame  src="../images/PNEUCA32.PNG" /> <!--5 ok -->
+ 		<frame  src="../images/PNEUCA32.PNG" /> <!--5 nok -->
  		<frame  src="../images/PNEUCAS4.PNG" /> <!--6 ok -->
  		<frame  src="../images/PNEUCAS6.PNG" /> <!--7 ok -->
  		<frame  src="../images/PNEUCO04.PNG" /> <!--8 ok -->

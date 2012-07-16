@@ -9,18 +9,12 @@ public class Item implements Serializable {
 
 	private static final long serialVersionUID = 7715559925553019556L;
 
-	private String codigo;
 	private String nome;
 	private Integer quantidade = 0;
 	private Double valor = 0D;
 
 	public Item(final String nome) {
 		super();
-		this.nome = nome;
-	}
-	public Item(final String codigo, final String nome) {
-		super();
-		this.codigo = codigo;
 		this.nome = nome;
 	}
 
@@ -31,12 +25,6 @@ public class Item implements Serializable {
 		this.valor += value;
 	}
 
-	public String getCodigo() {
-		return this.codigo;
-	}
-	public void setCodigo(final String codigo) {
-		this.codigo = codigo;
-	}
 	public String getNome() {
 		return this.nome;
 	}

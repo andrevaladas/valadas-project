@@ -22,7 +22,6 @@ import com.master.ed.Stif_Veiculo_InspecaoED;
 import com.master.ed.VeiculoED;
 import com.master.ed.relatorio.Item;
 import com.master.ed.relatorio.Pneu;
-import com.master.ed.relatorio.Problema;
 import com.master.ed.relatorio.Resumo;
 import com.master.ed.relatorio.Veiculo;
 import com.master.util.BancoUtil;
@@ -220,6 +219,7 @@ public class Stif_InspecaoRL extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.valvulas, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							addResumo(veiculo.getNr_Frota(),pneu.getNr_Fogo(), problemaED.getNm_problema());
+							veiculo.addProblemasValvulas(problemaED);
 							pneu.addNr_Problemas_Valvulas(problemaED.getCd_problema());
 							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
@@ -229,6 +229,7 @@ public class Stif_InspecaoRL extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.rodas, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							addResumo(veiculo.getNr_Frota(),pneu.getNr_Fogo(), problemaED.getNm_problema());
+							veiculo.addProblemasRodas(problemaED);
 							pneu.addNr_Problemas_Rodas(problemaED.getCd_problema());
 							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
@@ -239,6 +240,7 @@ public class Stif_InspecaoRL extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.outros, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							addResumo(veiculo.getNr_Frota(),pneu.getNr_Fogo(), problemaED.getNm_problema());
+							veiculo.addProblemasOutros(problemaED);
 							pneu.addNr_Problemas_Outros(problemaED.getCd_problema());
 							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
@@ -249,6 +251,7 @@ public class Stif_InspecaoRL extends BancoUtil {
 							final Stif_ProblemaED problemaED = problemaPneuED.getProblemaED();
 							addItem(this.pneus, problemaED.getNm_problema(), (vlParametroVidaPneu * problemaED.getPc_perda()/100));
 							addResumo(veiculo.getNr_Frota(),pneu.getNr_Fogo(), problemaED.getNm_problema());
+							veiculo.addProblemasPneus(problemaED);	
 							pneu.addNr_Problemas_Pneus(problemaED.getCd_problema());
 							verificaAnomaliaPneu(problemaED.getDm_problema());
 						}
@@ -391,19 +394,19 @@ public class Stif_InspecaoRL extends BancoUtil {
 	private void loadAllProblemas() {
 		final List<Stif_ProblemaED> valvulasList = findProblemas(DmTipo.valvulas);
 		for (final Stif_ProblemaED problemaED : valvulasList) {
-			this.valvulas.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
+			this.valvulas.add(new Item(problemaED.getNm_problema()));
 		}
 		final List<Stif_ProblemaED> rodasList = findProblemas(DmTipo.rodas);
 		for (final Stif_ProblemaED problemaED : rodasList) {
-			this.rodas.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
+			this.rodas.add(new Item(problemaED.getNm_problema()));
 		}
 		final List<Stif_ProblemaED> outrosList = findProblemas(DmTipo.outros);
 		for (final Stif_ProblemaED problemaED : outrosList) {
-			this.outros.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
+			this.outros.add(new Item(problemaED.getNm_problema()));
 		}
 		final List<Stif_ProblemaED> pneusList = findProblemas(DmTipo.pneus);
 		for (final Stif_ProblemaED problemaED : pneusList) {
-			this.pneus.add(new Item(problemaED.getCd_problema(), problemaED.getNm_problema()));
+			this.pneus.add(new Item(problemaED.getNm_problema()));
 		}
 	}
 	public Stif_InspecaoED getInspecaoED() {
@@ -453,18 +456,6 @@ public class Stif_InspecaoRL extends BancoUtil {
 		addItem(totalPerdas, "ITEM IV - OUTROS", getValorTotal(this.outros));
 		addItem(totalPerdas, "ITEM V - PNEUS EM USO", getValorTotal(this.pneus));
 		return totalPerdas;
-	}
-	public List<Problema> getProblemas(final List<Item> items) {
-		final List<Problema> problemas = new ArrayList<Problema>();
-		for (final Item item : items) {
-			if (item.getQuantidade() > 0) {
-				problemas.add(new Problema(item.getCodigo()+" - "+item.getNome()));
-			}
-		}
-		if (problemas.isEmpty()) {
-			problemas.add(new Problema("Nenhum problema aparente"));
-		}
-		return problemas;
 	}
 	private Double getValorTotal(final List<Item> items){
 		Double valorTotal = 0D;
@@ -569,12 +560,6 @@ public class Stif_InspecaoRL extends BancoUtil {
 		query.append(" FROM Stif_Constatacoes c");
 		query.append(" 	INNER JOIN Stif_Perdas_Percentuais pp");
 		query.append(" 		ON (c.oid_Perda_Percentual = pp.oid_Perda_Percentual)");
-		query.append(" 	INNER JOIN Stif_Pneus_Inspecoes pi");
-		query.append(" 		ON (c.oid_Veiculo_Inspecao = pi.oid_Veiculo_Inspecao)");
-		query.append(" 	INNER JOIN Stif_Veiculos_Inspecoes vi");
-		query.append(" 		ON (pi.oid_Veiculo_Inspecao = vi.oid_Veiculo_Inspecao)");
-		query.append(" 	INNER JOIN Stif_Inspecoes i");
-		query.append(" 		ON (i.oid_Inspecao = vi.oid_Inspecao)");
 		query.append(" WHERE c.oid_Veiculo_Inspecao = "+oidVeiculoInspecao);
 
 		try {

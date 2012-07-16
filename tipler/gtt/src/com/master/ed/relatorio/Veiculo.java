@@ -1,6 +1,13 @@
 package com.master.ed.relatorio;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+
+import com.master.ed.Stif_ProblemaED;
+import com.master.relatorio.relatorioJasper.ObjetoJRDataSource;
 
 /**
  * @author Andre Valadas
@@ -24,6 +31,10 @@ public class Veiculo implements Serializable {
 	private String tx_Observacao;
 	private String tx_Observacao_Imagem;
 	private long oid_Imagem;
+	private final ObjetoJRDataSource problemasRodas = new ObjetoJRDataSource();
+	private final ObjetoJRDataSource problemasValvulas = new ObjetoJRDataSource();
+	private final ObjetoJRDataSource problemasPneus = new ObjetoJRDataSource();
+	private final ObjetoJRDataSource problemasOutros = new ObjetoJRDataSource();
 
 	/** Pneus esquerdos */
 	private Pneu l8ee;
@@ -174,6 +185,62 @@ public class Veiculo implements Serializable {
 	}
 	public void setOid_Imagem(final long oidImagem) {
 		this.oid_Imagem = oidImagem;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void add(final ObjetoJRDataSource problemaDS, final Stif_ProblemaED problemaED) {
+		final String problemaFormatted = problemaED.getNm_problema().substring(0,1).toUpperCase() + problemaED.getNm_problema().substring(1).toLowerCase();
+		ArrayList<Problema> array = problemaDS.getArrayED();
+		if (array == null) {
+			array = new ArrayList<Problema>();
+		}
+		final String descricao = problemaED.getCd_problema()+" - "+problemaFormatted;
+		for (final Problema problema : array) {
+			if (problema.getDescricao().equals(descricao)) {
+				return;
+			}
+		}
+		array.add(new Problema(descricao));
+		problemaDS.setArrayED(array);
+	}
+	@SuppressWarnings("unchecked")
+	public ObjetoJRDataSource verificaProblemas(final ObjetoJRDataSource problemaDS) {
+		ArrayList<Problema> array = problemaDS.getArrayED();
+		if (array == null || array.isEmpty()) {
+			array = new ArrayList<Problema>(Arrays.asList(new Problema("Nenhum problema aparente")));
+		}
+		Collections.sort(array, new Comparator<Problema>() {
+			@Override
+			public int compare(final Problema arg0, final Problema arg1) {
+				return arg0.getDescricao().compareTo(arg1.getDescricao());
+			}
+		});
+		problemaDS.setArrayED(array);
+		return problemaDS;
+	}
+	public ObjetoJRDataSource getProblemasRodas() {
+		return verificaProblemas(this.problemasRodas);
+	}
+	public void addProblemasRodas(final Stif_ProblemaED problema) {
+		add(this.problemasRodas, problema);
+	}
+	public ObjetoJRDataSource getProblemasValvulas() {
+		return verificaProblemas(this.problemasValvulas);
+	}
+	public void addProblemasValvulas(final Stif_ProblemaED problema) {
+		add(this.problemasValvulas, problema);
+	}
+	public ObjetoJRDataSource getProblemasPneus() {
+		return verificaProblemas(this.problemasPneus);
+	}
+	public void addProblemasPneus(final Stif_ProblemaED problema) {
+		add(this.problemasPneus, problema);
+	}
+	public ObjetoJRDataSource getProblemasOutros() {
+		return verificaProblemas(this.problemasOutros);
+	}
+	public void addProblemasOutros(final Stif_ProblemaED problema) {
+		add(this.problemasOutros, problema);
 	}
 
 	/** Pneus */
