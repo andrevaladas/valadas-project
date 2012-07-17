@@ -274,7 +274,6 @@ public class Stif_InspecaoRN extends Transacao {
 		ed.setLista(new ArrayList<Veiculo>(veiculos));
 		ed.setRequest(request);
 		ed.setResponse(response);
-		ed.setNomeRelatorio("tif201");
 		ed.setHashMap(map);
 		new JasperRL(ed).geraRelatorio();
     }
@@ -295,8 +294,14 @@ public class Stif_InspecaoRN extends Transacao {
     	final Stif_InspecaoED ed = (Stif_InspecaoED)Obj;
     	ed.setRequest(request);
 		if ("1".equals(rel)) {
+			ed.setNomeRelatorio("tif201");
 			relatorio(ed, request, response);	
-		}		
+		} else
+		if ("2".equals(rel)) {
+			//resumo
+			ed.setNomeRelatorio("tif201_VisualizarResumo");
+			relatorio(ed, request, response);	
+		} 
     }
 
     /**

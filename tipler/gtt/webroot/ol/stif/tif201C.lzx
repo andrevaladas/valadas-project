@@ -336,7 +336,6 @@
 			  	  		      rn : "Stif_InspecaoRN",
 						  	acao : "L",
 					   encerrada : "true",
-					   	   todas : "true",
 				  	oid_Inspecao : oid
 	  			});	
   				dsInspecao.doRequest();
@@ -351,7 +350,6 @@
 				  	  		      rn : "Stif_InspecaoRN",
 							  	acao : "L",
 					   	   encerrada : "true",
-					   	       todas : "true",
 					  	 oid_Cliente : oid
 	  			});	
   				dsInspecaoList.doRequest();
@@ -365,7 +363,7 @@
 			chamada += "&amp;"+"rel=1"; 
 			chamada += "&amp;"+"oid_Inspecao="+oidInspecao;
 			chamada += "&amp;"+"time="+parent.parent.myDateUtils.getSystemTime();
-			LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=1,height=1"); void(0);' );
+			LzBrowser.loadURL('javascript:window.open("' + chamada + '","content","location=no,titlebar=no,scrollbars=no,width=800,height=600"); void(0);' );
 			carregando.stopAni();
 		</method>
 	    <!-- Reloginho -->
