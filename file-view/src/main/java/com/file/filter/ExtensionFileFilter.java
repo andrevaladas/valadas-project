@@ -4,6 +4,11 @@ import java.io.File;
 
 import javax.swing.filechooser.FileFilter;
 
+/**
+ * Classe para filtrar os tipos de arqvuivo válidos
+ * 
+ * @author andrevaladas
+ */
 public class ExtensionFileFilter extends FileFilter {
 	String description;
 
@@ -49,5 +54,4 @@ public class ExtensionFileFilter extends FileFilter {
 		}
 		return false;
 	}
-
 }

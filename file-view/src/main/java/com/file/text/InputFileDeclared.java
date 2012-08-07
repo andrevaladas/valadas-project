@@ -10,6 +10,11 @@ import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * Classe que carregas os dados do arquivo selecionado
+ * 
+ * @author andrevaladas
+ */
 public class InputFileDeclared {
 	private FileInputStream in = null;
 

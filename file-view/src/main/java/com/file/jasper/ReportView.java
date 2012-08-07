@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import net.sf.jasperreports.engine.JRDataSource;
-import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.JasperPrint;
@@ -18,36 +17,50 @@ import net.sf.jasperreports.view.JasperViewer;
 
 import com.file.text.InputFileDeclared;
 
+/**
+ * Classe para o montagem e visualização do Relatório
+ * 
+ * @author andrevaladas
+ */
 public class ReportView {
 
+	/**
+	 * Chama JasperView para exibir relatório
+	 * @param selectedFile
+	 */
 	public ReportView(final File selectedFile) {
-		System.out.println(selectedFile.getName());
-		final InputFileDeclared inputFileDeclared = new InputFileDeclared(selectedFile);
-		final List<String> loadStrings = inputFileDeclared.loadStrings();
-		//System.out.println(loadStrings.toString());
-
-		JasperReport report = null;
-
 		try {
 			final InputStream fileImputStream = ClassLoader.getSystemResourceAsStream("valadas.jrxml");
-			System.out.println("#################### 01: "+fileImputStream);
-			report = JasperCompileManager.compileReport(fileImputStream);
-		} catch (final Exception e1) {
-			e1.printStackTrace();
-		}
+			final JasperReport report = JasperCompileManager.compileReport(fileImputStream);
 
-		final Map<String, Object> simpleMasterMap = new HashMap<String, Object>();
-		simpleMasterMap.put("master", loadStrings.get(0));
-		final List<Map<String, Object>> simpleMasterList = new ArrayList<Map<String, Object>>();
-		simpleMasterList.add(simpleMasterMap);
-		final JRDataSource dataSource = new JRMapCollectionDataSource(simpleMasterList);
+			final JRDataSource dataSource = new JRMapCollectionDataSource(getReportParams(selectedFile));
 
-		JasperPrint print = null;
-		try {
-			print = JasperFillManager.fillReport(report, null, dataSource);
-		} catch (final JRException e) {
+			final JasperPrint print = JasperFillManager.fillReport(report, null, dataSource);
+			JasperViewer.viewReport(print, true);
+		} catch (final Exception e) {
 			e.printStackTrace();
 		}
-		JasperViewer.viewReport(print, true);
+	}
+
+	/**
+	 * Carrega parametros do Relatório
+	 * @param selectedFile
+	 * @return
+	 */
+	private List<Map<String, Object>> getReportParams(final File selectedFile) {
+
+		final List<Map<String, Object>> dsParamResult = new ArrayList<Map<String, Object>>();
+
+		/** Carrega dados do arquivo */
+		final InputFileDeclared inputFileDeclared = new InputFileDeclared(selectedFile);
+		final List<String> loadStrings = inputFileDeclared.loadStrings();
+
+		/** Seta os parâmetros do relatório */
+		for (final String string : loadStrings) {
+			final Map<String, Object> data = new HashMap<String, Object>();
+			data.put("master", string);
+			dsParamResult.add(data);
+		}
+		return dsParamResult;
 	}
 }

@@ -18,12 +18,19 @@ import javax.swing.filechooser.FileFilter;
 import com.file.filter.ExtensionFileFilter;
 import com.file.jasper.ReportView;
 
+/**
+ * Classe Main responsável pela execussão da interface
+ * 
+ * @author andrevaladas
+ */
 public class JFileChooserTest {
 	public static void main(final String[] args) {
 		JFrame.setDefaultLookAndFeelDecorated(true);
 		JDialog.setDefaultLookAndFeelDecorated(true);
+
 		final JFrame frame = new JFrame("JComboBox Test");
 		frame.setLayout(new FlowLayout());
+		frame.setResizable(false);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
@@ -50,13 +57,6 @@ public class JFileChooserTest {
 				if (returnValue == JFileChooser.APPROVE_OPTION) {
 					final File selectedFile = fileChooser.getSelectedFile();
 					new ReportView(selectedFile);
-					/*System.out.println(selectedFile.getName());
-					final InputFileDeclared inputFileDeclared = new InputFileDeclared(selectedFile);
-					final List<String> loadStrings = inputFileDeclared.loadStrings();
-					System.out.println(loadStrings.toString());
-					for (final String string : loadStrings) {
-						System.out.println(string);
-					}*/
 				}
 			}
 		});
