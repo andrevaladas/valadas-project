@@ -1,0 +1,4 @@
+http://sourceforge.net/projects/ireport/files/iReport/iReport-3.5.3/iReport-nb-3.5.3-windows-installer.exe/download
+
+
+install assembly:single
