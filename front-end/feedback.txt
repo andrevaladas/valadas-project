@@ -1,0 +1,31 @@
+Home:
+No contexto geral o layout não está ruim mas falta um refinamento maior em alguns detalhes e algumas soluções usadas vai ser complicado desenvolver sem usar imagem, o que pode começar a sobrecarregar o peso da aplicação. Os botões sugiro utilizar os prontos da biblioteca jquery mobile (http://jquerymobile.com/), onde além de ser todos em css, tem um apelo visual maior. 
+
+Ainda com relação ao visual, eu procuraria não usar fonte em itálico nos botões, pois este recurso fica melhor para dar destaque a elementos de texto que você não queira dar um mega destaque (usando negrito por exemplo). A sombra dos botões não está legal, precisaria dar um gausian blur maior e dar uma transparência maior, para que não fique com uma cor tão "chapada" e disputando a atenção com o botão. 
+
+Quanto as áreas, sugiro dar contraste maior as áreas, dividindo um pouco elas...tipo, o topo como está, parece ser parte integrante de todo o resto...procure dividir as áreas com cores ou elementos divisores para facilitar a navegação pelo aplicativo.
+
+A foto ou área onde fica a foto do usuário, aquele azul não tá combinando com a aplicação, que está em tons de cinza. Sugiro deixar a imagem em PB e a moldura da foto em preto ou cinza mais forte, caso queira dar um destaque para o mesmo.
+
+No topo da aplicação, não aparece em nenhum momento a opção "voltar" e aquele ícone da seta na direita, para mim, não ficou claro a sua real função.
+
+Em alguns textos tá um cinza muito claro, sugiro tomar cuidado com este pois temos que lembrar que o cara vai estar com um telefone em vários ambientes de luz e muitas vezes, pode ficar ilegível os textos. Por isso, o pessoal procura dar bastante contraste as coisas e usar com cuidado os tons claros. Caso não queira chamar muita atenção para uma informação, diferencie as mesmas através do tamanho das fontes e tente não usar mais que 3 a 4 tipos de fontes numa mesma aplicação, para não confundir o usuário. Escolha um tamanho e fonte para botão e siga até o final como padrão...o mesmo para títulos e textos, pois daí você educa o usuário com os padrões pré estabelecidos para facilitar o entendimento e identificação de cada coisa dentro da tua aplicação.
+
+Com relação ao texto abaixo de cada ícone do menu, quando clicado, achei pouco legível e mudaria para para uma cor igual ao do nome do usuário ou um tom de cinza mais forte, pois como os ícones foram bem escolhidos, não precisa dar um destaque muito grande ao texto.
+
+Particularmente não gostei dos ícones branco com sombra, não que a idéia não fosse boa, mas neste contexto e muitas vezes pela importância que tem, podem passar despercebidos por um usuário com frenesi de atenção - talvez um gradiente do branco para o cinza com sombra, melhore a visibilidade e não se distancie muito da tua idéia.
+
+
+Map-search:
+
+Nesta tela achei alguns pontos de usuabilidade que podem ser melhorados. Um deles poderia ser adicionar um botão para mostrar a legenda dizendo o que seria cada cor do mapa com opção de fechar e não mostrar mais. Não ficou claro para mim se o botão da lupa sobre o mapa é um botão de ação ou se abre uma busca. Eu tiraria o tumb do mapa ao lado do botão location, colocaria ali o texto "search by name" como label e empurraria para cima o ícone da busca tornando ele como o botão de disparar a busca. Ao invés de ter um botão "my location" eu adicionaria um tooltipo no mapa com o texto "você está aqui".
+
+Name search:
+
+Aqui eu deixaria na mesma linha do campo de busca o ícone de busca para dividir melhor as coisas. Os botões de + e - estão com os cantos arredondandados estranho.
+
+New account:
+
+Aquela imagem de tecido não está combinando com a aplicação e poderia substituir por outra ou nem colocar nada, só jogar os elementos mais para cima para centralizar na tela.A mensagem de "erro" sugiro diminuir o tamanho pois ela hierarquicamente falando, tá maior que qualquer coisa na aplicação.
+
+As demais telas ok!
