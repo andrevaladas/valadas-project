@@ -1,4 +1,4 @@
-package com.signature;
+package com.xml.signature;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.KeyPair;
@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import com.xml.signature.ValidateXMLSignature;
 
 /**
  * Generate the enveloped document
@@ -76,7 +78,7 @@ public class GenerateSignatureTest {
 	        // Create a KeyInfo and add the KeyValue to it
 	        KeyInfo ki = kif.newKeyInfo(Collections.singletonList(kv));
 
-	        final String xmlSignature = ClassLoader.getSystemResource(Validate.inputDocument).getPath(); 
+	        final String xmlSignature = ClassLoader.getSystemResource(ValidateXMLSignature.inputDocument).getPath(); 
 
 	        // Instantiate the document to be validated
 	        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -105,7 +107,9 @@ public class GenerateSignatureTest {
 	        // Output the resulting document
 	        TransformerFactory tf = TransformerFactory.newInstance();
 	        Transformer trans = tf.newTransformer();
-	        trans.transform(new DOMSource(doc), new StreamResult(new File(Validate.outputSignedDocument))); 
+	        trans.transform(new DOMSource(doc), new StreamResult(new File(ValidateXMLSignature.outputSignedDocument))); 
+
+	        System.out.println("Digital signature generated");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

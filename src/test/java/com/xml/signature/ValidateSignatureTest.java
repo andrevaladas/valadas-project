@@ -1,7 +1,9 @@
-package com.signature;
+package com.xml.signature;
 import java.io.File;
 
 import org.junit.Test;
+
+import com.xml.signature.ValidateXMLSignature;
 
 /**
  * Validate the signed enveloped document
@@ -16,6 +18,6 @@ public class ValidateSignatureTest {
 	@Test
 	public void testValidateSignature() throws Exception {
 		// Validate generated file by testGenerateSingnature()
-		Validate.validateSignature(new File(Validate.outputSignedDocument));
+		ValidateXMLSignature.validateSignature(new File(ValidateXMLSignature.outputSignedDocument));
 	}
 }
