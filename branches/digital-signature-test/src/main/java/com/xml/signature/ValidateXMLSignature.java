@@ -1,4 +1,4 @@
-package com.signature;
+package com.xml.signature;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.Key;
@@ -32,7 +32,7 @@ import org.w3c.dom.NodeList;
  * 
  * @link http://docs.oracle.com/javase/7/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html
  */
-public class Validate {
+public class ValidateXMLSignature {
 
 	public final static String inputDocument = "envelope.xml";
 	public final static String outputSignedDocument = "envelopedSignature.xml";
