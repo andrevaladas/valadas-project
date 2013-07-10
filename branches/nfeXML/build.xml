@@ -1,0 +1,204 @@
+<project name="nfeXML" default="_dist-xml2" basedir=".">
+	<property environment="env"/>
+	<property file="build.properties"/>
+
+	<property name="bin" value="bin"/>
+	<property name="src" value="src"/>
+	<property name="lib" value="lib"/>
+
+	<path id="class.path">		
+		<fileset dir="${lib}">
+	    	<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	
+	<target name="prepare-xml2">
+		<mkdir dir="${build.dist}/${project.xml}"/>
+	</target>
+
+	<target name="compile-xml2" depends="prepare-xml2">
+		<javac classpathref="class.path" srcdir="${src}" destdir="${bin}" includeantruntime="true" />
+	</target>
+
+	<target name="jar-xml2" depends="compile-xml2" >
+		<property name="jar" value="${project.xml.jar}"/>
+		
+	 	<jar destfile="${build.dist}/${project.xml}/${jar}">
+			<fileset dir="${bin}"/>
+	 		<manifest>
+	 			<attribute name="Built-By" value="${user.name}"/>
+	 			<attribute name="OS" value="${os.name}"/>
+	 			<attribute name="OS-Version" value="${os.version}"/>
+	 			<attribute name="Main-Class" value=""/>
+	 			<attribute name="Class-Path" value=""/>
+	 		</manifest>
+ 		</jar>
+	</target>
+
+	<target name="_dist-xml2" depends="jar-xml2">
+
+	</target>
+	
+	<taskdef name="xjc" classname="com.sun.tools.xjc.XJCTask">
+	  <classpath>
+	    <fileset dir="c:/java/jaxb-ri/lib" includes="*.jar" />
+	  </classpath>
+	</taskdef>
+	
+	<!-- Geracao das Classe JAXB -->
+
+	<target name="xsdCancNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/cancnfe" />
+		<property name="package-nfe" value="br.com.javac.v200.cancnfe"/>
+		<property name="xsd-file" value="xsd/cancNFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdConsCad_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/conscad" />
+		<property name="package-nfe" value="br.com.javac.v200.conscad"/>
+		<property name="xsd-file" value="xsd/consCad_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdConsReciNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/consrecinfe" />
+		<property name="package-nfe" value="br.com.javac.v200.consrecinfe"/>
+		<property name="xsd-file" value="xsd/consReciNFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdConsStatServ_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/consstatserv" />
+		<property name="package-nfe" value="br.com.javac.v200.consstatserv"/>
+		<property name="xsd-file" value="xsd/consStatServ_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdEnviNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/envinfe" />
+		<property name="package-nfe" value="br.com.javac.v200.envinfe"/>
+		<property name="xsd-file" value="xsd/enviNFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+	
+	<target name="xsdInutNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/inutnfe" />
+		<property name="package-nfe" value="br.com.javac.v200.inutnfe"/>
+		<property name="xsd-file" value="xsd/inutNFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+	
+	<target name="xsdProcNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/procnfe" />
+		<property name="package-nfe" value="br.com.javac.v200.procnfe"/>
+		<property name="xsd-file" value="xsd/procNFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdRetConsStatServ_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/retconsstatserv" />
+		<property name="package-nfe" value="br.com.javac.v200.retconsstatserv"/>
+		<property name="xsd-file" value="xsd/retConsStatServ_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdRetEnviNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/retenvinfe" />
+		<property name="package-nfe" value="br.com.javac.v200.retenvinfe"/>
+		<property name="xsd-file" value="xsd/retEnviNFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+	
+	<target name="xsdNFe_v2.00">
+		<property name="schema-nfe" value="src/br/com/javac/v200/nfe" />
+		<property name="package-nfe" value="br.com.javac.v200.nfe"/>
+		<property name="xsd-file" value="xsd/NFe_v2.00.xsd"/>
+		
+		<mkdir dir="${schema-nfe}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-nfe}">
+		  <produces dir="${schema-nfe}" includes="* impl/*" />
+		</xjc>
+	</target>
+
+	<target name="xsdEnvDPEC_v1.01">
+		<property name="schema-dpec" value="src/br/com/javac/v101/dpec" />
+		<property name="package-dpec" value="br.com.javac.v101.dpec"/>
+		<property name="xsd-file" value="xsd-dpec/envDPEC_v1.01.xsd"/>
+		
+		<mkdir dir="${schema-dpec}" />
+		<xjc destdir="src" 
+			schema="${xsd-file}" 
+			removeOldOutput="yes" 
+			package="${package-dpec}">
+		  <produces dir="${schema-dpec}" includes="* impl/*" />
+		</xjc>
+	</target>
+	
+</project>
