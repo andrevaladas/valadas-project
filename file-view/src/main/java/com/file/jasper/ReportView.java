@@ -47,9 +47,9 @@ public class ReportView {
 	 * @param selectedFile
 	 * @return
 	 */
-	private List<Map<String, Object>> getReportParams(final File selectedFile) {
+	private List<Map<String, ?>> getReportParams(final File selectedFile) {
 
-		final List<Map<String, Object>> dsParamResult = new ArrayList<Map<String, Object>>();
+		final List<Map<String, ?>> dsParamResult = new ArrayList<Map<String, ?>>();
 
 		/** Carrega dados do arquivo */
 		final InputFileDeclared inputFileDeclared = new InputFileDeclared(selectedFile);
