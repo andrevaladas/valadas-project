@@ -1,6 +1,12 @@
 package com.chronosystems.html.core;
 
-import java.io.IOException;
+import java.math.BigDecimal;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -8,12 +14,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.chronosystems.entity.Imovel;
+import com.chronosystems.entity.enumeration.SiteBusca;
 
 /**
  * @author André Valadas
  */
 public class JsoupExtractor {
 
+	final List<Imovel> result = new ArrayList<>();
+	
 	/**
 	 * URL princiapl a ser processada
 	 * 
@@ -21,15 +30,6 @@ public class JsoupExtractor {
 	 */
 	protected String getURLConnect() {
 		return "http://www.penseimoveis.com.br/rs/lista/compra/rs/casa";
-	}
-
-	/**
-	 * Timeout para conexão
-	 * 
-	 * @return
-	 */
-	protected int getTimeout() {
-		return 15 * 1000; //15 seconds
 	}
 
 	/**
@@ -43,15 +43,16 @@ public class JsoupExtractor {
 	}
 
 	/**
-	 * Total de registros por página 
+	 * Total de registros por página
 	 * 
 	 * @param doc
 	 * @return
 	 */
 	protected Element getTotalRecordsByPage(final Document doc) {
 		final Element pagination = doc.getElementById("resultadosPagina");
-		final Elements recordsByPageElement = pagination.getElementsByAttribute("selected");
-		return recordsByPageElement.get(0);
+		final Elements recordsByPageElement = pagination
+				.getElementsByAttribute("selected");
+		return recordsByPageElement.first();
 	}
 
 	/**
@@ -78,18 +79,18 @@ public class JsoupExtractor {
 	/**
 	 * @return the empresa value
 	 */
-	protected Long getEmpresa() {
-		return Long.valueOf(1);
+	protected SiteBusca getEmpresa() {
+		return SiteBusca.PENSE_IMOVEIS;
 	}
 
 	/**
 	 * @return the url
 	 */
 	protected String getUrlText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaBoxImagem").get(0);
+		final Element content = doc.getElementsByClass("anuncioListaBoxImagem").first();
 		final Elements links = content.getElementsByTag("a");
 		if (!links.isEmpty()) {
-			return links.get(0).absUrl("href");
+			return links.first().absUrl("href");
 		}
 		return null;
 	}
@@ -98,11 +99,11 @@ public class JsoupExtractor {
 	 * @return the codigo
 	 */
 	protected String getCodigoText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoTitulo").get(0);
+		final Element content = doc.getElementsByClass("anuncioListaInfoTitulo").first();
 		final Elements codigo = content.getElementsByTag("a");
 		if (!codigo.isEmpty()) {
-			final String absUrl = codigo.get(0).absUrl("href");
-			return absUrl.substring(absUrl.lastIndexOf("/")+1);
+			final String absUrl = codigo.first().absUrl("href");
+			return absUrl.substring(absUrl.lastIndexOf("/") + 1);
 		}
 		return null;
 	}
@@ -111,10 +112,10 @@ public class JsoupExtractor {
 	 * @return the titulo
 	 */
 	protected String getTituloText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoTitulo").get(0);
+		final Element content = doc.getElementsByClass("anuncioListaInfoTitulo").first();
 		final Elements title = content.getElementsByTag("a");
 		if (!title.isEmpty()) {
-			return title.attr("title");
+			return title.attr("title").trim();
 		}
 		return null;
 	}
@@ -123,10 +124,10 @@ public class JsoupExtractor {
 	 * @return the caracteristica
 	 */
 	protected String getCaracteristicaText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoCaracteristicas").get(0);
+		final Element content = doc.getElementsByClass("anuncioListaInfoCaracteristicas").first();
 		final Elements caracteristica = content.getElementsByTag("strong");
 		if (!caracteristica.isEmpty()) {
-			return caracteristica.html().trim();
+			return caracteristica.text().trim();
 		}
 		return null;
 	}
@@ -135,10 +136,10 @@ public class JsoupExtractor {
 	 * @return the descricao
 	 */
 	protected String getDescricaoText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoDescricao").get(0);
+		final Element content = doc.getElementsByClass("anuncioListaInfoDescricao").first();
 		final Elements descricao = content.getElementsByTag("a");
 		if (!descricao.isEmpty()) {
-			return descricao.html().trim();
+			return descricao.text().trim();
 		}
 		return null;
 	}
@@ -149,7 +150,7 @@ public class JsoupExtractor {
 	protected String getValorText(final Element doc) {
 		final Elements valorElement = doc.getElementsByClass("anuncioListaValoresValor");
 		if (!valorElement.isEmpty()) {
-			return valorElement.html();
+			return valorElement.text().trim();
 		}
 		return null;
 	}
@@ -160,7 +161,7 @@ public class JsoupExtractor {
 	protected String getUrlImagemText(final Element doc) {
 		final Elements imagem = doc.getElementsByClass("anuncioListaImagem").select("img[src]");
 		if (!imagem.isEmpty()) {
-			final String absUrl = imagem.get(0).absUrl("src");
+			final String absUrl = imagem.first().absUrl("src");
 			if (absUrl.indexOf("?") > -1) {
 				return absUrl.substring(0, absUrl.lastIndexOf("?"));
 			}
@@ -186,7 +187,8 @@ public class JsoupExtractor {
 	 * @param data
 	 */
 	protected void addElementProcessed(final Imovel data) {
-		info(data.getCodigo() + " adicionado.");
+		result.add(data);
+		info(data.getCodigoAnuncio() + " adicionado.");
 	}
 
 	/**
@@ -194,90 +196,100 @@ public class JsoupExtractor {
 	 */
 	protected void execute() {
 		try {
-			//TODO charset UTF-8 ????????
-
 			/** main url page */
-			final Document doc = Jsoup.connect(getURLConnect()).timeout(getTimeout()).get();
+			final Document doc = Jsoup.parse(new URL(getURLConnect()).openStream(), "ISO-8859-1", getURLConnect());
 			final String title = doc.title();
 			info(title);
 
 			/** total records */
-			final String totalRecordsText = getTotalRecords(doc).html();
+			final String totalRecordsText = getTotalRecords(doc).text();
 			info(totalRecordsText);
 
 			/** records by page */
-			final String recordsByPageText = getTotalRecordsByPage(doc).html();
+			final String recordsByPageText = getTotalRecordsByPage(doc).text();
 			info(recordsByPageText);
 
 			final Integer paginationCount = (Integer.valueOf(totalRecordsText) / Integer.valueOf(recordsByPageText));
 			info(paginationCount.toString());
 
+			final ExecutorService executor = Executors.newFixedThreadPool(5);
+			final List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+
 			/** elements to iterate */
 			final Elements anuncios = getPageElements(doc);
 			for (final Element element : anuncios) {
+				tasks.add(Executors.callable(new Runnable() {
+					public void run() {
+						/** validate data element */
+						if (validateElementToProcess(element)) {
 
-				/** validate data element */
-				if (validateElementToProcess(element)) {
+							/* *************** begin ***************** */
+							/** data to save */
+							final Imovel data = new Imovel(getEmpresa());
 
-					/* *************** begin ***************** */
+							/** url */
+							final String urlText = getUrlText(element);
+							data.setUrlAnuncio(urlText);
+							info(urlText);
 
-					/** data to save */
-					final Imovel data = new Imovel();
+							/** code */
+							final String codigoText = getCodigoText(element);
+							data.setCodigoAnuncio(codigoText);
+							info(codigoText);
 
-					/** url */
-					final String urlText = getUrlText(element);
-					data.setUrl(urlText);
-					info(urlText);
+							/** title */
+							final String tituloText = getTituloText(element);
+							data.setTituloResumo(tituloText);
+							info(tituloText);
 
-					/** code */
-					final String codigoText = getCodigoText(element);
-					data.setCodigo(codigoText);
-					info(codigoText);
+							/** caracteristicts */
+							final String caracteristicaText = getCaracteristicaText(element);
+							data.setCaracteristicasResumo(caracteristicaText);
+							info(caracteristicaText);
 
-					/** title */
-					final String tituloText = getTituloText(element);
-					data.setTitulo(tituloText);
-					info(tituloText);
+							/** desctiption */
+							final String descriptionText = getDescricaoText(element);
+							data.setDescricaoResumo(descriptionText);
+							info(descriptionText);
 
-					/** caracteristicts */
-					final String caracteristicaText = getCaracteristicaText(element);
-					data.setCaracteristica(caracteristicaText);
-					info(caracteristicaText);
+							/** price */
+							final String valorText = getValorText(element);
+							data.setValor(new BigDecimal(valorText.replaceAll("\\.", "").replaceAll(",", ".")));
+							info(valorText);
 
-					/** desctiption */
-					final String descriptionText = getDescricaoText(element);
-					data.setDescricao(descriptionText);
-					info(descriptionText);
+							/** url image */
+							final String urlImagemText = getUrlImagemText(element);
+							data.setUrlAnuncio(urlImagemText);
+							info(urlImagemText);
 
-					/** price */
-					final String valorText = getValorText(element);
-					data.setValor(valorText);
-					info(valorText);
+							/** anunciante */
+							final String anuncianteText = getAnuncianteText(element);
+							data.setAnunciante(anuncianteText);
+							info(anuncianteText);
 
-					/** url image */
-					final String urlImagemText = getUrlImagemText(element);
-					data.setUrlImagem(urlImagemText);
-					info(urlImagemText);
+							/** add sucessfull element processed */
+							addElementProcessed(data);
 
-					/** anunciante */
-					final String anuncianteText = getAnuncianteText(element);
-					data.setAnunciante(anuncianteText);
-					info(anuncianteText);
-
-					/** add sucessfull element processed */
-					addElementProcessed(data);
-
-					/* *************** end ******************* */
-				}
+							/* *************** end ******************* */
+						}
+					}
+				}));
 			}
-		} catch (IOException e) {
+
+			/** invoke all */
+			executor.invokeAll(tasks);
+			System.out.println(result.size());
+			System.out.println(anuncios.size());
+			System.exit(0);
+			
+		} catch (Exception e) {
 			error(e.getMessage());
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Registra informações do processo 
+	 * Registra informações do processo
 	 * 
 	 * @param info
 	 */
@@ -286,14 +298,14 @@ public class JsoupExtractor {
 	}
 
 	/**
-	 * Registra erros do processo 
+	 * Registra erros do processo
 	 * 
 	 * @param error
 	 */
 	private void error(final String error) {
 		System.out.println("| ERROR: " + error);
 	}
-	
+
 	/**
 	 * @param args
 	 */
