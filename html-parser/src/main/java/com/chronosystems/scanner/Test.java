@@ -1,4 +1,4 @@
-package com.chronosystems.html.core;
+package com.chronosystems.scanner;
 
 import java.net.URL;
 

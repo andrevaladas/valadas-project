@@ -17,6 +17,33 @@ import org.jsoup.select.Elements;
  */
 public final class JsoupUtils {
 
+	public static Integer stringToInteger(final String stringValue) {
+		if (stringValue != null) {
+			if (isNumber(stringValue)) {
+				return Integer.valueOf(stringValue);
+			} else {
+				//verifica se tem espaço na string pega primeiro numero ex.: "5 ou mais"
+				final int ws = stringValue.indexOf(" ");
+				if (ws > 0) {
+					return Integer.valueOf(stringValue.substring(0, ws));
+				}
+			}
+		}
+		return Integer.valueOf(0);
+	}
+
+	/**
+     * Validates if input String is a number
+     */
+    public static boolean isNumber(String in) {
+        try {
+            Integer.parseInt(in);
+        } catch (NumberFormatException ex) {
+            return false;
+        }
+        return true;
+    }
+
 	/**
 	 * Converte String para Valor decimal
 	 * 
@@ -24,10 +51,10 @@ public final class JsoupUtils {
 	 * @return
 	 */
 	public static BigDecimal stringToBigDecimal(final String stringValue) {
-		if (stringValue != null) {
+		if (stringValue.matches("-?\\d+(\\.\\d+)?")) {
 			return new BigDecimal(stringValue.replaceAll("\\.", "").replaceAll(",", "."));
 		}
-		return null;
+		return BigDecimal.ZERO;
 	}
 
 	/**
@@ -66,7 +93,7 @@ public final class JsoupUtils {
 			final int endProp = scriptText.indexOf("\"", initProp+1);
 			final String propertyValue = scriptText.substring(initProp+1, endProp).trim();
 			
-			System.out.println(propertyValue);
+			//System.out.println(propertyValue);
 			return propertyValue;
 		}
 		return null;

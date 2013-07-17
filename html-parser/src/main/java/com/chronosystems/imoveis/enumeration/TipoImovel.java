@@ -1,7 +1,7 @@
 package com.chronosystems.imoveis.enumeration;
 
 public enum TipoImovel {
-	CA("Casa"), AP("Apartamento"), CO("Comercial"), TE("Terreno"), BO("Box/Garagem"), NA("Desconhecido");
+	CA("Casa"), AP("Apartamento"), CO("Comercial"), TE("Terreno"), NA("Desconhecido");
 
 	private String description;
 

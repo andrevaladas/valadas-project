@@ -1,4 +1,4 @@
-package com.chronosystems.html.core;
+package com.chronosystems.scanner;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,6 +20,7 @@ import org.jsoup.select.Elements;
 import com.chronosystems.imoveis.entity.ImagemImovel;
 import com.chronosystems.imoveis.entity.Imovel;
 import com.chronosystems.imoveis.enumeration.CategoriaImovel;
+import com.chronosystems.imoveis.enumeration.Estado;
 import com.chronosystems.imoveis.enumeration.SiteBusca;
 import com.chronosystems.imoveis.enumeration.TipoImovel;
 import com.chronosystems.imoveis.utils.JsoupUtils;
@@ -28,7 +28,7 @@ import com.chronosystems.imoveis.utils.JsoupUtils;
 /**
  * @author André Valadas
  */
-public class JsoupExtractor {
+public class JsoupWebSiteScanner {
 
 	final List<Imovel> result = new ArrayList<>();
 
@@ -37,11 +37,27 @@ public class JsoupExtractor {
 	 * 
 	 * @return the URL to connect
 	 */
-	protected Map<TipoImovel, String> getURLConnect() {
-		final Map<TipoImovel, String> urls = new HashMap<>();
-		urls.put(TipoImovel.CA, "http://www.penseimoveis.com.br/rs/lista/compra/rs/casa");
+	protected Map<Estado, Map<TipoImovel, String>> getURLConnect() {
 
-		return urls;
+		/** RS */
+		final Map<TipoImovel, String> buscasRS = new HashMap<>();
+		buscasRS.put(TipoImovel.CA, "http://www.penseimoveis.com.br/rs/lista/compra/rs/casa");
+		buscasRS.put(TipoImovel.AP, "http://www.penseimoveis.com.br/rs/lista/compra/rs/apartamento");
+		buscasRS.put(TipoImovel.CO, "http://www.penseimoveis.com.br/rs/lista/compra/rs/comercial");
+		buscasRS.put(TipoImovel.TE, "http://www.penseimoveis.com.br/rs/lista/compra/rs/terreno");
+
+		/** SC */
+		final Map<TipoImovel, String> buscasSC = new HashMap<>();
+		buscasSC.put(TipoImovel.CA, "http://www.penseimoveis.com.br/sc/lista/compra/sc/casa");
+		buscasSC.put(TipoImovel.AP, "http://www.penseimoveis.com.br/sc/lista/compra/sc/apartamento");
+		buscasSC.put(TipoImovel.CO, "http://www.penseimoveis.com.br/sc/lista/compra/sc/comercial");
+		buscasSC.put(TipoImovel.TE, "http://www.penseimoveis.com.br/sc/lista/compra/sc/terreno");
+
+		final Map<Estado, Map<TipoImovel, String>> searchProperties = new HashMap<>();
+		//searchProperties.put(Estado.RS, buscasRS); // Adiciona RS
+		searchProperties.put(Estado.SC, buscasSC); // Adiciona SC
+
+		return searchProperties;
 	}
 
 	/**
@@ -50,20 +66,8 @@ public class JsoupExtractor {
 	 * @param doc
 	 * @return
 	 */
-	protected Element getTotalRecords(final Document doc) {
-		return doc.getElementById("resultadosEncontradosTopo");
-	}
-
-	/**
-	 * Total de registros por página
-	 * 
-	 * @param doc
-	 * @return
-	 */
-	protected Element getTotalRecordsByPage(final Document doc) {
-		final Element pagination = doc.getElementById("resultadosPagina");
-		final Elements recordsByPageElement = pagination.getElementsByAttribute("selected");
-		return recordsByPageElement.first();
+	protected Integer getTotalPages(final Document doc) {
+		return Integer.valueOf(doc.getElementById("totalDePaginas").text());
 	}
 
 	/**
@@ -73,7 +77,7 @@ public class JsoupExtractor {
 	 * @return
 	 */
 	protected Elements getPageElements(final Document doc) {
-		return doc.getElementsByClass("boxAnuncioLista");
+		return doc.select(".boxAnuncioLista");
 	}
 
 	/**
@@ -83,7 +87,7 @@ public class JsoupExtractor {
 	 * @return
 	 */
 	protected boolean validateElementToProcess(final Element element) {
-		final Elements valorElement = element.getElementsByClass("anuncioListaValoresValor");
+		final Elements valorElement = element.select(".anuncioListaValoresValor");
 		return valorElement != null && !valorElement.isEmpty();
 	}
 
@@ -98,7 +102,7 @@ public class JsoupExtractor {
 	 * @return the url
 	 */
 	protected String getUrlText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaBoxImagem").first();
+		final Element content = doc.select(".anuncioListaBoxImagem").first();
 		final Elements links = content.getElementsByTag("a");
 		if (!links.isEmpty()) {
 			return links.first().absUrl("href");
@@ -110,7 +114,7 @@ public class JsoupExtractor {
 	 * @return the codigo
 	 */
 	protected String getCodigoText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoTitulo").first();
+		final Element content = doc.select(".anuncioListaInfoTitulo").first();
 		final Elements codigo = content.getElementsByTag("a");
 		if (!codigo.isEmpty()) {
 			final String absUrl = codigo.first().absUrl("href");
@@ -123,7 +127,7 @@ public class JsoupExtractor {
 	 * @return the titulo
 	 */
 	protected String getTituloText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoTitulo").first();
+		final Element content = doc.select(".anuncioListaInfoTitulo").first();
 		final Elements title = content.getElementsByTag("a");
 		if (!title.isEmpty()) {
 			return title.attr("title").trim();
@@ -135,7 +139,7 @@ public class JsoupExtractor {
 	 * @return the caracteristica
 	 */
 	protected String getCaracteristicaText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoCaracteristicas").first();
+		final Element content = doc.select(".anuncioListaInfoCaracteristicas").first();
 		final Elements caracteristica = content.getElementsByTag("strong");
 		if (!caracteristica.isEmpty()) {
 			return caracteristica.text().trim();
@@ -147,7 +151,7 @@ public class JsoupExtractor {
 	 * @return the descricao
 	 */
 	protected String getDescricaoText(final Element doc) {
-		final Element content = doc.getElementsByClass("anuncioListaInfoDescricao").first();
+		final Element content = doc.select(".anuncioListaInfoDescricao").first();
 		final Elements descricao = content.getElementsByTag("a");
 		if (!descricao.isEmpty()) {
 			return descricao.text().trim();
@@ -159,7 +163,7 @@ public class JsoupExtractor {
 	 * @return the urlImagem
 	 */
 	protected String getUrlImagemText(final Element doc) {
-		final Elements imagem = doc.getElementsByClass("anuncioListaImagem").select("img[src]");
+		final Elements imagem = doc.select(".anuncioListaImagem").select("img[src]");
 		if (!imagem.isEmpty()) {
 			final String absUrl = imagem.first().absUrl("src");
 			if (absUrl.indexOf("?") > -1) {
@@ -174,7 +178,7 @@ public class JsoupExtractor {
 	 * @return the anunciante
 	 */
 	protected String getAnuncianteText(final Element doc) {
-		final Element anunciante = doc.getElementsByClass("dadosAnunciante.nomeAnunciante").first();
+		final Element anunciante = doc.select(".dadosAnunciante .nomeAnunciante").first();
 		if (anunciante != null) {
 			return anunciante.text().trim();
 		}
@@ -185,12 +189,11 @@ public class JsoupExtractor {
 	 * @return telefone
 	 */
 	protected String getTelefoneText(final Element doc) {
-		//TODO Verificar se tem como extrair direto o conteudo HTML ou TEXT completo
-		final Element telefoneTag = doc.getElementsByClass("informacoesTelefone.titlePhoneCustomer").first().parent();
-		final Elements codigos = telefoneTag.getElementsByClass("subTitlePrePhone");
+		final Element telefoneTag = doc.select(".informacoesTelefone .titlePhoneCustomer").first().parent();
+		final Elements codigos = telefoneTag.select(".subTitlePrePhone");
 		final String ddi = codigos.first().text();
 		final String ddd = codigos.get(1).text();
-		final String numero = telefoneTag.getElementsByClass("subTitlePhoneCustomer").first().text();
+		final String numero = telefoneTag.select(".subTitlePhoneCustomer").first().text();
 
 		return ddi+ddd+numero;
 	}
@@ -199,7 +202,7 @@ public class JsoupExtractor {
 	 * @return the valor
 	 */
 	protected String getValorText(final Element doc) {
-		final Element valorElement = doc.getElementsByClass("valorImovelConteudo.preco").first();
+		final Element valorElement = doc.select(".valorImovelConteudo .preco").first();
 		if (valorElement != null) {
 			return valorElement.text().trim();
 		}
@@ -213,7 +216,7 @@ public class JsoupExtractor {
 	 */
 	protected void addElementProcessed(final Imovel data) {
 		result.add(data);
-		info(data.getCodigoAnuncio() + " adicionado.");
+		debug(data.getCodigoAnuncio() + " adicionado. rowCount: "+result.size());
 	}
 
 	/**
@@ -222,65 +225,82 @@ public class JsoupExtractor {
 	protected void execute() {
 		try {
 
-			/** URLs */
-			final Map<TipoImovel, String> urlConnect = getURLConnect();
-			final Set<Entry<TipoImovel, String>> entrySet = urlConnect.entrySet();
-			for (final Entry<TipoImovel, String> entry : entrySet) {
+			/** properiedades da busca */
+			final Set<Entry<Estado, Map<TipoImovel, String>>> searchProperties = getURLConnect().entrySet();
+			for (final Entry<Estado, Map<TipoImovel, String>> search : searchProperties) {
 
-				/** url da listagem paginada */
-				final Document doc = Jsoup.parse(new URL(entry.getValue()).openStream(), "ISO-8859-1", entry.getValue());
-				final String title = doc.title();
-				info(title);
-				
-				/** total records */
-				final String totalRecordsText = getTotalRecords(doc).text();
-				info(totalRecordsText);
-				
-				/** records by page */
-				final String recordsByPageText = getTotalRecordsByPage(doc).text();
-				info(recordsByPageText);
-				
-				final Integer paginationCount = (Integer.valueOf(totalRecordsText) / Integer.valueOf(recordsByPageText));
-				info(paginationCount.toString());
-				
-				final ExecutorService executor = Executors.newFixedThreadPool(5);
-				final List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
-				
-				/** elements to iterate */
-				final Elements anuncios = getPageElements(doc);
-				for (final Element element : anuncios) {
-					tasks.add(Executors.callable(new Runnable() {
-						public void run() {
-							/** validate data element */
-							if (validateElementToProcess(element)) {
+				/** estado */
+				final Estado estado = search.getKey();
 
-								/* *************** begin summary ***************** */
-								/** Imóvel */
-								final Imovel imovel = new Imovel(getSiteBusca());
+				/** urls da consulta */
+				final Set<Entry<TipoImovel, String>> urls = search.getValue().entrySet();
+				for (final Entry<TipoImovel, String> entry : urls) {
 
-								/** tipo imóvel */
-								final TipoImovel tipoImovel = entry.getKey();
-								imovel.setTipoImovel(tipoImovel);
-								info(tipoImovel.getDescription());
+					/** url da listagem paginada */
+					Document doc = Jsoup.parse(new URL(entry.getValue()).openStream(), "ISO-8859-1", entry.getValue());
+					debug(entry.getKey().getDescription());
+					debug(estado.getDescription());
 
-								/* processa resumo */
-								processSummary(imovel, element);
+					/** total de páginas válidas para iterar */
+					final Integer totalPages = getTotalPages(doc);
+					debug(totalPages.toString());
 
-								/* processa detalhamento */
-								processDetail(imovel);
-
-								/* add sucessfull element processed */
-								addElementProcessed(imovel);
-							}
+					final ExecutorService executor = Executors.newFixedThreadPool(10);
+					//final List<Callable<Object>> tasks = new ArrayList<Callable<Object>>();
+					
+					info("total de páginas: "+totalPages);
+					
+					/** busca em todas as páginas da consulta */
+					for (int i = 1; i < totalPages; i++) {
+						
+						info("total processados: "+result.size());
+						info("página: "+i);
+						/** carrega próxima página */
+						if (i > 1) {
+							doc = Jsoup.parse(new URL(entry.getValue()+"?page="+i).openStream(), "ISO-8859-1", entry.getValue()+"?page="+i);
 						}
-					}));
-				}
+						
+						/** elements to iterate */
+						final Elements anuncios = getPageElements(doc);
+						for (final Element element : anuncios) {
+							//tasks.add(Executors.callable(new Runnable() {
+							executor.execute(new Runnable() {
+								public void run() {
 
-				/** invoke all */
-				executor.invokeAll(tasks);
-				System.out.println(result.size());
-				System.out.println(anuncios.size());
+									/** validate data element */
+									if (validateElementToProcess(element)) {
+
+										/** Imóvel */
+										final Imovel imovel = new Imovel();
+										imovel.setEstado(estado);
+										imovel.setSiteBusca(getSiteBusca());
+
+										/** tipo imóvel */
+										final TipoImovel tipoImovel = entry.getKey();
+										imovel.setTipoImovel(tipoImovel);
+										debug(tipoImovel.getDescription());
+
+										/* processa resumo */
+										processSummary(imovel, element);
+
+										/* processa detalhamento */
+										processDetail(imovel);
+
+										/* add sucessfull element processed */
+										addElementProcessed(imovel);
+									}
+								}
+								//}));
+							});
+						}
+					}
+
+					/** invoke all */
+					//executor.invokeAll(tasks);
+					System.out.println(result.size());
+				}
 			}
+
 			System.exit(0);
 			
 		} catch (Exception e) {
@@ -298,37 +318,32 @@ public class JsoupExtractor {
 		/** url anúncio */
 		final String urlText = getUrlText(element);
 		imovel.setUrlAnuncio(urlText);
-		info(urlText);
+		debug(urlText);
 
 		/** código */
 		final String codigoText = getCodigoText(element);
 		imovel.setCodigoAnuncio(codigoText);
-		info(codigoText);
+		debug(codigoText);
 
 		/** título */
 		final String tituloText = getTituloText(element);
 		imovel.setTituloResumo(tituloText);
-		info(tituloText);
+		debug(tituloText);
 
 		/** característica */
 		final String caracteristicaText = getCaracteristicaText(element);
 		imovel.setCaracteristicasResumo(caracteristicaText);
-		info(caracteristicaText);
-
-		/** categoria */
-		final CategoriaImovel categoriaImovel = CategoriaImovel.getEnum(caracteristicaText);
-		imovel.setCategoriaImovel(categoriaImovel);
-		info(categoriaImovel.getDescription());
+		debug(caracteristicaText);
 
 		/** descrição */
 		final String descriptionText = getDescricaoText(element);
 		imovel.setDescricaoResumo(descriptionText);
-		info(descriptionText);
+		debug(descriptionText);
 
 		/** url image */
 		final String urlImagemText = getUrlImagemText(element);
 		imovel.setImgDestaque(urlImagemText);
-		info(urlImagemText);
+		debug(urlImagemText);
 	}
 
 	/**
@@ -344,12 +359,12 @@ public class JsoupExtractor {
 			/** anunciante */
 			final String anuncianteText = getAnuncianteText(doc);
 			imovel.setAnunciante(anuncianteText);
-			info(anuncianteText);
+			debug(anuncianteText);
 
 			/** telefone */
 			final String telefoneText = getTelefoneText(doc);
 			imovel.setTelefone(telefoneText);
-			info(telefoneText);
+			debug(telefoneText);
 
 			/* processa caracteristicas */
 			processCarateristicas(imovel, doc);
@@ -363,7 +378,7 @@ public class JsoupExtractor {
 			/** valor */
 			final String valorText = getValorText(doc);
 			imovel.setValor(JsoupUtils.stringToBigDecimal(valorText));
-			info(valorText);
+			debug(valorText);
 
 		} catch (Exception e) {
 			error(e.getMessage());
@@ -378,23 +393,26 @@ public class JsoupExtractor {
 	 * @param doc
 	 */
 	private void processCarateristicas(final Imovel imovel, final Document doc) {
-		final Elements dormitorios = doc.getElementsByClass("linkDetalhesImovel.detalhes").select("li");
-		for (int i = 0; i < dormitorios.size(); i++) {
-			final Element element = dormitorios.get(i);
-			final String property = element.getElementsByClass("coluna1").text().trim();
-			final String value = element.getElementsByClass("coluna2").text().trim();
+		final Elements dormitorios = doc.select("#linkDetalhesImovel .detalhes li");
+		for (final Element element : dormitorios) {
+			final String property = element.select(".coluna1").text().trim();
+			final String value = element.select(".coluna2").text().trim();
 			if (property.startsWith("Dormitórios")) {
-				imovel.setDormitorios(Integer.valueOf(value));
-				info(value);
+				imovel.setDormitorios(JsoupUtils.stringToInteger(value));
+				debug(value);
 			} else if (property.startsWith("Vagas de garagem")) {
-				imovel.setBoxGaragem(Integer.valueOf(value));
-				info(value);
+				imovel.setBoxGaragem(JsoupUtils.stringToInteger(value));
+				debug(value);
 			} else if (property.startsWith("Área total")) {
 				imovel.setAreaTotal(JsoupUtils.stringToBigDecimal(value));
-				info(value);
+				debug(value);
 			} else if (property.startsWith("Área privativa")) {
 				imovel.setAreaPrivativa(JsoupUtils.stringToBigDecimal(value));
-				info(value);
+				debug(value);
+			} else if (property.startsWith("Imóvel")) {
+				final CategoriaImovel categoriaImovel = CategoriaImovel.getEnum(value);
+				imovel.setCategoriaImovel(categoriaImovel);
+				debug(categoriaImovel.getDescription());
 			}
 		}
 	}
@@ -406,23 +424,22 @@ public class JsoupExtractor {
 	 * @param doc
 	 */
 	private void processLocalizacao(final Imovel imovel, final Document doc) {
-		final Element map = doc.getElementById("mapaLocalizacao").getElementsByTag("a").first();
-		final String googleMaps = map.absUrl("href");
+		final String latitude = JsoupUtils.getScriptPropertyValue(doc, "latitude").trim();
+		final String longitude = JsoupUtils.getScriptPropertyValue(doc, "longitude").trim();
+		final String endereco = JsoupUtils.getScriptPropertyValue(doc, "enderecoAlternativo").trim();
 
-		final int index = googleMaps.indexOf("?ll=");
-		final String[] coordenadas = googleMaps.substring(index+4, googleMaps.indexOf("&")).split(",");
-
-		final String latitude = coordenadas[0].trim();
-		final String longitude = coordenadas[1].trim();
-		final String endereco = JsoupUtils.getScriptPropertyValue(doc, "enderecoFull").trim();
-
-		imovel.setLatitude(new BigDecimal(latitude));
-		imovel.setLongitude(new BigDecimal(longitude));
+		if (!latitude.isEmpty()) {
+			imovel.setLatitude(new BigDecimal(latitude));
+			imovel.setLongitude(new BigDecimal(longitude));
+			//TODO add LOCALIZACAO EXATA
+		} else {
+			//TODO  chamar google geocoder pra encontrar LOCALIZAÇÃO APROXIMADA
+		}
 		imovel.setEndereco(endereco);
 
-		info(latitude);
-		info(longitude);
-		info(endereco);
+		debug(latitude);
+		debug(longitude);
+		debug(endereco);
 	}
 
 	/**
@@ -432,15 +449,12 @@ public class JsoupExtractor {
 	 * @param doc
 	 */
 	private void processImagens(final Imovel imovel, final Document doc) {
-		final Elements imagens = doc.getElementsByClass("imagemBoxRodapeThumb").select("img[src]");
+		final Elements imagens = doc.select(".imagemBoxRodapeThumb").select("img[src]");
 		final List<ImagemImovel> imagensImoveis = new ArrayList<>();
 
 		for (final Element imagem : imagens) {
 			final String descricao = imagem.attr("title").trim();
-			String absUrl = imagem.absUrl("src");
-			if (absUrl.indexOf("?") > -1) {
-				absUrl = absUrl.substring(0, absUrl.lastIndexOf("?"));
-			}
+			final String absUrl = imagem.absUrl("alt");
 
 			final ImagemImovel imagemImovel = new ImagemImovel();
 			imagemImovel.setUrl(absUrl);
@@ -449,15 +463,15 @@ public class JsoupExtractor {
 
 			imagensImoveis.add(imagemImovel);
 
-			info(absUrl);
-			info(descricao);
+			debug(absUrl);
+			debug(descricao);
 		}
 
 		/** atualiza dados do imóvel */
 		imovel.setTotalImagens(Integer.valueOf(imagensImoveis.size()));
 		imovel.setImagens(new HashSet<>(imagensImoveis));
 	}
-	
+
 	/**
 	 * Registra informações do processo
 	 * 
@@ -465,6 +479,15 @@ public class JsoupExtractor {
 	 */
 	private void info(final String info) {
 		System.out.println("| info: " + info);
+	}
+	
+	/**
+	 * Registra informações do processo
+	 * 
+	 * @param debug
+	 */
+	private void debug(final String debug) {
+		System.out.println("| debug: " + debug);
 	}
 
 	/**
@@ -480,6 +503,6 @@ public class JsoupExtractor {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		new JsoupExtractor().execute();
+		new JsoupWebSiteScanner().execute();
 	}
 }

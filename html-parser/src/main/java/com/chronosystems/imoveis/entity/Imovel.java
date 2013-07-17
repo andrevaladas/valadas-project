@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.chronosystems.imoveis.enumeration.CategoriaImovel;
+import com.chronosystems.imoveis.enumeration.Estado;
 import com.chronosystems.imoveis.enumeration.SimNao;
 import com.chronosystems.imoveis.enumeration.SiteBusca;
 import com.chronosystems.imoveis.enumeration.TipoImovel;
@@ -37,8 +38,11 @@ public class Imovel implements Serializable {
 	@Column(name = "ID_IMOVEL", unique = true, nullable = false)
 	private Long id;
 
-
 	/** BASE DO ANÚNCIO */
+	@Enumerated(EnumType.STRING)
+	@Column(name = "CODIGO_ESTADO", nullable = false, length = 2)
+	private Estado estado;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "SITE_BUSCA", nullable = false, length = 20)
 	private SiteBusca siteBusca;
@@ -122,16 +126,20 @@ public class Imovel implements Serializable {
 	public Imovel() {
 	}
 
-	public Imovel(SiteBusca siteBusca) {
-		this.siteBusca = siteBusca;
-	}
-
 	public Long getId() {
 		return id;
 	}
 
 	public void setId(Long id) {
 		this.id = id;
+	}
+
+	public Estado getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Estado estado) {
+		this.estado = estado;
 	}
 
 	public SiteBusca getSiteBusca() {
