@@ -30,6 +30,11 @@
 			<version>4.2.3.Final</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.google.code.geocoder-java</groupId>
+			<artifactId>geocoder-java</artifactId>
+			<version>0.15</version>
+		</dependency>
 
 	</dependencies>
 </project>

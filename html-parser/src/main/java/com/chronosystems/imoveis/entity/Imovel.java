@@ -23,6 +23,7 @@ import com.chronosystems.imoveis.enumeration.Estado;
 import com.chronosystems.imoveis.enumeration.SimNao;
 import com.chronosystems.imoveis.enumeration.SiteBusca;
 import com.chronosystems.imoveis.enumeration.TipoImovel;
+import com.chronosystems.imoveis.enumeration.TipoLocalizacao;
 
 /**
  * Classe Imovel
@@ -100,6 +101,10 @@ public class Imovel implements Serializable {
 	private String endereco;
 	private BigDecimal latitude;
 	private BigDecimal longitude;
+	
+	@Enumerated(EnumType.STRING)
+	@Column(name = "TIPO_LOCALIZACAO", nullable = false, length = 1)
+	private TipoLocalizacao tipoLocalizacao;
 
 	@Column(name = "TOTAL_IMAGENS")
 	private Integer totalImagens;
@@ -292,6 +297,14 @@ public class Imovel implements Serializable {
 
 	public void setLongitude(BigDecimal longitude) {
 		this.longitude = longitude;
+	}
+
+	public TipoLocalizacao getTipoLocalizacao() {
+		return tipoLocalizacao;
+	}
+
+	public void setTipoLocalizacao(TipoLocalizacao tipoLocalizacao) {
+		this.tipoLocalizacao = tipoLocalizacao;
 	}
 
 	public Integer getTotalImagens() {

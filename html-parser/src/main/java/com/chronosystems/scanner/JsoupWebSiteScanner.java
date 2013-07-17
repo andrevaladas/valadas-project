@@ -23,7 +23,16 @@ import com.chronosystems.imoveis.enumeration.CategoriaImovel;
 import com.chronosystems.imoveis.enumeration.Estado;
 import com.chronosystems.imoveis.enumeration.SiteBusca;
 import com.chronosystems.imoveis.enumeration.TipoImovel;
+import com.chronosystems.imoveis.enumeration.TipoLocalizacao;
 import com.chronosystems.imoveis.utils.JsoupUtils;
+import com.google.code.geocoder.Geocoder;
+import com.google.code.geocoder.GeocoderRequestBuilder;
+import com.google.code.geocoder.model.GeocodeResponse;
+import com.google.code.geocoder.model.GeocoderGeometry;
+import com.google.code.geocoder.model.GeocoderRequest;
+import com.google.code.geocoder.model.GeocoderResult;
+import com.google.code.geocoder.model.GeocoderStatus;
+import com.google.code.geocoder.model.LatLng;
 
 /**
  * @author André Valadas
@@ -431,9 +440,19 @@ public class JsoupWebSiteScanner {
 		if (!latitude.isEmpty()) {
 			imovel.setLatitude(new BigDecimal(latitude));
 			imovel.setLongitude(new BigDecimal(longitude));
-			//TODO add LOCALIZACAO EXATA
+			imovel.setTipoLocalizacao(TipoLocalizacao.E);
 		} else {
-			//TODO  chamar google geocoder pra encontrar LOCALIZAÇÃO APROXIMADA
+			final Geocoder geocoder = new Geocoder();
+			GeocoderRequest geocoderRequest = new GeocoderRequestBuilder().setAddress(endereco).setLanguage("pt-BR").getGeocoderRequest();
+			GeocodeResponse geocoderResponse = geocoder.geocode(geocoderRequest);
+			if (GeocoderStatus.OK.equals(geocoderResponse.getStatus())) {
+				final GeocoderResult geocoderResult = geocoderResponse.getResults().get(0);
+				final GeocoderGeometry geometry = geocoderResult.getGeometry();
+				final LatLng location = geometry.getLocation();
+				imovel.setLatitude(location.getLat());
+				imovel.setLongitude(location.getLng());
+			}
+			imovel.setTipoLocalizacao(TipoLocalizacao.A);
 		}
 		imovel.setEndereco(endereco);
 
